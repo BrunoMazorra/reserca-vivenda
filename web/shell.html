@@ -157,6 +157,53 @@ body.on-cat .site-foot { display: none; }
   .card { transition: none; }
   .card:hover { transform: none; }
 }
+/* City pages */
+.city-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.city-pick label { font-family: var(--site-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--site-muted); }
+.city-select { font: inherit; font-size: 16px; font-weight: 640; color: var(--site-ink); background-color: var(--site-card); border: 1px solid var(--site-line); border-radius: 10px; padding: 9px 38px 9px 12px; min-width: min(320px, 100%); max-width: 100%; appearance: none; -webkit-appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--site-muted) 50%), linear-gradient(135deg, var(--site-muted) 50%, transparent 50%); background-position: calc(100% - 20px) 52%, calc(100% - 14px) 52%; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; cursor: pointer; }
+.city-select:focus-visible { outline: 2px solid var(--site-accent); outline-offset: 2px; }
+.city-hint { font-size: 13px; color: var(--site-muted); }
+.city { display: flex; flex-direction: column; gap: 18px; }
+.city-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 20px; }
+.city-name { margin: 0; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: clamp(28px, 4vw, 38px); line-height: 1.1; }
+.city-sub { margin: 4px 0 0; color: var(--site-muted); }
+.city-extended { font-weight: 620; text-decoration: none; border: 1px solid var(--site-line); border-radius: 999px; padding: 7px 14px; background: var(--site-card); display: inline-flex; gap: 8px; align-items: baseline; }
+.city-extended:hover { border-color: var(--site-accent); }
+.city-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.city-kpi { background: var(--site-card); border: 1px solid var(--site-line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.city-kpi .k { font-size: 12.5px; color: var(--site-muted); }
+.city-kpi .v { font-family: var(--font-anthropic-serif); font-size: 28px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.city-kpi .y { font-size: 12px; color: var(--site-muted); font-variant-numeric: tabular-nums; }
+.city-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.city-card { margin: 0; background: var(--site-card); border: 1px solid var(--site-line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.city-card h3 { margin: 0; font-size: 15px; font-weight: 640; }
+.city-card figcaption { display: flex; flex-direction: column; gap: 6px; }
+.city-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--site-muted); }
+.city-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 3px; border-radius: 2px; display: inline-block; }
+.sw-1 { background: var(--chart-1); }
+.sw-2 { background: var(--chart-2); }
+.sw-3 { background: var(--chart-3); }
+.sw-soft { opacity: 0.35; height: 10px; }
+.city-chart { position: relative; min-height: 190px; min-width: 0; }
+.city-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.city-chart .tick text, .city-chart .lbl { fill: var(--cds-text-secondary); font-size: 11.5px; font-family: var(--site-display); font-variant-numeric: tabular-nums; }
+.city-chart .domain { stroke: var(--cds-chart-axis); }
+.city-chart .tick line { stroke: var(--cds-chart-grid); }
+.city-chart .ax-y .domain { display: none; }
+.city-chart .rule { stroke: var(--cds-chart-reference); stroke-dasharray: 3 3; }
+.city-chart .empty { color: var(--site-muted); font-size: 13px; padding-top: 24px; margin: 0; }
+.city-src { margin: 0; font-size: 12.5px; color: var(--site-muted); max-width: 75ch; }
+.city-strip { min-height: 120px; }
+.city-strip circle { cursor: pointer; }
+.city-tip { position: absolute; z-index: 3; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: 8px; padding: 6px 10px; font-size: 12.5px; line-height: 1.45; font-variant-numeric: tabular-nums; max-width: 240px; opacity: 0; transition: opacity 120ms; }
+.city-tip b { display: block; font-weight: 640; }
+.city-tip span { color: var(--site-muted); }
+.city-method { border-top: 1px solid var(--site-line); padding-top: 14px; }
+.city-method summary { cursor: pointer; font-weight: 640; }
+.city-method ul { margin: 10px 0 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; max-width: 78ch; color: var(--site-muted); }
+.city-back { margin: 0 0 14px; }
+.city-back a { font-weight: 620; text-decoration: none; }
 /*__PAGE_CSS__*/
 </style>
 
@@ -190,9 +237,9 @@ body.on-cat .site-foot { display: none; }
               <svg viewBox="0 0 300 92" preserveAspectRatio="none"><polyline points="0,70 30,66 60,68 90,60 120,62 150,52 180,55 210,40 240,44 270,30 300,34" fill="none" stroke="var(--chart-1)" stroke-width="2.5"/><polyline points="0,80 30,78 60,79 90,76 120,74 150,73 180,70 210,68 240,66 270,62 300,60" fill="none" stroke="var(--chart-2)" stroke-width="2.5"/></svg>
             </div>
             <h2>Ciutats</h2>
-            <p>Fitxes de ciutat amb sèries llargues de població, llars, construcció, compravendes i preus.</p>
-            <ul><li>León i la seva província</li></ul>
-            <div class="meta"><span class="lang">ES</span><span>1 ciutat</span><span class="go">Obre →</span></div>
+            <p>Una fitxa per a cada capital de província, amb les mateixes sèries per a totes i un selector per passar d'una a l'altra.</p>
+            <ul><li>Població, compravendes, preus i lloguer</li><li>Compres d'inversió comparades entre les 52 capitals</li></ul>
+            <div class="meta"><span class="lang">CA</span><span>52 ciutats</span><span class="go">Obre →</span></div>
           </a>
           <a class="card" href="#catalunya">
             <div class="card-art" aria-hidden="true">
@@ -225,13 +272,90 @@ body.on-cat .site-foot { display: none; }
     <div class="wrap pg-head">
       <p class="eyebrow">Ciutats</p>
       <h1 class="pg-title">Fitxes de ciutat</h1>
-      <p class="pg-intro">Cada fitxa reuneix població, llars, construcció, compravendes, compres d'inversió i preus d'una ciutat i la seva província.</p>
-      <nav class="tabs" aria-label="Ciutats">
-        <a href="#ciutats" aria-current="page">León <span class="lang">ES</span></a>
-      </nav>
+      <p class="pg-intro">Les 50 capitals de província, Ceuta i Melilla, amb les mateixes dades per a totes: població, compravendes, preus, lloguer, pisos turístics, habitatge nou i una estimació de les compres d'inversió.</p>
+      <div class="city-pick">
+        <label for="city-select">Tria una ciutat</label>
+        <select id="city-select" class="city-select" aria-describedby="city-hint"></select>
+        <span id="city-hint" class="city-hint">o fes clic en un punt del gràfic de comparació, més avall</span>
+      </div>
     </div>
     <div class="wrap pg-body">
-      <div class="dashroot" data-page="leon">
+      <article id="city-fitxa" class="city" aria-live="polite">
+        <header class="city-head">
+          <div>
+            <h2 id="city-name" class="city-name">—</h2>
+            <p id="city-sub" class="city-sub">—</p>
+          </div>
+          <a id="city-extended" class="city-extended" href="#ciutat-leon-ampliada" hidden>Fitxa ampliada de León <span class="lang">ES</span> →</a>
+        </header>
+        <div id="city-kpis" class="city-kpis"></div>
+        <div class="city-grid">
+          <figure class="city-card" data-chart="poblacio">
+            <figcaption><h3>Habitants a 1 de gener</h3></figcaption>
+            <div class="city-chart"></div>
+            <p class="city-src">INE, padró municipal.</p>
+          </figure>
+          <figure class="city-card" data-chart="estrangers">
+            <figcaption><h3>Població estrangera a la província, %</h3></figcaption>
+            <div class="city-chart"></div>
+            <p class="city-src">INE, Estadística Continua de Població.</p>
+          </figure>
+          <figure class="city-card" data-chart="compravendes">
+            <figcaption><h3>Compravendes d'habitatge</h3>
+              <ul class="city-legend"><li><i class="sw sw-1"></i>Total</li><li><i class="sw sw-2"></i>Segona mà</li><li><i class="sw sw-3"></i>Nova</li></ul></figcaption>
+            <div class="city-chart"></div>
+            <p class="city-src">Ministeri d'Habitatge, escriptures davant notari.</p>
+          </figure>
+          <figure class="city-card" data-chart="preu">
+            <figcaption><h3>Valor taxat de l'habitatge, €/m²</h3>
+              <ul class="city-legend"><li><i class="sw sw-1"></i>Capital</li><li><i class="sw sw-2"></i>Província</li></ul></figcaption>
+            <div class="city-chart"></div>
+            <p class="city-src">Ministeri d'Habitatge. Per municipi, només els de més de 25.000 habitants i des del 2010.</p>
+          </figure>
+          <figure class="city-card" data-chart="lloguer">
+            <figcaption><h3>Lloguer mitjà d'un pis, €/mes</h3>
+              <ul class="city-legend"><li><i class="sw sw-1"></i>Capital</li><li><i class="sw sw-2"></i>Província</li></ul></figcaption>
+            <div class="city-chart"></div>
+            <p class="city-src">Ministeri d'Habitatge, SERPAVI (lloguers declarats a l'IRPF). Sense dades al País Basc i Navarra.</p>
+          </figure>
+          <figure class="city-card" data-chart="turistics">
+            <figcaption><h3>Pisos turístics anunciats a l'agost</h3></figcaption>
+            <div class="city-chart"></div>
+            <p class="city-src">INE, habitatges d'ús turístic.</p>
+          </figure>
+          <figure class="city-card" data-chart="nous">
+            <figcaption><h3>Habitatges nous a la província</h3>
+              <ul class="city-legend"><li><i class="sw sw-1"></i>Iniciats</li><li><i class="sw sw-2"></i>Acabats</li></ul></figcaption>
+            <div class="city-chart"></div>
+            <p class="city-src">Ministeri d'Habitatge, habitatge lliure.</p>
+          </figure>
+          <figure class="city-card" data-chart="inversio">
+            <figcaption><h3>Compres d'inversió a la capital, % de les compres</h3>
+              <ul class="city-legend"><li><i class="sw sw-1"></i>Estricta</li><li><i class="sw sw-1 sw-soft"></i>Amplia</li></ul></figcaption>
+            <div class="city-chart"></div>
+            <p class="city-src">Estimació pròpia amb fonts oficials, amb un mínim i un màxim per any. El mètode és al final de la pàgina.</p>
+          </figure>
+        </div>
+        <section class="city-card city-compare" id="city-compare">
+          <h3>Compres d'inversió a les 52 capitals</h3>
+          <p class="city-src">Punt mitjà de l'estimació estricta, últim any amb dades. Fes clic en un punt per obrir la fitxa d'aquella ciutat.</p>
+          <div class="city-chart city-strip" id="city-strip"></div>
+        </section>
+        <p id="city-notes" class="city-src"></p>
+        <details class="city-method">
+          <summary>Com es calcula la compra d'inversió</summary>
+          <ul>
+            <li><b>Estricta:</b> compres d'empreses privades, més les de particulars que no hi aniran a viure i que paguen sense hipoteca.</li>
+            <li><b>Amplia:</b> empreses privades, més particulars que no hi aniran a viure (per llogar, com a segona residència o per deixar-la buida), amb hipoteca o sense.</li>
+            <li>Les compres d'administracions públiques i d'entitats sense ànim de lucre no hi compten.</li>
+            <li>Cap estadística creua com es paga un habitatge amb l'ús que se'n fa, ni el tipus de comprador per municipi. Per això el resultat és un interval.</li>
+            <li>Peces de cada any: compravendes davant notari (Ministeri d'Habitatge); compres de persones jurídiques segons el percentatge de la comunitat autònoma (Col·legi de Registradors); repartiment per tipus de propietari amb el cadastre; compradors d'una altra província; augment dels habitatges llogats (SERPAVI); canvi dels pisos turístics (INE); i percentatge de compres sense hipoteca (INE i Consell General del Notariat).</li>
+            <li>Calculat amb el programa <i>vivienda_capitales</i>, el mateix per a totes les capitals.</li>
+          </ul>
+        </details>
+      </article>
+      <p class="city-back" hidden><a href="#ciutat-leon">← Fitxa general de León</a></p>
+      <div class="dashroot" data-page="leon" hidden>
 <!--__LEON__-->
       </div>
     </div>
@@ -440,17 +564,343 @@ SITE.startCatalunya = function () {
 
 SITE.routes = {
   inici: {pg: 'inici'},
-  ciutats: {pg: 'ciutats', pages: ['leon']},
+  ciutats: {pg: 'ciutats', city: 'leon'},
+  'ciutat-leon-ampliada': {pg: 'ciutats', leonFull: true, pages: ['leon']},
   catalunya: {pg: 'catalunya', cat: true},
   barcelona: {pg: 'barcelona', sub: 'barcelona', pages: ['bcn_lloguer']},
   'barcelona-mapes': {pg: 'barcelona', sub: 'barcelona-mapes', pages: ['bcn_mapes']},
 };
 
+SITE.resolve = function (h) {
+  if (SITE.routes[h]) return {key: h, r: SITE.routes[h]};
+  const m = /^ciutat-([a-z0-9-]+)$/.exec(h);
+  if (m) return {key: h, r: {pg: 'ciutats', city: m[1]}};
+  return {key: 'inici', r: SITE.routes.inici};
+};
+
+/* City pages: one generic file per capital, loaded when chosen. */
+SITE.city = (function () {
+  const loc = d3.formatLocale({decimal: ',', thousands: '.', grouping: [3], currency: ['', ' €']});
+  const f0 = loc.format(',.0f');
+  const f1 = loc.format(',.1f');
+  const reduce = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  let index = null;
+  let indexP = null;
+  let current = null;
+  let currentData = null;
+  const cache = {};
+  const $ = (id) => document.getElementById(id);
+
+  function getIndex() {
+    if (!indexP) {
+      indexP = fetch('data/capitals/index.json').then((r) => r.json()).then((rows) => {
+        index = rows.slice().sort((a, b) => a.capital.localeCompare(b.capital, 'ca'));
+        fillSelect();
+        return index;
+      });
+    }
+    return indexP;
+  }
+  function fillSelect() {
+    const sel = $('city-select');
+    if (!sel) return;
+    const groups = d3.groups(index, (c) => c.ccaa).sort((a, b) => a[0].localeCompare(b[0], 'ca'));
+    sel.replaceChildren(...groups.map(([ccaa, caps]) => {
+      const g = document.createElement('optgroup');
+      g.label = ccaa;
+      caps.forEach((c) => g.appendChild(new Option(c.capital, c.slug)));
+      return g;
+    }));
+    sel.addEventListener('change', () => { location.hash = '#ciutat-' + sel.value; });
+  }
+  function load(slug) {
+    if (!cache[slug]) cache[slug] = fetch('data/capitals/' + slug + '.json').then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+    return cache[slug];
+  }
+  function last(rows, key) {
+    for (let i = rows.length - 1; i >= 0; i -= 1) {
+      const v = rows[i][key];
+      if (v !== null && v !== undefined && v !== '' && !Number.isNaN(+v)) return {v: +v, anio: rows[i].anio};
+    }
+    return null;
+  }
+  function mid(c) { return c.pct_estricta_min == null ? null : (c.pct_estricta_min + c.pct_estricta_max) / 2; }
+
+  function tip(el) {
+    let t = el.querySelector(':scope > .city-tip');
+    if (!t) { t = document.createElement('div'); t.className = 'city-tip'; el.appendChild(t); }
+    return t;
+  }
+  function showTip(el, t, title, lines, x, y) {
+    t.replaceChildren();
+    const b = document.createElement('b'); b.textContent = title; t.appendChild(b);
+    lines.forEach(([k, v]) => {
+      const d = document.createElement('div');
+      const s = document.createElement('span'); s.textContent = k + ': ';
+      d.appendChild(s); d.appendChild(document.createTextNode(v));
+      t.appendChild(d);
+    });
+    const W = el.clientWidth;
+    let left = x + 14;
+    if (left + t.offsetWidth > W) left = Math.max(0, x - t.offsetWidth - 14);
+    t.style.left = left + 'px';
+    t.style.top = Math.max(0, y - t.offsetHeight - 6) + 'px';
+    t.style.opacity = 1;
+  }
+  function hideTip(t) { t.style.opacity = 0; }
+  function empty(el, text) {
+    el.replaceChildren();
+    const p = document.createElement('p'); p.className = 'empty'; p.textContent = text || 'Sense dades per a aquesta ciutat.';
+    el.appendChild(p);
+  }
+
+  /* Line chart: series = [{rows, key, label, color, fmt}] sharing one x (years). */
+  function lines(el, series, opt) {
+    opt = opt || {};
+    const pts = series.map((s) => s.rows.filter((r) => r[s.key] !== null && r[s.key] !== undefined && r[s.key] !== '').map((r) => ({x: +r.anio, y: +r[s.key]})));
+    if (!pts.some((p) => p.length > 0)) { empty(el); return; }
+    el.replaceChildren();
+    const w = Math.max(260, el.clientWidth || 320);
+    const h = 190;
+    const m = {t: 10, r: 48, b: 24, l: 46};
+    const all = pts.flat();
+    const ext = d3.extent(all, (p) => p.x);
+    if (ext[0] === ext[1]) { ext[0] -= 1; ext[1] += 1; }
+    const x = d3.scaleLinear(ext, [m.l, w - m.r]);
+    const ymin = opt.zero === false ? d3.min(all, (p) => p.y) * 0.97 : 0;
+    const y = d3.scaleLinear([ymin, d3.max(all, (p) => p.y) * 1.04], [h - m.b, m.t]).nice();
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('role', 'img').attr('aria-label', opt.label || '');
+    const fmt = opt.fmt || f0;
+    svg.append('g').attr('class', 'ax-y').attr('transform', `translate(${m.l},0)`)
+      .call(d3.axisLeft(y).ticks(4).tickSize(-(w - m.l - m.r)).tickFormat((v) => (opt.tick || fmt)(v)));
+    const span = x.domain()[1] - x.domain()[0];
+    svg.append('g').attr('transform', `translate(0,${h - m.b})`)
+      .call(d3.axisBottom(x).ticks(Math.min(span, w < 420 ? 4 : 6)).tickFormat((v) => String(v)));
+    const g = svg.append('g');
+    series.forEach((s, i) => {
+      if (pts[i].length < 1) return;
+      g.append('path').datum(pts[i]).attr('fill', 'none').style('stroke', s.color).attr('stroke-width', 2.2)
+        .attr('d', d3.line().x((p) => x(p.x)).y((p) => y(p.y)));
+      const lp = pts[i][pts[i].length - 1];
+      g.append('circle').attr('cx', x(lp.x)).attr('cy', y(lp.y)).attr('r', 3.5).style('fill', s.color);
+      if (series.length === 1 || i === 0) {
+        g.append('text').attr('class', 'lbl').attr('x', x(lp.x) + 6).attr('y', y(lp.y) + 4).text(fmt(lp.y));
+      }
+    });
+    const rule = svg.append('line').attr('class', 'rule').attr('y1', m.t).attr('y2', h - m.b).style('opacity', 0);
+    const t = tip(el);
+    svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', w - m.l - m.r).attr('height', h - m.t - m.b).attr('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const [px, py] = d3.pointer(ev, el);
+        const yr = Math.round(x.invert(px));
+        const ls = [];
+        series.forEach((s, i) => { const p = pts[i].find((q) => q.x === yr); if (p) ls.push([s.label, fmt(p.y)]); });
+        if (!ls.length) { hideTip(t); rule.style('opacity', 0); return; }
+        rule.attr('x1', x(yr)).attr('x2', x(yr)).style('opacity', 1);
+        showTip(el, t, String(yr), ls, px, py);
+      })
+      .on('pointerleave', () => { hideTip(t); rule.style('opacity', 0); });
+  }
+
+  /* Band chart for the investment estimate (strict and broad ranges). */
+  function bands(el, rows) {
+    const r = rows.filter((d) => d.pct_estricta_min != null && d.pct_estricta_max != null);
+    if (r.length < 2) { empty(el); return; }
+    el.replaceChildren();
+    const w = Math.max(260, el.clientWidth || 320);
+    const h = 190;
+    const m = {t: 10, r: 14, b: 24, l: 40};
+    const x = d3.scaleLinear(d3.extent(r, (d) => +d.anio), [m.l, w - m.r]);
+    const ymax = d3.max(r, (d) => Math.max(+d.pct_amplia_max || 0, +d.pct_estricta_max));
+    const y = d3.scaleLinear([0, ymax * 1.08], [h - m.b, m.t]).nice();
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('role', 'img').attr('aria-label', "Compres d'inversió a la capital, interval estricte i ampli per any");
+    svg.append('g').attr('class', 'ax-y').attr('transform', `translate(${m.l},0)`)
+      .call(d3.axisLeft(y).ticks(4).tickSize(-(w - m.l - m.r)).tickFormat((v) => f0(v) + ' %'));
+    svg.append('g').attr('transform', `translate(0,${h - m.b})`)
+      .call(d3.axisBottom(x).ticks(w < 420 ? 4 : 7).tickFormat((v) => String(v)));
+    const amp = r.filter((d) => d.pct_amplia_min != null && d.pct_amplia_max != null);
+    svg.append('path').datum(amp).style('fill', 'var(--chart-1)').attr('fill-opacity', 0.16)
+      .attr('d', d3.area().x((d) => x(+d.anio)).y0((d) => y(+d.pct_amplia_min)).y1((d) => y(+d.pct_amplia_max)));
+    svg.append('path').datum(r).style('fill', 'var(--chart-1)').attr('fill-opacity', 0.55)
+      .attr('d', d3.area().x((d) => x(+d.anio)).y0((d) => y(+d.pct_estricta_min)).y1((d) => y(+d.pct_estricta_max)));
+    const rule = svg.append('line').attr('class', 'rule').attr('y1', m.t).attr('y2', h - m.b).style('opacity', 0);
+    const t = tip(el);
+    svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', w - m.l - m.r).attr('height', h - m.t - m.b).attr('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const [px, py] = d3.pointer(ev, el);
+        const yr = Math.round(x.invert(px));
+        const d = r.find((q) => +q.anio === yr);
+        if (!d) { hideTip(t); return; }
+        rule.attr('x1', x(yr)).attr('x2', x(yr)).style('opacity', 1);
+        const ls = [['Estricta', f1(d.pct_estricta_min) + '–' + f1(d.pct_estricta_max) + ' %']];
+        if (d.pct_amplia_min != null) ls.push(['Amplia', f1(d.pct_amplia_min) + '–' + f1(d.pct_amplia_max) + ' %']);
+        ls.push(['Compres', f0(d.compras)]);
+        showTip(el, t, String(yr), ls, px, py);
+      })
+      .on('pointerleave', () => { hideTip(t); rule.style('opacity', 0); });
+  }
+
+  /* Dot strip of the 52 capitals; a click opens that city. */
+  function strip() {
+    const el = $('city-strip');
+    if (!el || !index) return;
+    const data = index.filter((c) => mid(c) != null).map((c) => ({c, v: mid(c)})).sort((a, b) => a.v - b.v);
+    el.replaceChildren();
+    const w = Math.max(280, el.clientWidth || 600);
+    const m = {t: 22, r: 16, b: 24, l: 16};
+    const x = d3.scaleLinear([0, Math.max(40, d3.max(data, (d) => d.v) * 1.05)], [m.l, w - m.r]).nice();
+    const lanes = [];
+    const gap = 9;
+    data.forEach((d) => {
+      d.px = x(d.v);
+      let k = lanes.findIndex((lx) => d.px - lx >= gap);
+      if (k < 0) { lanes.push(d.px); k = lanes.length - 1; } else lanes[k] = d.px;
+      d.lane = k;
+    });
+    const laneH = 11;
+    const h = m.t + lanes.length * laneH + m.b + 6;
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('role', 'img').attr('aria-label', "Compres d'inversió a les 52 capitals, punt mitjà de l'estimació estricta");
+    const base = h - m.b;
+    svg.append('g').attr('transform', `translate(0,${base})`)
+      .call(d3.axisBottom(x).ticks(w < 420 ? 4 : 8).tickFormat((v) => f0(v) + ' %'));
+    const t = tip(el);
+    const sel = current ? current.slug : null;
+    const dots = svg.append('g').selectAll('circle').data(data).join('circle')
+      .attr('cx', (d) => d.px).attr('cy', (d) => base - 8 - d.lane * laneH).attr('r', (d) => (d.c.slug === sel ? 6.5 : 4.5))
+      .style('fill', (d) => (d.c.slug === sel ? 'var(--site-accent)' : 'var(--chart-1)'))
+      .attr('fill-opacity', (d) => (d.c.slug === sel ? 1 : 0.55))
+      .style('stroke', 'var(--site-card)').attr('stroke-width', 1.5)
+      .attr('tabindex', 0).attr('role', 'link').attr('aria-label', (d) => d.c.capital + ', ' + f1(d.v) + ' %')
+      .on('click', (ev, d) => { location.hash = '#ciutat-' + d.c.slug; })
+      .on('keydown', (ev, d) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); location.hash = '#ciutat-' + d.c.slug; } })
+      .on('pointermove', (ev, d) => {
+        const [px, py] = d3.pointer(ev, el);
+        showTip(el, t, d.c.capital, [['Estricta', f1(d.c.pct_estricta_min) + '–' + f1(d.c.pct_estricta_max) + ' %'], ['Amplia', f1(d.c.pct_amplia_min) + '–' + f1(d.c.pct_amplia_max) + ' %'], ['Any', String(d.c.anio)]], px, py);
+      })
+      .on('pointerleave', () => hideTip(t));
+    dots.filter((d) => d.c.slug === sel).raise();
+    const s = data.find((d) => d.c.slug === sel);
+    if (s) {
+      const right = s.px > w * 0.7;
+      svg.append('text').attr('class', 'lbl').attr('x', s.px + (right ? -10 : 10)).attr('y', base - 8 - s.lane * laneH - 10)
+        .attr('text-anchor', right ? 'end' : 'start').style('fill', 'var(--site-ink)').style('font-weight', 640)
+        .text(s.c.capital + ' · ' + f1(s.v) + ' %');
+    }
+  }
+
+  function kpis(meta, d) {
+    const cap = d.capital || [], prov = d.provincia || [], inv = d.inversion_capital || [];
+    const out = [];
+    const add = (k, val, year) => out.push({k, v: val, y: year});
+    let p = last(cap, 'poblacion_padron');
+    if (p) add('Habitants', f0(p.v), 'padró ' + p.anio);
+    p = last(cap, 'compraventas');
+    if (p) add("Compravendes d'habitatge", f0(p.v), String(p.anio));
+    p = last(cap, 'valor_tasado');
+    if (p) add('Valor taxat', f0(p.v) + ' €/m²', String(p.anio));
+    else if ((p = last(prov, 'valor_tasado'))) add('Valor taxat (província)', f0(p.v) + ' €/m²', String(p.anio));
+    p = last(cap, 'alquiler_mediano_piso');
+    if (p) add("Lloguer mitjà d'un pis", f0(p.v) + ' €', String(p.anio));
+    else if ((p = last(prov, 'alquiler_mediano_piso'))) add("Lloguer mitjà (província)", f0(p.v) + ' €', String(p.anio));
+    const li = inv.filter((r) => r.pct_estricta_min != null).slice(-1)[0];
+    if (li) {
+      const ranked = index.filter((c) => mid(c) != null).sort((a, b) => mid(b) - mid(a));
+      const pos = ranked.findIndex((c) => c.slug === meta.slug) + 1;
+      add("Compres d'inversió (estricta)", f1(li.pct_estricta_min) + '–' + f1(li.pct_estricta_max) + ' %', li.anio + (pos ? ' · posició ' + pos + ' de ' + ranked.length : ''));
+    }
+    const box = $('city-kpis');
+    box.replaceChildren(...out.map((o) => {
+      const div = document.createElement('div'); div.className = 'city-kpi';
+      [['k', o.k], ['v', o.v], ['y', o.y]].forEach(([c, txt]) => { const s = document.createElement('span'); s.className = c; s.textContent = txt; div.appendChild(s); });
+      return div;
+    }));
+  }
+
+  function charts(d) {
+    const cap = d.capital || [], prov = d.provincia || [], inv = d.inversion_capital || [];
+    const get = (name) => document.querySelector('#city-fitxa [data-chart="' + name + '"] .city-chart');
+    lines(get('poblacio'), [{rows: cap, key: 'poblacion_padron', label: 'Habitants', color: 'var(--chart-1)'}], {zero: false, label: 'Habitants a 1 de gener'});
+    const est = prov.map((r) => ({anio: r.anio, pct: (r.extranjeros != null && r.espanoles != null && (+r.extranjeros + +r.espanoles) > 0) ? 100 * r.extranjeros / (+r.extranjeros + +r.espanoles) : null}));
+    lines(get('estrangers'), [{rows: est, key: 'pct', label: 'Estrangers', color: 'var(--chart-1)'}], {fmt: (v) => f1(v) + ' %', tick: (v) => f0(v) + ' %', label: 'Població estrangera a la província'});
+    lines(get('compravendes'), [
+      {rows: cap, key: 'compraventas', label: 'Total', color: 'var(--chart-1)'},
+      {rows: cap, key: 'compraventas_segunda_mano', label: 'Segona mà', color: 'var(--chart-2)'},
+      {rows: cap, key: 'compraventas_nueva', label: 'Nova', color: 'var(--chart-3)'},
+    ], {label: "Compravendes d'habitatge"});
+    lines(get('preu'), [
+      {rows: cap, key: 'valor_tasado', label: 'Capital', color: 'var(--chart-1)'},
+      {rows: prov, key: 'valor_tasado', label: 'Província', color: 'var(--chart-2)'},
+    ], {fmt: (v) => f0(v) + ' €', tick: f0, label: "Valor taxat de l'habitatge"});
+    lines(get('lloguer'), [
+      {rows: cap, key: 'alquiler_mediano_piso', label: 'Capital', color: 'var(--chart-1)'},
+      {rows: prov, key: 'alquiler_mediano_piso', label: 'Província', color: 'var(--chart-2)'},
+    ], {fmt: (v) => f0(v) + ' €', tick: f0, label: "Lloguer mitjà d'un pis"});
+    lines(get('turistics'), [{rows: cap, key: 'turisticas_ago', label: 'Pisos turístics', color: 'var(--chart-1)'}], {label: "Pisos turístics anunciats a l'agost"});
+    lines(get('nous'), [
+      {rows: prov, key: 'viviendas_iniciadas', label: 'Iniciats', color: 'var(--chart-1)'},
+      {rows: prov, key: 'viviendas_terminadas', label: 'Acabats', color: 'var(--chart-2)'},
+    ], {label: 'Habitatges nous a la província'});
+    bands(get('inversio'), inv);
+  }
+
+  function render() {
+    if (!current || !currentData) return;
+    kpis(current, currentData);
+    charts(currentData);
+    strip();
+  }
+
+  async function show(slug) {
+    await getIndex();
+    const meta = index.find((c) => c.slug === slug) || index.find((c) => c.slug === 'leon') || index[0];
+    current = meta;
+    const sel = $('city-select');
+    if (sel) sel.value = meta.slug;
+    $('city-name').textContent = meta.capital;
+    $('city-sub').textContent = 'Província de ' + meta.provincia + ' · ' + meta.ccaa;
+    $('city-extended').hidden = meta.slug !== 'leon';
+    const notes = [meta.notas, meta.avisos].filter(Boolean).join(' · ');
+    $('city-notes').textContent = notes ? 'Notes del càlcul per a aquesta ciutat (en castellà): ' + notes : '';
+    document.querySelectorAll('#city-fitxa .city-chart').forEach((el) => { if (el.id !== 'city-strip') empty(el, 'Carregant…'); });
+    try {
+      const d = await load(meta.slug);
+      if (current !== meta) return;
+      currentData = d;
+      render();
+    } catch (e) {
+      console.error('[ciutat]', e);
+      document.querySelectorAll('#city-fitxa .city-chart').forEach((el) => empty(el, "No s'han pogut carregar les dades."));
+    }
+  }
+
+  let lastW = 0;
+  let timer = null;
+  const fitxa = document.getElementById('city-fitxa');
+  if (fitxa && 'ResizeObserver' in window) {
+    new ResizeObserver(() => {
+      const w = fitxa.clientWidth;
+      if (!w || w === lastW) return;
+      lastW = w;
+      clearTimeout(timer);
+      timer = setTimeout(render, 120);
+    }).observe(fitxa);
+  }
+  return {show};
+})();
+
 SITE.current = null;
 SITE.route = function () {
   const h = location.hash.replace(/^#/, '');
-  const key = SITE.routes[h] ? h : 'inici';
-  const r = SITE.routes[key];
+  const res = SITE.resolve(h);
+  const key = res.key;
+  const r = res.r;
+  if (r.pg === 'ciutats') {
+    document.getElementById('city-fitxa').hidden = !!r.leonFull;
+    document.querySelector('.city-back').hidden = !r.leonFull;
+    document.querySelector('[data-page="leon"]').hidden = !r.leonFull;
+    document.querySelector('#pg-ciutats .city-pick').hidden = !!r.leonFull;
+    if (!r.leonFull) SITE.city.show(r.city);
+  }
   document.querySelectorAll('main > .pg').forEach((s) => { s.hidden = s.id !== 'pg-' + r.pg; });
   document.querySelectorAll('.site-nav a').forEach((a) => {
     if (a.dataset.route === r.pg) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');

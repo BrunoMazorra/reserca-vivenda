@@ -5,6 +5,7 @@ Entrades (src/):
 - La pàgina de concentració del lloguer es llegeix directament de ../concentracio/pagina
   i ../concentracio/dades, per no tenir-ne dues còpies.
 - catalunya/page.html: el mapa 3D, una pàgina normal amb les dades dins.
+- capitals/: les fitxes de les 52 capitals (vegeu importa_capitals.py).
 
 Sortida (dist/): index.html i data/<pàgina>/<dataset>.<ext>.
 - dist/index.html és per a claude.ai, que hi afegeix la capçalera HTML.
@@ -197,6 +198,9 @@ def main():
     js_parts.append(page_js("bcn_lloguer", scripts, sources))
     body = body.replace("Cada xifra porta a la seva font al panell de fonts.", "La font de cada gràfic és a sota.")
     shell = shell.replace("<!--__BCN_LLOGUER__-->", body)
+
+    # Fitxes de ciutat: una per capital, generades amb vivienda_capitales (importa_capitals.py)
+    shutil.copytree(SRC / "capitals", DIST / "data" / "capitals")
 
     # Catalunya
     css, markup, js = build_catalunya()

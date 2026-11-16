@@ -13,7 +13,8 @@ es comparteix des del seu menú.
 | Ruta | Contingut | Origen |
 |---|---|---|
 | `#inici` | Presentació i accés a les tres escales | `shell.html` |
-| `#ciutats` | Fitxa de León (en castellà) | `src/leon/` |
+| `#ciutats`, `#ciutat-<nom>` | Fitxa de cada capital de província, amb selector (per exemple `#ciutat-girona`) | `src/capitals/` |
+| `#ciutat-leon-ampliada` | Fitxa ampliada de León (en castellà) | `src/leon/` |
 | `#catalunya` | Mapa 3D «Catalunya en relleu» | `src/catalunya/` |
 | `#barcelona` | Concentració del lloguer i grans propietaris | `../concentracio/pagina/` |
 | `#barcelona-mapes` | Propietat per barris, amb mapes (en castellà) | `src/bcn_mapes/` |
@@ -33,6 +34,9 @@ es comparteix des del seu menú.
   - Comprova que no hi hagi identificadors repetits entre pàgines.
 - `src/`: còpies de les pàgines originals i dels seus fitxers de dades, baixades dels
   artefactes el 16/11/2026.
+- `src/capitals/`: les 52 fitxes de ciutat, sortides del framework *vivienda_capitales*
+  (`python ejecutar.py --todas`). Per actualitzar-les:
+  `python3 -I web/importa_capitals.py /ruta/a/vivienda_capitales`.
 - `dist/`: el resultat. No es guarda al repositori.
 
 ## Regenerar i publicar
