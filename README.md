@@ -76,6 +76,8 @@ concentracio/        tema 1: concentració del mercat
   README.md
   dades/             dades descarregades (les grans no es pugen al repo)
   analisi/           scripts i notebooks
+  figures/           gràfics generats pels scripts
+requirements.txt     dependències de Python dels scripts d'anàlisi
 ```
 
 ## Fonts de dades transversals

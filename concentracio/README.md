@@ -128,7 +128,7 @@ Dades, fonts i quines xifres hem comprovat nosaltres a
 | Ajuntament (IMHAB) | 9.770 | des. 2024 | 4,1 % | Lloguer social i assequible |
 | Generalitat (INCASÒL) | 2.581 | febr. 2024 | 1,1 % | No inclou l'Agència de l'Habitatge |
 | CEVASA | ≥ 1.180 | des. 2025 | ≥ 0,5 % | Només Meridiano-Cero. Total del grup: 2.378 pisos |
-| Blackstone | ≥ 815 | 2014–2018 | ≥ 0,3 % | Albirana 569, Fidere 181, Euripo 65. Cartera en desinversió |
+| Blackstone | ≥ 634 | 2016–2018 | ≥ 0,3 % | Albirana 569, Euripo 65. El Diagonal 75 de Fidere (181) ara és de Vivenio. Cartera en desinversió |
 | Vivenio (APG / Aware Super) | ~243 | 2026 | 0,1 % | Suma per edificis de la web |
 | Elix Vintage (Allianz) | 118 | 2019 | 0,05 % | Unitats abans de rehabilitar |
 
@@ -204,6 +204,126 @@ altres 2,1 %
   cadastrals, no dels immobles de l'IBI. Cal veure si això explica tota la diferència.
 - L'O-HB avisa que les cinc edicions de l'informe de la ciutat (2018, 2019, 2021, 2023, 2025)
   **no són directament comparables**. Això limita P8.
+
+## Anàlisi per barri amb dades públiques (novembre 2026)
+
+**Dades:**
+
+- Lloguer mitjà (€/mes i €/m²) i contractes nous per barri: fiances de l'INCASÒL, publicades
+  al [Portal Barcelona Dades](https://portaldades.ajuntament.barcelona.cat/).
+- Preu de compravenda (€/m²) per barri: registres notarials, al mateix portal.
+- Concentració de la propietat per barri: O-HB 2025 (annexos 1 i 2) i cadastre d'Open Data BCN.
+
+**On són:**
+
+- Fitxers: [`dades/portal_dades/`](dades/portal_dades/),
+  [`dades/ohb_2025_barris.csv`](dades/ohb_2025_barris.csv) i
+  [`dades/cadastre_propietaris_barri.csv`](dades/cadastre_propietaris_barri.csv).
+- Codi: [`analisi/barris.py`](analisi/barris.py),
+  [`analisi/cadastre_serie.py`](analisi/cadastre_serie.py) i
+  [`analisi/extreure_annex_ohb.py`](analisi/extreure_annex_ohb.py).
+- Les taules del portal s'han copiat de la pàgina web i s'han comprovat amb sumes de control
+  per columna contra el portal.
+
+**Exposició d'un barri:** % dels seus habitatges en mans de propietaris privats amb 5 o més
+habitatges.
+
+- Ve de l'O-HB 2025. L'annex 1 de l'informe inclou el parc públic, i per això l'hem restat.
+- Alternativa: % d'habitatges d'empreses al cadastre del 2023, abans del topall.
+- Les dues mesures tenen una correlació de 0,88.
+- Limitació: són dades del parc total, no del parc de lloguer.
+
+**Mostra:** els 63 barris amb almenys 100 contractes nous el 2023.
+
+### P8. La propietat de persones jurídiques puja a poc a poc
+
+![Persones jurídiques al cadastre](figures/p8_persones_juridiques.png)
+
+- **A la ciutat:** el pes de les persones jurídiques passa del 12,3 % (2009) al 15,3 % (2026).
+  El de les empreses, de l'11,3 % (2018) al 12,2 % (2026).
+- **Lectura:** no hi ha cap salt ni cap canvi de tendència després del 2020. A escala de
+  ciutat, això va a favor de H8c i en contra de H8b.
+- **Per barris:** la mediana puja 2,4 punts, i puja en 66 dels 73 barris.
+  - Les pujades més grans són a Ciutat Meridiana (+10,7), Torre Baró (+9,8), la Trinitat
+    Vella (+8,2) i el Raval (+7,4).
+  - Caldria veure si són pisos adjudicats a bancs o habitatge públic.
+- **Compte:** els titulars "no consta" baixen de 43.651 (2009) a 2.715 (2026). Si molts eren
+  persones jurídiques, part de la pujada és només que ara el registre és més complet.
+
+### P4. Entre barris, la concentració va amb preus alts respecte del lloguer
+
+![Secció creuada](figures/p4_seccio_creuada.png)
+
+Diferència associada a +10 punts d'exposició, en %. Errors robustos entre parèntesis.
+
+| 2023 | Sense efectes de districte | Dins de cada districte |
+|---|---|---|
+| Lloguer €/m² | +6,2 (1,7) | +1,6 (3,1) |
+| Preu de compra €/m² | +16,6 (3,4) | +9,4 (5,3) |
+| Ràtio preu / lloguer | +10,4 (2,3) | +7,8 (3,2) |
+
+- **Lloguer:** dins de cada districte, els barris amb més grans propietaris privats **no**
+  tenen lloguers significativament més alts.
+- **Ràtio preu/lloguer:** en canvi, sí que la tenen més alta, és a dir, el preu de compra hi
+  és més alt respecte del lloguer. La ràtio va d'11,7 a 27,7 anys de lloguer, amb una
+  mediana de 18,1.
+- **Què vol dir per a H4a:** si la concentració apugés el lloguer i el preu el capitalitzés,
+  la ràtio no hauria de dependre de la concentració. El que veiem encaixa més amb la
+  direcció contrària: els inversors grans compren on esperen que el preu pugi (rendibilitat
+  per lloguer baixa i guany de capital esperat alt).
+- És una correlació, no un efecte causal. La mesura d'empreses del cadastre dona el mateix
+  patró.
+
+### P3. El topall del 2024
+
+![Estudi d'esdeveniment](figures/p3_topall_2024.png)
+
+**Model:** `log y = efecte fix de barri + efecte fix d'any + Σₜ βₜ · (exposició/10) · 1[any = t]`,
+amb el 2023 com a base i errors agrupats per barri. `βₜ` és la diferència en % que s'associa
+a +10 punts d'exposició, respecte del 2023.
+
+| | 2024 | 2025 | Anys anteriors (2017–2022) |
+|---|---|---|---|
+| Contractes nous | +2,1 (2,6) | **+8,1 (3,4)** | entre +6 i +11 |
+| Lloguer €/mes | +0,2 (0,6) | −0,8 (0,9) | entre −1,5 i +0,3 |
+| Preu de compra €/m² | −1,0 (1,0) | **−3,4 (0,8)** | de +2,0 (2017) a −1,8 (2022) |
+
+- **Contractes:** els barris exposats perden contractes en termes relatius el 2023, l'any de
+  la Llei 12/2023, i el 2025 tornen al nivell relatiu d'abans.
+  - No es veu la caiguda relativa que prediu H3b, segons la qual els grans lloguen menys
+    quan el topall mossega.
+  - Encaixa més amb H3a, o amb que el topall mossega poc. Però el 2023 és un any estrany, i
+    no ho podem atribuir al topall.
+- **Lloguer:** cap diferència entre barris després del topall.
+  - Si el topall mossegués per als grans tenidors, el lloguer mitjà hauria de baixar més als
+    barris exposats.
+  - Que no passi pot voler dir tres coses: el topall mossega poc, els grans tenidors fan pocs
+    contractes nous, o la mesura d'exposició (parc total) és massa grollera.
+- **Preu:** el 2025 el preu de compra puja menys als barris exposats, un 3,4 % menys per cada
+  10 punts.
+  - Encaixaria amb la capitalització (H3a i H4), però hi ha dos problemes.
+  - Primer, ja hi havia una tendència relativa a la baixa des del 2017.
+  - Segon, els barris exposats són els cèntrics, que són també els més afectats per la
+    regulació dels habitatges d'ús turístic: el
+    [Decret llei 3/2023](https://portaljuridic.gencat.cat/ca/detalls/noticia/mesures_urgents_regim_habitatges_us_turistics_dogc)
+    i la [decisió de l'Ajuntament de no renovar les llicències](https://ajuntament.barcelona.cat/turisme/ca/actualitat/noticies/barcelona-no-renovara-les-llicencies-dhabitatges-dus-turistic-1413375).
+  - Amb dades anuals no ho podem separar.
+- La mesura d'empreses del cadastre (2023) dona resultats en la mateixa direcció, i el preu
+  del 2025 hi surt amb un −6,6 % (1,2).
+
+### Conclusió provisional
+
+1. Per grup i per NIF, la propietat del lloguer **no està concentrada** a escala de ciutat.
+2. Entre barris, la concentració **no va amb lloguers més alts** dins de cada districte. Va
+   amb preus alts respecte del lloguer, cosa més compatible amb inversors que segueixen els
+   preus que amb poder de mercat sobre el lloguer.
+3. El topall del 2024 no mostra la retirada d'oferta que esperaríem en un mercat competitiu,
+   però tampoc una baixada del lloguer als barris exposats. La prova és feble per tres
+   motius: les dades són anuals, l'exposició és del parc total, i es barreja amb la
+   regulació dels pisos turístics.
+4. Amb dades públiques encara es pot fer una cosa més: refer P3 amb les sèries
+   **trimestrals** del mateix portal. Permetria separar el topall (març 2024) de l'anunci
+   de l'Ajuntament sobre els pisos turístics (21 de juny del 2024).
 
 ## Context legal (afecta les dades i els incentius)
 
@@ -301,6 +421,10 @@ són la quantitat dels grans i la renda dels petits.
   documenta un augment dels contractes de temporada, però no separa per tipus d'arrendador.
 - Calen microdades de fiances per tipus d'arrendador, que són restringides.
 
+*Estat:* hi ha una primera versió amb dades anuals públiques, comparant barris segons
+l'exposició (vegeu més amunt). No es veu retirada d'oferta als barris exposats, però tampoc
+baixada del lloguer. Falta la versió trimestral.
+
 ### P4. El poder en el lloguer es capitalitza en el preu de compra?
 
 - **H4a (capitalització plena).** Als barris amb més concentració del lloguer, els lloguers i
@@ -322,6 +446,9 @@ són la quantitat dels grans i la renda dels petits.
    d'inversió.
 3. **Vendes grans de carteres** (un fons que ven a molts petits propietaris): la
    concentració baixa de cop i els lloguers i els preus haurien de reaccionar.
+
+*Estat:* la comparació entre barris del 2023 va en contra de H4a. Dins de cada districte,
+la concentració no va amb lloguers més alts, sinó amb una ràtio preu/lloguer més alta.
 
 ### P5. Els grans propietaris cobren més per un habitatge igual?
 
@@ -376,6 +503,9 @@ de propietari) dona el pes de les persones jurídiques per barri i any. Compte: 
 familiar amb un pis és una persona jurídica però no un gran tenidor, i el cadastre no
 distingeix si el pis està llogat.
 
+*Estat:* fet. El pes de les persones jurídiques puja de manera lenta i contínua, del 12,3 %
+el 2009 al 15,3 % el 2026, sense cap canvi de tendència. Va a favor de H8c.
+
 ### P9. La concentració que importa és la de la propietat o la de la intermediació?
 
 - **H9a.** Encara que la propietat estigui atomitzada, els preus els fixen pocs
@@ -393,6 +523,7 @@ La concentració en l'obra nova i el sòl es tractarà amb el tema *cost de cons
 
 | Font | Què conté | Nivell | Accés | Preguntes |
 |---|---|---|---|---|
+| [Portal Barcelona Dades](https://portaldades.ajuntament.barcelona.cat/) | Lloguer mitjà, contractes nous i preu de compravenda, anual i trimestral | Barri | Obert (taules web) | P3, P4 |
 | Informe de l'O-HB sobre el parc de lloguer (2023) | Trams de tinença i tipus de propietari del parc de lloguer | Demarcació, ciutat, resta AMB | PDF | P1 |
 | Fiances de l'INCASÒL | Contractes de lloguer amb renda, data i arrendador | Habitatge | Microdades restringides (l'O-HB i la Secretaria d'Habitatge hi tenen accés). Idescat en publica agregats per municipi i barri | P1c, P3, P5, P7 |
 | Memòries de SOCIMIs i fons (BME Growth, CNMV) i Registre Mercantil | Carteres per ciutat i vincles entre societats | Grup | Públic | P1b |
@@ -413,10 +544,21 @@ Pendents de llegir.
 
 ## Pla
 
-Centrat en el lloguer, del més fàcil al més difícil:
+**Fet:** inventari de grups (P1b), sèrie del cadastre (P8), comparació entre barris (P4) i
+estudi d'esdeveniment anual del topall (P3).
 
-1. **Fiances agrupades per grup i municipi (P1b, P1c).** El primer inventari per grup ja
-   està fet. Per tancar els buits hi ha dues vies:
+**Següent, només amb dades públiques:**
+
+1. **P3 trimestral:** contractes, lloguer i preu per barri i trimestre, del Portal Barcelona
+   Dades. Serveix per separar el topall (març 2024) de l'anunci sobre els pisos turístics
+   (juny 2024).
+2. **Exposició del parc de lloguer:** aproximar-la amb el pes de les empreses al cadastre i
+   el nombre de contractes per habitatge de cada barri.
+3. Estendre a l'**AMB**.
+
+**Si algun dia es demanen dades** (ara no):
+
+1. **Fiances agrupades per grup i municipi (P1b, P1c).** Hi ha dues vies:
    - el conjunt de dades de la Fundació Civio, que va obtenir les fiances de l'INCASÒL per
      transparència i les agrupa per accionista majoritari (cal un formulari amb nom i correu);
    - una sol·licitud d'accés a informació pública a l'INCASÒL, demanant recomptes per
@@ -427,11 +569,6 @@ Centrat en el lloguer, del més fàcil al més difícil:
    - si poden agrupar NIFs per grup;
    - l'accés a fiances per tipus d'arrendador, abans i després del març del 2024;
    - l'aclariment de les incoherències de les taules.
-3. **Dissenyar el test del topall (P3):** definir l'exposició per barri, les variables de
-   resultat i la finestra temporal.
-4. **Capitalització (P4):** reunir preus de compra i lloguers per barri.
-5. **Context (P8):** sèrie del cadastre 2009–2026 per barri.
-6. Estendre a l'**AMB**.
 
 ## Lectures
 
