@@ -113,7 +113,56 @@ Els dos informes compten propietaris per NIF (contribuent de l'IBI o arrendador 
 fiança). L'O-HB avisa que el CIF no informa de la vinculació amb altres empreses. Un grup
 inversor pot tenir els pisos repartits en moltes societats (SOCIMIs, filials, una societat
 per cartera). **La concentració per grup pot ser molt més alta que la que surt aquí.** És la
-pregunta clau pendent (P1b).
+pregunta clau (P1b).
+
+### Per grup: primer inventari (novembre 2026)
+
+Habitatges a Barcelona ciutat per grup, a partir de documents de les mateixes entitats
+(comptes a la CNMV i a BME Growth, memòries, webs corporatives) i de l'administració.
+Dades, fonts i quines xifres hem comprovat nosaltres a
+[`dades/grups_lloguer_bcn.csv`](dades/grups_lloguer_bcn.csv). Càlcul a
+[`analisi/quotes_grups.py`](analisi/quotes_grups.py).
+
+| Grup | Habitatges a la ciutat | Data | Quota del lloguer | Comentari |
+|---|---|---|---|---|
+| Ajuntament (IMHAB) | 9.770 | des. 2024 | 4,1 % | Lloguer social i assequible |
+| Generalitat (INCASÒL) | 2.581 | febr. 2024 | 1,1 % | No inclou l'Agència de l'Habitatge |
+| CEVASA | ≥ 1.180 | des. 2025 | ≥ 0,5 % | Només Meridiano-Cero. Total del grup: 2.378 pisos |
+| Blackstone | ≥ 815 | 2014–2018 | ≥ 0,3 % | Albirana 569, Fidere 181, Euripo 65. Cartera en desinversió |
+| Vivenio (APG / Aware Super) | ~243 | 2026 | 0,1 % | Suma per edificis de la web |
+| Elix Vintage (Allianz) | 118 | 2019 | 0,05 % | Unitats abans de rehabilitar |
+
+Quota calculada sobre 240.369 habitatges llogats (fiances, gener 2023).
+
+Lectures:
+
+- **L'únic grup per sobre del llindar del 2,5 % és l'Ajuntament**, i lloga per sota del preu
+  de mercat. No exerceix poder de mercat a l'alça. Si de cas, és oferta per sota de mercat.
+- **El grup privat més gran documentat és CEVASA, amb un 0,5 % com a mínim.** Probablement és
+  l'empresa de 1.309 habitatges del top-10 de l'O-HB (1.180 a Meridiano-Cero més dues
+  promocions més a la ciutat), però no està confirmat.
+- **Blackstone.** Els documents només donen xifres de ciutat fins al 2018. Cota superior,
+  sumant els fullets d'incorporació a BME Growth del 2017–2018 (no comprovats un per un):
+  - Tot Blackstone tenia uns 7.100 habitatges a la província, amb ocupacions del 61–84 %.
+    Encara que tots fossin a la ciutat, en tindria menys de 6.000 llogats (< 2,5 %).
+  - El 2016, només 554 de les unitats d'Albirana a la província eren a la ciutat.
+  - Des de llavors ha venut bona part de la cartera: Albirana i Euripo han deixat de
+    cotitzar, i les filials de Fidere s'han venut a Brookfield.
+- **Conclusió provisional per a H1b:** amb el que està documentat, cap grup privat s'acosta al
+  2,5 % del lloguer de la ciutat. El poder de mercat per la quota d'un grup a escala de
+  ciutat és molt improbable. Si n'hi ha, ha de ser local (P1c), d'intermediació (P9) o de
+  coordinació, i el test del topall del 2024 (P3) és la manera de veure-ho.
+
+Buits:
+
+- Cerberus (Divarian, Promontoria, Haya), CaixaBank (BuildingCenter) i els altres bancs no
+  publiquen xifres per ciutat.
+- PATRIZIA té 1.479 habitatges a l'àrea de Barcelona, sense desglossar la ciutat. Encara que
+  tots fossin a la ciutat, serien el 0,6 %.
+- L'Agència de l'Habitatge de Catalunya no té xifra per a la ciutat.
+- Els propietaris locals grans (per exemple Núñez i Navarro) no publiquen xifres.
+- **La font que ho resoldria és el registre de fiances agrupat per grup i municipi.** Vegeu
+  el pla.
 
 ### Parc total de la ciutat (context, gener 2025)
 
@@ -203,6 +252,11 @@ HHI. A tres nivells:
   *Com les separem:* memòries i informes de les SOCIMIs i dels fons (BME Growth, CNMV) amb
   el nombre d'habitatges a Barcelona; Registre Mercantil per vincular societats; preguntar a
   l'O-HB si pot agrupar NIFs.
+
+  *Estat:* primer inventari fet (vegeu més amunt). Cap grup privat documentat supera l'1 %
+  del lloguer de la ciutat, cosa que va a favor de H1b-i. L'únic grup per sobre del 2,5 % és
+  públic.
+  Falten Cerberus, els bancs i PATRIZIA.
 - **P1c. Per barri.** Concentració del lloguer per barri. L'informe de lloguer no baixa a
   barri; cal demanar-ho a l'O-HB.
 
@@ -342,6 +396,7 @@ La concentració en l'obra nova i el sòl es tractarà amb el tema *cost de cons
 | Informe de l'O-HB sobre el parc de lloguer (2023) | Trams de tinença i tipus de propietari del parc de lloguer | Demarcació, ciutat, resta AMB | PDF | P1 |
 | Fiances de l'INCASÒL | Contractes de lloguer amb renda, data i arrendador | Habitatge | Microdades restringides (l'O-HB i la Secretaria d'Habitatge hi tenen accés). Idescat en publica agregats per municipi i barri | P1c, P3, P5, P7 |
 | Memòries de SOCIMIs i fons (BME Growth, CNMV) i Registre Mercantil | Carteres per ciutat i vincles entre societats | Grup | Públic | P1b |
+| Fundació Civio, conjunt de dades *megatenedores* | Fiances de l'INCASÒL obtingudes per transparència, agrupades per accionista majoritari (entitats amb ≥50 fiances, juny 2023) | Grup, Catalunya | Descàrrega amb formulari (nom i correu) | P1b |
 | Informes de l'O-HB sobre la propietat a la ciutat (2018, 2019, 2021, 2023, 2025) | Trams de tinença, tipus de propietari, dades per barri, top-10 propietaris | Ciutat i barri | PDF al [repositori de l'AMB](https://recam.amb.cat/) | Context, P7, P8 |
 | [Open Data BCN: habitatges per tipus de propietari](https://opendata-ajuntament.barcelona.cat/data/ca/dataset/est-cadastre-habitatges-propietari) | Nombre i superfície de locals d'habitatge per tipus de propietari (19 categories) i nacionalitat. 2009–2026 | Secció censal | Obert (CSV) | P8 |
 | Compravendes i preus (Col·legi de Registradors, Notaris) | Preus de compra | Cal veure si arriba a barri | Públic agregat | P4 |
@@ -360,9 +415,12 @@ Pendents de llegir.
 
 Centrat en el lloguer, del més fàcil al més difícil:
 
-1. **Consolidació per grup (P1b).** Llistar les SOCIMIs i els fons residencials amb
-   habitatges a Barcelona i quants en tenen, a partir de les seves memòries. Comparar amb
-   el llindar de 6.000–27.000 habitatges llogats.
+1. **Fiances agrupades per grup i municipi (P1b, P1c).** El primer inventari per grup ja
+   està fet. Per tancar els buits hi ha dues vies:
+   - el conjunt de dades de la Fundació Civio, que va obtenir les fiances de l'INCASÒL per
+     transparència i les agrupa per accionista majoritari (cal un formulari amb nom i correu);
+   - una sol·licitud d'accés a informació pública a l'INCASÒL, demanant recomptes per
+     propietari agregats per municipi i barri, sense identificar persones físiques.
 2. **Escriure a l'O-HB** per demanar:
    - el top-N del parc de lloguer de la ciutat;
    - la concentració del lloguer per barri;
