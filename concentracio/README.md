@@ -21,59 +21,120 @@ L = (p − c) / p = HHI / ε
 ```
 
 on `HHI = Σ sᵢ²` (quotes en tant per u) i `ε` és l'elasticitat de la demanda del mercat.
-
-**Càlcul ràpid.** A la ciutat hi ha uns 525.000 propietaris i la gran majoria en tenen un
-sol habitatge. Fins i tot si els 10 més grans tinguessin un 1 % del parc cadascun,
-`HHI ≈ 10 × 0,01² = 0,001` (10 punts en l'escala 0–10.000). Amb `ε = 0,5`, el marge seria
-del 0,2 %. **A escala de ciutat, la concentració clàssica difícilment explica gaire.**
+Amb les dades de l'O-HB, a escala de ciutat i per al parc total, aquest marge és com a molt
+d'un 0,1 % (vegeu el càlcul més avall). **A aquesta escala, la concentració clàssica no
+explica els preus.**
 
 Per tant, si hi ha poder de mercat, hauria de venir d'algun d'aquests llocs:
 
 1. **Mercats locals o segments petits** (barri, edifici, tipus de producte), on pocs
    propietaris pesen molt. Però en un mercat petit la demanda també és més elàstica,
-   perquè el llogater pot marxar al barri del costat. Això és el que estima
+   perquè el llogater pot marxar al barri del costat. Això és el que estimen
    Watson & Ziv per a Nova York; enllaça amb el tema del model de localització.
-2. **Retenció d'oferta:** un propietari gran que internalitza que un pis buit fa pujar el preu
+2. **El parc de lloguer**, on la concentració és molt més alta que al parc total.
+3. **Retenció d'oferta:** un propietari gran que internalitza que un pis buit fa pujar el preu
    de la resta dels seus pisos.
-3. **Concentració en la intermediació, no en la propietat:** agències, administradors de
+4. **Concentració en la intermediació, no en la propietat:** agències, administradors de
    finques, portals o algorismes de preus compartits (vegeu Calder-Wang & Kim).
 
 ## Què sabem ja
 
-| Àmbit i dada | Xifra | Font |
+Només fonts primàries: informes originals, textos legals i dades. No fem servir premsa.
+
+### Parc total, ciutat de Barcelona (gener 2025)
+
+Font: [O-HB, *Estructura i concentració de la propietat d'habitatges a la ciutat de Barcelona 2025*](https://recam.amb.cat/bitstreams/03203c5f-f1ec-49cd-ad2c-56dc55eb3135/download)
+(desembre 2025). Dades: base alfanumèrica del Cadastre i Registre Cadastral Municipal
+(contribuents de l'IBI pseudoanonimitzats, a 31/01/2025).
+
+| Dada | Propietaris | Habitatges |
 |---|---|---|
-| **Ciutat, tot el parc (dades 2025)** | 525.440 propietaris i 792.884 habitatges (1,5 per propietari) | O-HB, via [Nació Digital, 28/09/2026](https://naciodigital.cat/societat/de-qui-son-els-pisos-a-barcelona-mes-de-la-meitat-en-mans-de-grans-tenidors.html) |
-| | Persones físiques: 96,3 % dels propietaris. Persones jurídiques: 3,7 % dels propietaris i 15,2 % dels habitatges | id. |
-| | Propietaris amb ≥5 habitatges: 2,2 % dels propietaris, 22,8 % dels habitatges | id. |
-| | ≥10 habitatges: 0,8 % / 16,8 %. ≥15 habitatges: 0,5 % / 13,8 % | id. |
-| | Propietaris amb un sol habitatge: 83,5 % (l'article també diu 80 %; cal mirar l'informe original) | id. |
-| **Parc de lloguer, demarcació de Barcelona (gener 2023)** | 305.709 propietaris i 589.272 habitatges llogats | O-HB, *Estructura i concentració de la propietat del parc de lloguer a la demarcació de Barcelona*, amb fiances de l'INCASÒL, via [betevé](https://beteve.cat/economia/gairebe-4-cada-10-pisos-lloguer-demarcacio-barcelona-grans-tenidors/) |
-| | ≥5 habitatges llogats: 4,5 % dels propietaris, 36,3 % dels habitatges. ≥10: 1,4 % / 25,7 % | id. |
-| **Parc de lloguer, ciutat de Barcelona (gener 2023)** | ≥5 habitatges llogats: 7,5 % dels propietaris, **44,7 % dels habitatges de lloguer** | id. |
-| | Persones jurídiques: 35,3 % dels habitatges de lloguer a la ciutat, 25,1 % a la resta de l'àrea metropolitana | id. |
-| **Ciutat, cadastre (2026, càlcul propi)** | 836.621 locals d'habitatge. Persona física espanyola 78,8 %, estrangera 5,6 %, SL 10,0 %, SA 2,1 %, corporacions locals 1,4 %, altres 2,1 % | [Open Data BCN `est-cadastre-habitatges-propietari`](https://opendata-ajuntament.barcelona.cat/data/ca/dataset/est-cadastre-habitatges-propietari) |
+| Total | 525.440 | 792.884 (estimació O-HB), 1,5 per propietari |
+| Amb un sol habitatge | 83,5 % | 55,3 % |
+| Amb 5 o més | 2,2 % (11.700) | 22,8 % (181.130) |
+| Amb més de 10 | 0,8 % (4.460) | 16,8 % (133.249) |
+| Amb més de 15 | 0,5 % (2.572) | 13,8 % (109.332) |
+| Persones físiques | 96,3 % | 84,5 % |
+| Persones jurídiques | 3,7 % | 15,2 % (120.574) |
+| … de les quals empreses | | 12,0 % (95.369) |
+| … de les quals administració pública | | 1,6 % (12.832) |
 
-Lectures ràpides:
+**Els 10 propietaris més grans** (Taula C de l'informe): tres administracions públiques
+(4.791, 3.983 i 2.559 habitatges) i set empreses (1.309, 980, 933, 804, 698, 605 i 513).
+El propietari privat més gran té el **0,17 %** del parc de la ciutat.
 
-- La concentració és **molt més alta al parc de lloguer que al parc total**. El mercat
-  rellevant per als preus de lloguer és el lloguer, no tot el parc.
-- "≥5 habitatges" no és el mateix que una quota alta. El 44,7 % del lloguer està repartit
-  entre milers de propietaris. Per calcular l'HHI necessitem les quotes dels més grans.
-- El propietari individual més gran probablement és **públic** (Ajuntament i Generalitat).
-  Té una quota alta però no fixa preus com un monopolista. Cal tractar-lo a part.
-- Els totals del cadastre (836.621) i de l'O-HB (792.884) no quadren. Probablement
-  la unitat és diferent (local cadastral o habitatge). Cal reconciliar-los.
+**Càlcul propi a partir d'aquestes taules:**
+
+- CR1 = 0,6 %, CR3 = 1,4 %, CR10 = 2,2 %.
+- HHI ≤ **5,6** sobre 10.000. Els 10 primers hi aporten 0,8. La resta n'aporta com a màxim
+  4,8, perquè l'11è propietari té 387 habitatges i cap altre en pot tenir més.
+- Marge de Cournot `L = HHI / ε` ≤ 0,11 % amb ε = 0,5 (≤ 0,19 % amb ε = 0,3).
+
+### Parc de lloguer (1 de gener de 2023)
+
+Font: [O-HB, *Estructura i concentració de la propietat del parc de lloguer a la demarcació de Barcelona 2023*](https://recam.amb.cat/bitstreams/080a7897-75e0-49ce-b8c2-e022b583dbec/download)
+(gener 2024). Dades: Registre de fiances de l'INCASÒL.
+
+| Dada | Demarcació de Barcelona | Ciutat de Barcelona |
+|---|---|---|
+| Propietaris / habitatges llogats | 305.709 / 589.272 | 113.527 / 240.369 |
+| 5 o més habitatges llogats | 4,5 % dels propietaris, 36,3 % dels habitatges | 7,5 % (8.538), **44,7 %** (107.539) |
+| Més de 10 | 1,4 % / 25,7 % | 2,8 % (3.155) / 32,6 % (78.380) |
+| Més de 15 | 0,8 % / 21,7 % | 1,6 % (1.863) / 27,1 % (65.076) |
+| 50 o més | | 0,3 % (319) / 14,2 % (34.212) |
+| 300 o més | 38 propietaris, 7,7 % (45.569) | |
+| Persones jurídiques | 8,1 % / 29,6 % | 84.768 habitatges, el 35,3 % del parc de lloguer (càlcul propi) |
+
+### Cadastre, ciutat de Barcelona (2026, càlcul propi)
+
+Font: [Open Data BCN `est-cadastre-habitatges-propietari`](https://opendata-ajuntament.barcelona.cat/data/ca/dataset/est-cadastre-habitatges-propietari).
+836.621 locals d'habitatge. Persona física espanyola 78,8 %, estrangera 5,6 %, SL 10,0 %,
+SA 2,1 %, corporacions locals 1,4 %, altres 2,1 %.
+
+### Lectures ràpides
+
+- **H1a es compleix per al parc total a escala de ciutat.** El propietari més gran és públic i
+  té el 0,6 % dels habitatges. El privat més gran, el 0,17 %.
+- **La concentració és molt més alta al parc de lloguer**, que és el mercat rellevant per als
+  lloguers. A la ciutat, els propietaris de 5 o més habitatges tenen el 44,7 % del lloguer.
+  Però "5 o més" no és una quota alta: aquest 44,7 % està repartit entre 8.538 propietaris.
+  **Per al lloguer no tenim la llista dels propietaris més grans.** És el buit principal.
+- Els propietaris més grans són **públics**. Tenen quota però no fixen preus com un
+  monopolista, i cal tractar-los a part.
+
+### Incoherències per aclarir (amb l'O-HB)
+
+- Informe 2025, Taula 1: 15 propietaris amb 300 o més habitatges sumen 20.650. Taula C: els
+  10 primers sumen 17.175 i l'11è en té 387. Els 5 que falten haurien de tenir 695 de mitjana,
+  més que l'11è. Les dues taules no quadren.
+- Informe 2025: les empreses són 14.410 titulars als *Destacats* i 14.888 al capítol 2.
+- El cadastre d'Open Data BCN dona 836.621 locals d'habitatge i l'O-HB n'estima 792.884.
+  Segons la metodologia de l'O-HB, la seva estimació parteix de les construccions
+  cadastrals, no dels immobles de l'IBI. Cal veure si això explica tota la diferència.
+- L'O-HB avisa que les cinc edicions de l'informe de la ciutat (2018, 2019, 2021, 2023, 2025)
+  **no són directament comparables**. Això limita P3.
 
 ## Context legal (afecta les dades i els incentius)
 
-- **Llei 12/2023** (estatal), art. 3.k: defineix el gran tenidor (en general, més de 10
-  habitatges).
-- **Barcelona és zona de mercat residencial tensionat** des del març del 2024
-  ([BOE-A-2024-5214](https://www.boe.es/boe/dias/2024/03/15/pdfs/BOE-A-2024-5214.pdf)).
-  A les zones tensionades de Catalunya, el llindar baixa a **5 o més habitatges**.
-- En contractes nous en zona tensionada, el **gran tenidor** queda limitat per l'índex de
-  referència (SERPAVI). El **petit propietari** queda limitat per la renda del contracte
-  anterior. Això crea una **discontinuïtat al llindar de 5 habitatges** (vegeu P6).
+- **Llei 12/2023, art. 3.k**
+  ([BOE-A-2023-12203](https://www.boe.es/buscar/act.php?id=BOE-A-2023-12203)): gran
+  tenidor és qui té més de 10 immobles urbans d'ús residencial o més de 1.500 m² d'ús
+  residencial. En zones tensionades, la comunitat autònoma pot baixar el llindar a 5 o més
+  immobles ubicats a la zona.
+- **Barcelona és zona de mercat residencial tensionat** per la Resolució TER/800/2024, de 13
+  de març, recollida a [BOE-A-2024-5214](https://www.boe.es/boe/dias/2024/03/15/pdfs/BOE-A-2024-5214.pdf).
+  La vigència és de tres anys. Gran tenidor és la persona física o jurídica titular de
+  **5 o més immobles d'ús residencial ubicats a la zona**.
+- **Límits de renda en contractes nous**
+  ([LAU, art. 17.6 i 17.7](https://www.boe.es/buscar/act.php?id=BOE-A-1994-26003)):
+  - Tots els propietaris: la renda nova no pot superar la del darrer contracte dels últims
+    cinc anys, actualitzada (17.6).
+  - Grans tenidors: a més, no pot superar l'índex de preus de referència (17.7, primer
+    paràgraf).
+  - Habitatges sense contracte en els últims cinc anys: també topall de l'índex (17.7, segon
+    paràgraf, activat per la resolució catalana).
+
+  Això crea una **discontinuïtat al llindar de 5 habitatges** (vegeu P6).
 - Les persones jurídiques amb més de 10 habitatges han de comunicar la condició de gran
   tenidor a l'Agència de l'Habitatge de Catalunya
   ([tràmit](https://tramits.gencat.cat/ca/tramits/tramits-temes/Comunicacio-de-la-condicio-de-gran-tenidor-dhabitatge)).
@@ -86,7 +147,7 @@ Lectures ràpides:
 ### P1. Quina concentració hi ha? (descriptiva)
 
 Mesures: % d'habitatges en mans de persones jurídiques; % en mans de propietaris amb ≥5,
-≥10 i ≥15 habitatges; CR1, CR5 i CR10; HHI; corba de Lorenz de la tinença.
+>10 i >15 habitatges; CR1, CR5 i CR10; HHI; corba de Lorenz de la tinença.
 Per separat per a: parc total, parc de lloguer, contractes nous (flux) i oferta anunciada.
 
 - **H1a.** A escala de ciutat la propietat està atomitzada (HHI < 100 sobre 10.000).
@@ -96,6 +157,9 @@ Per separat per a: parc total, parc de lloguer, contractes nous (flux) i oferta 
 
 *Com les separem:* HHI i CR-N per barri i segment. H1b prediu que una part no negligible
 dels barris té un HHI de lloguer > 1.500 (llindar habitual de "moderadament concentrat").
+
+*Estat:* H1a es compleix per al **parc total** de la ciutat (HHI ≤ 5,6). Falta el parc de
+lloguer i l'escala de barri.
 
 ### P2. Quin és el mercat rellevant?
 
@@ -124,8 +188,8 @@ elasticitats creuades d'un model de demanda espacial (tema *model de localitzaci
 *Com les separem:* la sèrie del cadastre a Open Data BCN (2009–2026, per secció censal i tipus
 de propietari) permet veure l'evolució del pes de les persones jurídiques per barri i any.
 **És el primer pas que podem fer amb dades obertes.** Compte: una SL familiar amb un pis és
-una persona jurídica però no és un gran tenidor. Per a la mida de la tinença calen els
-informes de l'O-HB.
+una persona jurídica però no és un gran tenidor. Les edicions de l'informe de l'O-HB donen la
+mida de la tinença, però no són directament comparables entre elles.
 
 ### P4. Els grans propietaris cobren més per un habitatge igual?
 
@@ -155,7 +219,7 @@ censal; registre d'habitatges buits de l'Agència de l'Habitatge.
 
 ### P6. La regulació crea incentius per no ser gran tenidor?
 
-Amb el llindar de 5 habitatges en zona tensionada:
+Amb el llindar de 5 habitatges a la zona tensionada:
 
 - **H6a.** *Bunching* just per sota del llindar: propietaris de 5–6 pisos que en venen un o
   els reparteixen entre familiars o societats.
@@ -164,8 +228,9 @@ Amb el llindar de 5 habitatges en zona tensionada:
   concentració mesurada sense que canviï res més.
 
 *Com les separem:* distribució del nombre d'habitatges per propietari abans i després del
-març del 2024 (cal la distribució per trams de l'O-HB o del Cadastre); pes dels contractes
-de temporada en les fiances; canvis de titularitat al cadastre.
+març del 2024 (les taules per trams dels informes de l'O-HB del 2023 i el 2025 ja separen
+"de 4" i "de 5"); pes dels contractes de temporada en les fiances; canvis de titularitat al
+cadastre. Cal tenir en compte que les edicions no són directament comparables.
 
 ### P7. La concentració que importa és la de la propietat o la de la intermediació?
 
@@ -188,11 +253,12 @@ amb el tema *cost de construcció*.
 | Font | Què conté | Nivell | Accés | Preguntes |
 |---|---|---|---|---|
 | [Open Data BCN: habitatges per tipus de propietari](https://opendata-ajuntament.barcelona.cat/data/ca/dataset/est-cadastre-habitatges-propietari) | Nombre i superfície de locals d'habitatge per tipus de propietari (19 categories) i nacionalitat. 2009–2026 | Secció censal | Obert (CSV) | P1, P3 |
-| Open Data BCN: càrrecs cadastrals per tipus de propietari (`est-cadastre-carrecs-tipus-propietari`) | Valor cadastral i càrrecs per tipus de propietari (físic o jurídic). 2026 | Secció censal | Obert (CSV) | P1 |
-| Informes de l'O-HB | Distribució per trams de tinença (1, 2–4, ≥5, ≥10, ≥15, ≥50), parc total i parc de lloguer | Ciutat, AMB, demarcació | Informes, taules agregades | P1, P3, P6 |
+| Open Data BCN: càrrecs cadastrals per tipus de propietari (`est-cadastre-carrecs-tipus-propietari`) | Valor cadastral i càrrecs per tipus de propietari (físic o jurídic) | Secció censal | Obert (CSV) | P1 |
+| Informes de l'O-HB sobre la propietat a la ciutat (2018, 2019, 2021, 2023, 2025) | Trams de tinença, tipus de propietari, dades per barri, top-10 propietaris | Ciutat i barri | PDF al [repositori de l'AMB](https://recam.amb.cat/) | P1, P3, P6 |
+| Informe de l'O-HB sobre el parc de lloguer (2023) | Trams de tinença i tipus de propietari del parc de lloguer | Demarcació, ciutat, resta AMB | PDF | P1, P6 |
 | Fiances de l'INCASÒL | Contractes de lloguer amb renda i arrendador | Habitatge | Microdades restringides (l'O-HB hi té accés). Idescat en publica agregats per municipi i barri | P4, P6 |
 | Cadastre (DG del Catastro) | Titularitat per immoble | Immoble | Dades protegides. Possible petició per a recerca | P1, P6 |
-| Comptes de SOCIMIs i fons (CNMV, BME Growth) | Carteres per ciutat | Cartera | Públic | P1 (CR-N) |
+| Comptes de SOCIMIs i fons (CNMV, BME Growth) | Carteres per ciutat | Cartera | Públic | P1 (top-N del lloguer) |
 | INE, Cens 2021 | Habitatges buits i esporàdics | Secció censal | Obert | P5 |
 | Portals (Idealista, Fotocasa, Habitaclia) | Anuncis, preu i anunciant | Anunci | *Scraping* (cal mirar les condicions d'ús) | P2, P4, P7 |
 | Padró (Open Data BCN) | Canvis de domicili | Barri | Obert | P2 |
@@ -209,13 +275,13 @@ Passos petits, del més fàcil al més difícil:
 
 1. **Sèrie del cadastre 2009–2026** (Open Data BCN): pes de les persones jurídiques per barri
    i any. Gràfic i mapa. *(P3, només dades obertes)*
-2. **Reunir les taules de l'O-HB** per trams (ciutat 2025, lloguer 2023) i reconciliar
-   els totals amb el cadastre.
-3. **Top-20 propietaris** (públics, SOCIMIs, fons) amb el nombre d'habitatges a Barcelona,
-   a partir de memòries i comptes. Calcular CR-N i una cota de l'HHI per a la ciutat i el
+2. **Aclarir amb l'O-HB** les incoherències de les taules i si poden donar el top-N del
    parc de lloguer.
-4. **Càlcul `L = HHI / ε`** amb un rang d'elasticitats, per a la ciutat i per barri.
-   Si surt negligible fins i tot a escala de barri, ho diem i prioritzem P5 i P7.
+3. **Top-N del parc de lloguer** (públics, SOCIMIs, fons), a partir de memòries i comptes.
+   Calcular CR-N i una cota de l'HHI per al lloguer a la ciutat.
+4. **HHI i marge `L = HHI / ε` per barri** (Annex 1 de l'informe 2025, que dona trams per
+   barri) amb un rang d'elasticitats. Si surt negligible fins i tot a escala de barri, ho
+   diem i prioritzem P5 i P7.
 5. Decidir si cal **demanar microdades** (fiances INCASÒL via O-HB, Cadastre) per a P4–P6.
 6. Estendre a l'**AMB**.
 
@@ -223,16 +289,16 @@ Passos petits, del més fàcil al més difícil:
 
 Sobre Barcelona:
 
+- O-HB (2025). [*Estructura i concentració de la propietat d'habitatges a la ciutat de Barcelona 2025*](https://recam.amb.cat/bitstreams/03203c5f-f1ec-49cd-ad2c-56dc55eb3135/download).
+  Edició anterior: [2023](https://recam.amb.cat/bitstreams/113a3c1a-7e51-4355-9a7d-2c0b3507155d/download).
+- O-HB (2024). [*Estructura i concentració de la propietat del parc de lloguer a la demarcació de Barcelona 2023*](https://recam.amb.cat/bitstreams/080a7897-75e0-49ce-b8c2-e022b583dbec/download).
+- O-HB (2025). [*Informe de seguiment semestral de la Zona de Mercat Residencial Tens (ZMRT) Barcelona*, núm. 3](https://recam.amb.cat/bitstreams/7ce226a8-43f9-4507-bd89-02d2973ddc28/download). Per a P6.
 - García-Lamarca, M. (2021). *Real estate crisis resolution regimes and residential REITs:
   emerging socio-spatial impacts in Barcelona*. Housing Studies 36(9), 1407–1426.
   [doi:10.1080/02673037.2020.1769034](https://doi.org/10.1080/02673037.2020.1769034)
-- O-HB. *Estructura i concentració de la propietat del parc de lloguer a la demarcació de
-  Barcelona* (dades de gener del 2023).
-- O-HB. Estudi de la propietat del parc residencial de Barcelona (dades 2025).
 - Ajuntament de Barcelona: [Propietat BCN 2018](https://bcnroc.ajuntament.barcelona.cat/jspui/bitstream/11703/118864/3/Propietat-BCN-2018.pdf.txt),
   [Lab Propietat 2019–2020](https://bcnroc.ajuntament.barcelona.cat/jspui/bitstream/11703/119340/3/Lab_Propietat_2019-2020-VF.pdf.txt),
   [Lab Propietat INCASÒL (juny 2020)](https://bcnroc.ajuntament.barcelona.cat/jspui/bitstream/11703/119447/4/Lab_Propietat_Incasol_juny2020.pdf.txt).
-- [Catalunya té quasi 25.500 habitatges buits en mans de grans tenidors, la meitat que el 2015](https://www.3cat.cat/3cat/catalunya-te-quasi-25-500-habitatges-buits-en-mans-de-grans-tenidors-la-meitat-que-el-2015/noticia/3343872/) (3Cat). Per a P5.
 
 Teoria i evidència a altres ciutats:
 

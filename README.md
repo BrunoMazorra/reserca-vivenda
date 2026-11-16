@@ -23,6 +23,9 @@ Principis:
    Metropolitana (RMB, 164 municipis).
 6. **Fonts i dates sempre explícites.** Cada xifra porta la font, l'any de les dades i
    l'àmbit. Les xifres no verificades es marquen.
+7. **Només fonts primàries:** dades, informes originals, textos legals (BOE, DOGC) i
+   articles acadèmics. No citem diaris ni blogs. Si una xifra només surt a la premsa, anem
+   a buscar l'informe original, i si no el trobem, no la fem servir.
 
 ## Plantilla per a cada tema
 
@@ -84,5 +87,5 @@ concentracio/        tema 1: concentració del mercat
   Inmobiliaria): compravendes per nacionalitat i per tipus de comprador.
 - Ministeri d'Habitatge: índex de preus de referència del lloguer (SERPAVI).
 - [Observatori Metropolità de l'Habitatge de Barcelona (O-HB)](https://www.ohb.cat/):
-  informes i dades agregades.
+  informes i dades agregades. Els PDF originals són al [repositori de l'AMB](https://recam.amb.cat/).
 - Banc d'Espanya: crèdit hipotecari i tipus d'interès.
