@@ -205,6 +205,10 @@ altres 2,1 %
 - L'O-HB avisa que les cinc edicions de l'informe de la ciutat (2018, 2019, 2021, 2023, 2025)
   **no són directament comparables**. Això limita P8.
 
+## Pàgina interactiva
+
+Hi ha una pàgina amb els resultats i animacions explicatives (graella de qui té els pisos, model de poder de mercat, grups, barris i topall): [Concentració del lloguer a Barcelona](https://claude.ai/artifact/FNWRr3ABf554HLh3gRhRnn). És privada fins que es comparteix. La font és a [`pagina/`](pagina/).
+
 ## Anàlisi per barri amb dades públiques (novembre 2026)
 
 **Dades:**

@@ -1,0 +1,1041 @@
+<meta name="dash-one-writer">
+<style>
+  .cl { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+  .cl h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .cl h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .cl h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .cl h4 { font-size: var(--cds-font-size-caption); font-weight: var(--cds-font-weight-medium); margin: 0; color: var(--color-fg); }
+  .cl p { margin: 0; max-width: 70ch; line-height: 1.55; }
+  .cl-lead { font-size: var(--cds-font-size-body); }
+  .cl-muted { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .cl-sec { display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+  .cl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--cds-gap-lg); }
+  .cl-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-md); min-width: 0; }
+  .cl-chart { position: relative; min-height: 200px; min-width: 0; }
+  .cl-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .cl-chart .tick text, .cl-chart .cl-axis-label { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+  .cl-chart .domain { stroke: var(--cds-chart-axis); }
+  .cl-chart .cl-ax-y .domain { display: none; }
+  .cl-chart .tick line { stroke: var(--cds-chart-grid); }
+  .cl-chart .cl-zero { stroke: var(--cds-chart-reference); }
+  .cl-chart .cl-guide { stroke: var(--cds-chart-reference); stroke-dasharray: 3 3; stroke-width: 1.2; }
+  .cl-chart .cl-end, .cl-chart .cl-bar-l { font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; font-family: var(--font-anthropic-sans); fill: var(--color-fg); }
+  .cl-chart .cl-end { fill: var(--cds-text-secondary); }
+  .cl-chart .cl-zone { fill: var(--cds-chart-reference); fill-opacity: 0.12; }
+  .cl-chart .cl-zone-t { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+  .cl-chart .cl-ci { fill-opacity: 0.16; }
+  .cl-tip { position: absolute; z-index: 2; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); font-size: var(--cds-font-size-caption); line-height: 1.45; max-width: 240px; font-variant-numeric: tabular-nums; transition: opacity 120ms; }
+  .cl-tip b { font-weight: var(--cds-font-weight-medium); display: block; }
+  .cl-tip .cl-tip-k { color: var(--cds-text-secondary); }
+  .cl-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-md); list-style: none; margin: 0; padding: 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cl-legend li { display: inline-flex; align-items: center; gap: 6px; }
+  .cl-sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; background: var(--cds-chart-muted); }
+  .cl-sw-line { height: 3px; border-radius: 2px; }
+  .cl-fail { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding-top: var(--cds-pad-lg); }
+  .cl-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--cds-gap-md); }
+  .cl-kpi { display: flex; flex-direction: column; gap: 2px; }
+  .cl-kpi .cl-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+  .cl-num { font-variant-numeric: tabular-nums; font-weight: var(--cds-font-weight-medium); }
+  .cl-seg { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 3px; border: 1px solid var(--color-border-line); border-radius: calc(var(--cds-radius) + 3px); background: var(--color-bg); align-self: flex-start; max-width: 100%; }
+  .cl-seg button { font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); background: transparent; border: 0; border-radius: var(--cds-radius); padding: 6px 10px; cursor: pointer; }
+  .cl-seg button:hover { color: var(--color-fg); }
+  .cl-seg button[aria-pressed="true"] { background: var(--color-panel); color: var(--color-fg); box-shadow: 0 0 0 1px var(--color-border-line); font-weight: var(--cds-font-weight-medium); }
+  .cl-seg button:focus-visible, .cl input:focus-visible { outline: 2px solid var(--cds-chart-reference); outline-offset: 2px; }
+  .cl-waffle-row { display: flex; flex-wrap: wrap; gap: var(--cds-gap-lg); align-items: flex-start; }
+  .cl-waffle { flex: 0 1 400px; min-height: 240px; }
+  .cl-side { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+  .cl-off { display: none !important; }
+  .cl-formula { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-heading); font-variant-numeric: tabular-nums; }
+  .cl-control { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cds-gap-sm) var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cl-control input[type="range"] { width: min(260px, 100%); }
+  .cl-pred { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--cds-gap-md); }
+  .cl-note { border-left: 3px solid var(--cds-chart-reference); padding-left: var(--cds-pad-md); display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+  .cl-minis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--cds-gap-lg); }
+  .cl-mini { display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
+  .cl-tablewrap { overflow-x: auto; }
+  .cl table { border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; width: 100%; }
+  .cl th, .cl td { padding: 5px 8px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+  .cl th:first-child, .cl td:first-child, .cl td.cl-l, .cl th.cl-l { text-align: left; }
+  .cl th { font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); }
+  .cl td a { color: inherit; }
+  .cl details { border-top: 1px solid var(--color-border-line); padding-top: var(--cds-pad-md); }
+  .cl summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
+  .cl-list { padding-left: 1.2em; margin: 0; display: flex; flex-direction: column; gap: var(--cds-gap-xs); max-width: 75ch; line-height: 1.55; }
+  .cl details .cl-list { margin-top: var(--cds-gap-sm); }
+  .cl a { text-underline-offset: 2px; }
+</style>
+
+<div class="cl">
+  <header class="cl-sec" id="capcalera">
+    <h1>Concentració del lloguer a Barcelona</h1>
+    <p class="cl-lead">A Barcelona hi ha
+      <span class="cl-num" data-draw="num" data-source="lloguer_ciutat" data-field="habitatges" data-where="tram=total" data-fmt="int">—</span>
+      pisos llogats amb fiança. Els propietaris que en tenen 5 o més en concentren el
+      <span class="cl-num" data-draw="num" data-source="lloguer_ciutat" data-field="pct_habitatges" data-where="tram=cinc_o_mes">—</span> %.
+      Però el grup privat més gran que hem documentat,
+      <span class="cl-num" data-draw="num" data-source="resum_grups" data-field="grup_privat" data-row="0" data-fmt="text">—</span>,
+      en té el <span class="cl-num" data-draw="num" data-source="resum_grups" data-field="quota_privat_pct" data-row="0" data-fmt="pct2">—</span> %,
+      i el propietari més gran és públic:
+      <span class="cl-num" data-draw="num" data-source="resum_grups" data-field="grup_public" data-row="0" data-fmt="text">—</span>, amb el
+      <span class="cl-num" data-draw="num" data-source="resum_grups" data-field="quota_public_pct" data-row="0" data-fmt="pct2">—</span> %.
+      Hi ha molts propietaris mitjans i cap gran grup que pugui fixar el preu de tota la ciutat.</p>
+    <p class="cl-muted">Barcelona ciutat. Dades oficials: fiances de l'INCASÒL, cadastre, registres notarials, informes de l'Observatori Metropolità de l'Habitatge (O-HB) i comptes de cada empresa. Cada xifra porta a la seva font al panell de fonts.</p>
+    <div class="cl-kpis" id="xifres">
+      <div class="cl-kpi">
+        <span class="cl-muted">Pisos llogats a la ciutat</span>
+        <span class="cl-big" data-draw="num" data-source="lloguer_ciutat" data-field="habitatges" data-where="tram=total" data-fmt="int">—</span>
+        <span class="cl-muted">fiances, 1 de gener del 2023</span>
+      </div>
+      <div class="cl-kpi">
+        <span class="cl-muted">En mans de propietaris amb 5 o més</span>
+        <span class="cl-big"><span data-draw="num" data-source="lloguer_ciutat" data-field="pct_habitatges" data-where="tram=cinc_o_mes">—</span> %</span>
+        <span class="cl-muted">la definició legal de gran tenidor</span>
+      </div>
+      <div class="cl-kpi">
+        <span class="cl-muted">Grup privat més gran documentat</span>
+        <span class="cl-big"><span data-draw="num" data-source="resum_grups" data-field="quota_privat_pct" data-row="0" data-fmt="pct2">—</span> %</span>
+        <span class="cl-muted" data-draw="num" data-source="resum_grups" data-field="grup_privat" data-row="0" data-fmt="text">—</span>
+      </div>
+      <div class="cl-kpi">
+        <span class="cl-muted">Índex HHI dels grups documentats</span>
+        <span class="cl-big" data-draw="num" data-source="resum_grups" data-field="hhi" data-row="0" data-fmt="int">—</span>
+        <span class="cl-muted">sobre 10.000; per sota de 1.500 un mercat es considera poc concentrat</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="cl-sec" id="qui">
+    <h2>1. Qui té els pisos de lloguer</h2>
+    <p>Repartim tots els pisos llogats de la ciutat en 100 quadrats. Cada quadrat és un 1 % dels pisos. Canvia la vista per veure'ls per mida del propietari, per grans tenidors o per propietaris concrets.</p>
+    <div class="cl-card" id="graella">
+      <div class="cl-seg" role="group" aria-label="Vista de la graella" data-group="step" data-redraw="c_waffle">
+        <button type="button" data-value="0" aria-pressed="true">Per mida del propietari</button>
+        <button type="button" data-value="1" aria-pressed="false">Grans tenidors</button>
+        <button type="button" data-value="2" aria-pressed="false">Propietaris concrets</button>
+      </div>
+      <div class="cl-waffle-row">
+        <div class="cl-chart cl-waffle" data-draw="c_waffle" data-source="trams_ciutat quotes_grups"></div>
+        <div class="cl-side">
+          <ul class="cl-legend" data-step-legend="0">
+            <li><span class="cl-sw" data-sw="muted"></span>1 pis</li>
+            <li><span class="cl-sw" data-sw="0" data-op="0.34"></span>2 a 4</li>
+            <li><span class="cl-sw" data-sw="0" data-op="0.5"></span>5 a 10</li>
+            <li><span class="cl-sw" data-sw="0" data-op="0.62"></span>11 a 15</li>
+            <li><span class="cl-sw" data-sw="0" data-op="0.8"></span>16 a 49</li>
+            <li><span class="cl-sw" data-sw="0" data-op="1"></span>50 o més</li>
+          </ul>
+          <ul class="cl-legend cl-off" data-step-legend="1">
+            <li><span class="cl-sw" data-sw="0" data-op="1"></span>5 pisos o més (gran tenidor)</li>
+            <li><span class="cl-sw" data-sw="muted"></span>Menys de 5</li>
+          </ul>
+          <ul class="cl-legend cl-off" data-step-legend="2">
+            <li><span class="cl-sw" data-sw="1" data-op="1"></span>Propietari públic</li>
+            <li><span class="cl-sw" data-sw="0" data-op="1"></span>Empresa o fons</li>
+          </ul>
+          <p data-step-text="0">Mida del propietari segons quants pisos lloga. El
+            <span class="cl-num" data-draw="num" data-source="lloguer_ciutat" data-field="pct_habitatges" data-where="tram=un">—</span> %
+            dels pisos són de propietaris que només en lloguen un. A l'altre extrem, els propietaris de 50 pisos o més en tenen el
+            <span class="cl-num" data-draw="num" data-source="lloguer_ciutat" data-field="pct_habitatges" data-where="tram=cinquanta_o_mes">—</span> %.</p>
+          <p class="cl-off" data-step-text="1">A Barcelona, la llei considera gran tenidor qui té 5 habitatges o més a la zona tensionada. Aquests propietaris tenen el
+            <span class="cl-num" data-draw="num" data-source="lloguer_ciutat" data-field="pct_habitatges" data-where="tram=cinc_o_mes">—</span> %
+            dels pisos llogats, però són només el
+            <span class="cl-num" data-draw="num" data-source="lloguer_ciutat" data-field="pct_propietaris" data-where="tram=cinc_o_mes">—</span> %
+            dels propietaris.</p>
+          <p class="cl-off" data-step-text="2">Ara mirem propietaris concrets, comptant totes les societats de cada grup. El més gran és
+            <span class="cl-num" data-draw="num" data-source="resum_grups" data-field="grup_public" data-row="0" data-fmt="text">—</span>, amb el
+            <span class="cl-num" data-draw="num" data-source="resum_grups" data-field="quota_public_pct" data-row="0" data-fmt="pct2">—</span> %.
+            La primera empresa privada documentada,
+            <span class="cl-num" data-draw="num" data-source="resum_grups" data-field="grup_privat" data-row="0" data-fmt="text">—</span>, en té el
+            <span class="cl-num" data-draw="num" data-source="resum_grups" data-field="quota_privat_pct" data-row="0" data-fmt="pct2">—</span> %.
+            Passa el punter per sobre de cada tros per veure qui és.</p>
+        </div>
+      </div>
+      <p class="cl-muted">Pisos: O-HB a partir de les fiances de l'INCASÒL, 1 de gener del 2023, propietaris comptats per NIF. Grups: inventari propi amb els documents de cada entitat, amb dates del 2016 al 2026.</p>
+    </div>
+  </section>
+
+  <section class="cl-sec" id="model">
+    <h2>2. Quina part del mercat cal per fixar preus</h2>
+    <p>Si un propietari gran apuja el lloguer, part dels llogaters se'n van a pisos d'altres propietaris. Com més pisos té, més li compensa apujar-lo igualment. El model clàssic calcula el marge que pot posar segons la seva quota (s), com reacciona la demanda (ε<sub>d</sub>) i com reaccionen els altres propietaris (ε<sub>f</sub>), que poden posar pisos al lloguer o treure'n.</p>
+    <div class="cl-card" id="calculadora">
+      <span class="cl-formula">marge = s / (ε<sub>d</sub> + ε<sub>f</sub> · (1 − s))</span>
+      <div class="cl-control">
+        <label for="cl-ef">Resposta dels altres propietaris, ε<sub>f</sub></label>
+        <input type="range" id="cl-ef" min="0" max="5" step="0.5" value="1">
+        <span class="cl-num" data-draw="ef_val">—</span>
+      </div>
+      <div class="cl-chart" data-draw="c_model" data-source="quotes_grups"></div>
+      <ul class="cl-legend">
+        <li><span class="cl-sw cl-sw-line" data-sw="0" data-op="1"></span>Marge possible segons la quota</li>
+        <li><span class="cl-sw" data-sw="1" data-op="1"></span>Propietari públic</li>
+        <li><span class="cl-sw" data-sw="0" data-op="1"></span>Empresa o fons</li>
+      </ul>
+      <p>Amb aquest valor, per tenir un marge del 5 % un sol grup necessitaria el <span class="cl-num" data-draw="s_star">—</span> % del lloguer de la ciutat. Cap grup privat documentat hi arriba.</p>
+      <p class="cl-muted">ε<sub>d</sub> = 0,5. Els valors són il·lustratius. És el model d'empresa dominant amb una franja competitiva: amb ε<sub>f</sub> = 0 és el cas de Cournot.</p>
+    </div>
+  </section>
+
+  <section class="cl-sec" id="grups">
+    <h2>3. Els grups més grans, un per un</h2>
+    <p>Les estadístiques oficials compten propietaris per NIF, i un fons pot repartir els pisos entre moltes societats. Per això hem sumat les societats de cada grup a partir dels seus comptes i memòries.</p>
+    <div class="cl-grid">
+      <div class="cl-card" id="grups-barres">
+        <h3>Part del lloguer de la ciutat de cada grup</h3>
+        <div class="cl-chart" data-draw="c_grups" data-source="quotes_grups"></div>
+        <ul class="cl-legend">
+          <li><span class="cl-sw" data-sw="1" data-op="1"></span>Propietari públic</li>
+          <li><span class="cl-sw" data-sw="0" data-op="1"></span>Empresa o fons</li>
+        </ul>
+        <p class="cl-muted">La línia marca el 2,5 %, la part mínima per a un marge del 5 % si els altres propietaris no reaccionen. Les xifres de Blackstone són de 2016–2018 i des de llavors ha venut bona part de la cartera.</p>
+      </div>
+      <div class="cl-card" id="grups-taula">
+        <h3>Inventari i fonts</h3>
+        <div class="cl-tablewrap">
+          <table data-source="grups" data-row-key="entitat">
+            <thead>
+              <tr>
+                <th data-field="grup">Grup</th>
+                <th data-field="entitat" class="cl-l">Entitat</th>
+                <th data-field="habitatges">Pisos</th>
+                <th data-field="ambit" class="cl-l">Àmbit</th>
+                <th data-field="data_ref" class="cl-l">Data</th>
+                <th data-field="verificat" class="cl-l">Comprovat</th>
+              </tr>
+            </thead>
+            <tbody data-draw="tb_grups"></tbody>
+          </table>
+        </div>
+        <p class="cl-muted">«Àrea» vol dir que el document no separa la ciutat. El Diagonal 75 de Fidere és el mateix edifici que ara té Vivenio i només es compta una vegada. Cada entitat enllaça al document d'on surt la xifra.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cl-sec" id="barris">
+    <h2>4. Barris amb més grans propietaris: lloguers i preus</h2>
+    <p>Si la concentració fes pujar els lloguers, els barris amb més grans propietaris tindrien lloguers més alts. I si el preu de compra ho incorporés, la proporció entre preu i lloguer seria semblant a tots els barris.</p>
+    <div class="cl-card" id="barris-punts">
+      <div class="cl-seg" role="group" aria-label="Variable de l'eix vertical" data-group="yvar" data-redraw="c_barris">
+        <button type="button" data-value="lloguer_m2" aria-pressed="false">Lloguer €/m²</button>
+        <button type="button" data-value="preu_m2" aria-pressed="false">Preu de compra €/m²</button>
+        <button type="button" data-value="anys_lloguer" aria-pressed="true">Preu / lloguer</button>
+      </div>
+      <div class="cl-chart" data-draw="c_barris" data-source="punts_barris"></div>
+      <p class="cl-muted">Cada punt és un barri amb almenys 100 contractes nous el 2023. Eix horitzontal: % d'habitatges del barri de propietaris privats amb 5 o més (O-HB 2025, sense el parc públic). «Preu / lloguer» és el preu de compra dividit pel lloguer d'un any: quants anys de lloguer costa el pis. La línia discontínua és la tendència.</p>
+    </div>
+    <div class="cl-card" id="barris-taula">
+      <h3>Diferència associada a 10 punts més d'exposició, en %</h3>
+      <div class="cl-tablewrap">
+        <table data-source="p4_taula" data-row-key="fila">
+          <thead>
+            <tr>
+              <th data-field="variable">Variable, 2023</th>
+              <th data-field="sense">Tots els barris</th>
+              <th data-field="sense_se">error estàndard</th>
+              <th data-field="amb">Dins de cada districte</th>
+              <th data-field="amb_se">error estàndard</th>
+            </tr>
+          </thead>
+          <tbody data-draw="tb_p4"></tbody>
+        </table>
+      </div>
+      <p>Dins de cada districte, els barris amb més grans propietaris no tenen lloguers significativament més alts
+        (<span class="cl-num" data-draw="num" data-source="p4_taula" data-field="amb" data-where="fila=lloguer_m2" data-fmt="signed1">—</span> %),
+        però sí una proporció preu/lloguer més alta
+        (<span class="cl-num" data-draw="num" data-source="p4_taula" data-field="amb" data-where="fila=ratio" data-fmt="signed1">—</span> %).
+        Encaixa més amb inversors que compren on esperen que el preu pugi que amb poder de mercat sobre el lloguer. És una correlació, no un efecte causal.</p>
+    </div>
+  </section>
+
+  <section class="cl-sec" id="cadastre">
+    <h2>5. Com ha canviat la propietat, 2009–2026</h2>
+    <div class="cl-card" id="cadastre-serie">
+      <h3>Habitatges de la ciutat en mans de persones jurídiques</h3>
+      <div class="cl-chart" data-draw="c_cadastre" data-source="serie_cadastre"></div>
+      <ul class="cl-legend">
+        <li><span class="cl-sw cl-sw-line" data-sw="0" data-op="1"></span>Persones jurídiques</li>
+        <li><span class="cl-sw cl-sw-line" data-sw="1" data-op="1"></span>Empreses (dada disponible des del 2018)</li>
+      </ul>
+      <p>El pes de les persones jurídiques puja a poc a poc, del
+        <span class="cl-num" data-draw="num" data-source="serie_cadastre" data-field="pct_juridica" data-where="any=2009">—</span> % el 2009 al
+        <span class="cl-num" data-draw="num" data-source="serie_cadastre" data-field="pct_juridica" data-where="any=2026">—</span> % el 2026, sense salts ni canvis de tendència després del 2020.</p>
+      <p class="cl-muted">Cadastre, Open Data BCN. Percentatge sobre els habitatges amb titular conegut. Inclou tot el parc, no només el de lloguer. Una societat familiar amb un pis també compta com a persona jurídica.</p>
+    </div>
+  </section>
+
+  <section class="cl-sec" id="topall">
+    <h2>6. El topall del 2024</h2>
+    <p>Des del març del 2024, a Barcelona els grans tenidors no poden llogar per sobre de l'índex de referència. Els petits propietaris només tenen el límit del contracte anterior. És un topall de preu que afecta una part dels propietaris, i cada hipòtesi preveu una reacció diferent.</p>
+    <div class="cl-pred">
+      <div class="cl-note">
+        <h3>Si els grans tenien poder de mercat</h3>
+        <p>Ja no els compensa retenir pisos, i en lloguen més. El lloguer dels petits baixa. El preu de compra baixa on els grans pesen més.</p>
+      </div>
+      <div class="cl-note">
+        <h3>Si el mercat era competitiu</h3>
+        <p>Els grans lloguen menys: venen, passen a temporada o deixen pisos buits. El lloguer dels petits puja o no es mou.</p>
+      </div>
+    </div>
+    <div class="cl-card" id="topall-grafics">
+      <h3>Barris més exposats als grans tenidors, abans i després del topall</h3>
+      <p class="cl-muted">Cada punt diu quant canvia la variable, en %, per cada 10 punts més d'exposició, respecte del 2023. La franja és l'interval del 95 %. La línia de punts marca el topall.</p>
+      <div class="cl-seg" role="group" aria-label="Mesura d'exposició" data-group="expo" data-redraw="c_topall">
+        <button type="button" data-value="privat_5_o_mes" aria-pressed="true">Grans propietaris privats (O-HB)</button>
+        <button type="button" data-value="empreses_2023" aria-pressed="false">Empreses al cadastre, 2023</button>
+      </div>
+      <div class="cl-minis">
+        <div class="cl-mini">
+          <h4>Contractes nous</h4>
+          <div class="cl-chart" data-draw="c_topall" data-var="contractes" data-source="p3"></div>
+        </div>
+        <div class="cl-mini">
+          <h4>Lloguer, €/mes</h4>
+          <div class="cl-chart" data-draw="c_topall" data-var="lloguer" data-source="p3"></div>
+        </div>
+        <div class="cl-mini">
+          <h4>Preu de compra, €/m²</h4>
+          <div class="cl-chart" data-draw="c_topall" data-var="preu_m2" data-source="p3"></div>
+        </div>
+      </div>
+      <p>El 2025, els barris més exposats tenen més contractes nous
+        (<span class="cl-num" data-draw="num" data-source="p3" data-field="beta_pct" data-where="exposicio=privat_5_o_mes&amp;variable=contractes&amp;any=2025" data-fmt="signed1">—</span> % per cada 10 punts),
+        el mateix lloguer
+        (<span class="cl-num" data-draw="num" data-source="p3" data-field="beta_pct" data-where="exposicio=privat_5_o_mes&amp;variable=lloguer&amp;any=2025" data-fmt="signed1">—</span> %)
+        i un preu de compra que puja menys
+        (<span class="cl-num" data-draw="num" data-source="p3" data-field="beta_pct" data-where="exposicio=privat_5_o_mes&amp;variable=preu_m2&amp;any=2025" data-fmt="signed1">—</span> %).
+        No es veu la retirada de pisos que esperaríem en un mercat competitiu. Però la prova és feble:</p>
+      <ul class="cl-list">
+        <li>Les dades són anuals, i el 2024 barreja mesos d'abans i de després del topall.</li>
+        <li>Els barris exposats ja perdien contractes en termes relatius el 2023, l'any de la Llei d'habitatge.</li>
+        <li>El preu de compra ja tenia una tendència relativa a la baixa abans del topall.</li>
+        <li>Els barris exposats són els cèntrics, que també són els més afectats per la regulació dels pisos turístics: el <a href="https://portaljuridic.gencat.cat/ca/detalls/noticia/mesures_urgents_regim_habitatges_us_turistics_dogc" target="_blank" rel="noopener">Decret llei 3/2023</a> i la <a href="https://ajuntament.barcelona.cat/turisme/ca/actualitat/noticies/barcelona-no-renovara-les-llicencies-dhabitatges-dus-turistic-1413375" target="_blank" rel="noopener">decisió de l'Ajuntament del 21 de juny del 2024</a> de no renovar les llicències.</li>
+        <li>L'exposició mesura tot el parc, no només el de lloguer.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="cl-sec" id="conclusions">
+    <h2>Què en traiem</h2>
+    <ul class="cl-list">
+      <li>Comptant per grup i per NIF, el lloguer de Barcelona no està concentrat. Els únics propietaris grans són públics, i lloguen per sota del preu de mercat.</li>
+      <li>Entre barris, tenir més grans propietaris va amb preus de compra alts respecte del lloguer, no amb lloguers més alts.</li>
+      <li>El topall del 2024 no mostra la retirada de pisos d'un mercat competitiu, però tampoc una baixada del lloguer als barris exposats. Amb dades anuals no ho podem separar d'altres canvis.</li>
+      <li>Pas següent: refer la prova del topall amb dades trimestrals, per separar el topall (març del 2024) de l'anunci sobre els pisos turístics (juny del 2024).</li>
+    </ul>
+  </section>
+
+  <details id="metode">
+    <summary>Com s'ha fet i d'on surten les dades</summary>
+    <ul class="cl-list">
+      <li>Pisos llogats per mida del propietari: O-HB, <a href="https://recam.amb.cat/bitstreams/080a7897-75e0-49ce-b8c2-e022b583dbec/download" target="_blank" rel="noopener">Estructura i concentració de la propietat del parc de lloguer a la demarcació de Barcelona 2023</a>, a partir del registre de fiances de l'INCASÒL.</li>
+      <li>Concentració per barri: O-HB, <a href="https://recam.amb.cat/bitstreams/03203c5f-f1ec-49cd-ad2c-56dc55eb3135/download" target="_blank" rel="noopener">Estructura i concentració de la propietat d'habitatges a la ciutat de Barcelona 2025</a>, annexos 1 i 2. L'annex 1 inclou el parc públic, i l'hem restat.</li>
+      <li>Grups: comptes a la CNMV i a BME Growth, memòries i webs de cada entitat, i documents de l'Ajuntament i de la Generalitat. Cada fila de la taula enllaça a la seva font.</li>
+      <li>Lloguer, contractes i preus per barri: <a href="https://portaldades.ajuntament.barcelona.cat/" target="_blank" rel="noopener">Portal Barcelona Dades</a> (fiances de l'INCASÒL i registres notarials).</li>
+      <li>Model del topall: logaritme de la variable amb efectes fixos de barri i d'any, i l'exposició multiplicada per cada any, amb el 2023 com a base. Errors agrupats per barri. Barris amb almenys 100 contractes nous el 2023.</li>
+      <li>Codi i dades: repositori <a href="https://github.com/BrunoMazorra/reserca-vivenda" target="_blank" rel="noopener">reserca-vivenda</a>, carpeta concentracio.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+window.CL = (function () {
+  const loc = d3.formatLocale({decimal: ',', thousands: '.', grouping: [3], currency: ['', ' €']});
+  const n0 = loc.format(',.0f');
+  const n1 = loc.format(',.1f');
+  const n2 = loc.format(',.2f');
+  const f = {
+    int: n0,
+    pct1: n1,
+    pct2: n2,
+    num1: n1,
+    text: (v) => String(v),
+    signed1: (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + n1(Math.abs(v)),
+  };
+  const reduce = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const dur = (ms) => (reduce() ? 0 : ms);
+  const played = {};
+  function once(key, el, cb) {
+    if (played[key]) return;
+    played[key] = true;
+    if (reduce() || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        io.disconnect();
+        cb();
+      }
+    }, {threshold: 0.3});
+    io.observe(el);
+  }
+  function svgIn(el, w, h, label) {
+    let svg = d3.select(el).select('svg.cl-svg');
+    if (svg.empty()) svg = d3.select(el).append('svg').attr('class', 'cl-svg').attr('role', 'img');
+    svg.attr('viewBox', '0 0 ' + w + ' ' + h).attr('aria-label', label);
+    return svg;
+  }
+  function layer(svg, cls) {
+    let g = svg.select('g.' + cls);
+    if (g.empty()) g = svg.append('g').attr('class', cls);
+    return g;
+  }
+  function tip(el) {
+    let t = d3.select(el).select('div.cl-tip');
+    if (t.empty()) t = d3.select(el).append('div').attr('class', 'cl-tip').style('opacity', 0);
+    return t;
+  }
+  function showTip(el, t, title, lines, x, y) {
+    t.selectAll('*').remove();
+    t.append('b').text(title);
+    lines.forEach(([k, v]) => {
+      const p = t.append('div');
+      p.append('span').attr('class', 'cl-tip-k').text(k + ': ');
+      p.append('span').text(v);
+    });
+    const W = el.clientWidth;
+    const tw = t.node().offsetWidth;
+    const th = t.node().offsetHeight;
+    let left = x + 14;
+    if (left + tw > W) left = Math.max(0, x - tw - 14);
+    t.style('left', left + 'px').style('top', Math.max(0, y - th - 8) + 'px').style('opacity', 1);
+  }
+  function hideTip(t) { t.style('opacity', 0); }
+  function pointer(el, ev) {
+    const r = el.getBoundingClientRect();
+    return [ev.clientX - r.left, ev.clientY - r.top];
+  }
+  function fail(el, d) {
+    if (d.status !== 'error') return false;
+    d3.select(el).selectAll('*').remove();
+    d3.select(el).append('p').attr('class', 'cl-fail').text("No s'ha pogut carregar.");
+    return true;
+  }
+  function ok(d) { return d.status === 'ok' && Array.isArray(d.data) && d.data.length > 0; }
+  function anim(first, sel, ms) { return first || reduce() ? sel : sel.transition().duration(ms); }
+  function clean(el) { d3.select(el).selectAll('p.cl-fail').remove(); }
+  const ramp = {un: 1, dos_quatre: 0.34, cinc_deu: 0.5, onze_quinze: 0.62, setze_49: 0.8, cinquanta: 1};
+  const state = {step: '0', ef: 1, yvar: 'anys_lloguer', expo: 'privat_5_o_mes'};
+  return {f, n0, n1, n2, reduce, dur, once, anim, svgIn, layer, tip, showTip, hideTip, pointer, fail, ok, clean, ramp, state};
+})();
+</script>
+
+<script>
+dash.calc('quotes_grups', {
+  title: 'Part del lloguer de la ciutat de cada grup',
+  description: "Pisos de cada grup a la ciutat dividits pels pisos llogats amb fiança (O-HB, gener 2023). Només files d'àmbit ciutat.",
+  inputs: ['grups', 'lloguer_ciutat'],
+  fn: (grups, lloguer) => {
+    const totalRow = lloguer.find((r) => r.tram === 'total');
+    const total = totalRow ? +totalRow.habitatges : 0;
+    if (!total) return [];
+    const per = new Map();
+    for (const r of grups) {
+      if (r.ambit !== 'ciutat') continue;
+      const g = per.get(r.grup) || {grup: r.grup, tipus: r.tipus, habitatges: 0};
+      g.habitatges += +r.habitatges;
+      per.set(r.grup, g);
+    }
+    return [...per.values()]
+      .map((g) => ({grup: g.grup, tipus: g.tipus, habitatges: g.habitatges, quota_pct: Math.round(10000 * g.habitatges / total) / 100}))
+      .sort((a, b) => b.habitatges - a.habitatges);
+  },
+});
+
+dash.calc('resum_grups', {
+  title: 'Grups més grans i HHI dels grups documentats',
+  description: 'El grup públic i el privat amb més pisos, i la suma dels quadrats de les quotes (en %) de tots els grups documentats.',
+  inputs: ['quotes_grups'],
+  fn: (quotes) => {
+    if (!Array.isArray(quotes) || !quotes.length) return [];
+    const priv = quotes.filter((q) => q.tipus !== 'public');
+    const pub = quotes.filter((q) => q.tipus === 'public');
+    let hhi = 0;
+    for (const q of quotes) hhi += q.quota_pct * q.quota_pct;
+    return [{
+      grup_privat: priv.length ? priv[0].grup : '',
+      quota_privat_pct: priv.length ? priv[0].quota_pct : null,
+      grup_public: pub.length ? pub[0].grup : '',
+      quota_public_pct: pub.length ? pub[0].quota_pct : null,
+      hhi: Math.round(hhi * 10) / 10,
+    }];
+  },
+});
+
+dash.calc('trams_ciutat', {
+  title: 'Pisos llogats per mida del propietari, per trams',
+  description: "Trams sense solapament a partir dels subtotals de l'O-HB (1 pis, 5 o més, més de 10, més de 15, 50 o més).",
+  inputs: ['lloguer_ciutat'],
+  fn: (lloguer) => {
+    const p = (t) => {
+      const r = lloguer.find((x) => x.tram === t);
+      return r ? +r.pct_habitatges : NaN;
+    };
+    const u = p('un'), c5 = p('cinc_o_mes'), m10 = p('mes_de_10'), m15 = p('mes_de_15'), c50 = p('cinquanta_o_mes');
+    if (![u, c5, m10, m15, c50].every(Number.isFinite)) return [];
+    const r1 = (v) => Math.round(v * 10) / 10;
+    return [
+      {tram: 'un', etiqueta: '1 pis', pct: r1(u)},
+      {tram: 'dos_quatre', etiqueta: '2 a 4 pisos', pct: r1(100 - u - c5)},
+      {tram: 'cinc_deu', etiqueta: '5 a 10 pisos', pct: r1(c5 - m10)},
+      {tram: 'onze_quinze', etiqueta: '11 a 15 pisos', pct: r1(m10 - m15)},
+      {tram: 'setze_49', etiqueta: '16 a 49 pisos', pct: r1(m15 - c50)},
+      {tram: 'cinquanta', etiqueta: '50 pisos o més', pct: r1(c50)},
+    ];
+  },
+});
+
+dash.calc('serie_cadastre', {
+  title: 'Habitatges de persones jurídiques i empreses, ciutat',
+  description: 'Percentatge sobre els habitatges amb titular conegut (sense «no consta»), suma dels 73 barris.',
+  inputs: ['cadastre'],
+  fn: (cadastre) => {
+    const per = new Map();
+    for (const r of cadastre) {
+      const codi = +r.codi_barri;
+      if (codi < 1 || codi > 73) continue;
+      const any = +r.any;
+      const s = per.get(any) || {fisica: 0, juridica: 0, empreses: 0};
+      s.fisica += +r.fisica;
+      s.juridica += +r.juridica;
+      s.empreses += r.empreses == null || r.empreses === '' ? 0 : +r.empreses;
+      per.set(any, s);
+    }
+    return [...per.entries()].sort((a, b) => a[0] - b[0]).map(([any, s]) => ({
+      any,
+      pct_juridica: Math.round(1000 * s.juridica / (s.fisica + s.juridica)) / 10,
+      pct_empreses: any >= 2018 ? Math.round(1000 * s.empreses / (s.fisica + s.juridica)) / 10 : null,
+    }));
+  },
+});
+
+dash.calc('punts_barris', {
+  title: 'Barris el 2023: exposició, lloguer i preu',
+  description: "Barris amb almenys 100 contractes nous el 2023. Exposició: % d'habitatges de propietaris amb 5 o més menys el % públic (O-HB 2025).",
+  inputs: ['panell', 'ohb_barris'],
+  fn: (panell, ohb) => {
+    const expo = new Map(ohb.map((r) => [+r.codi_barri, Math.max(0, +r.pct_5_o_mes - +r.pct_administracio)]));
+    return panell
+      .filter((r) => +r.any === 2023 && +r.contractes >= 100 && r.lloguer_m2 != null && r.preu_m2 != null)
+      .map((r) => ({
+        codi_barri: +r.codi_barri,
+        barri: r.barri,
+        districte: r.districte,
+        exposicio: Math.round(10 * expo.get(+r.codi_barri)) / 10,
+        lloguer_m2: +r.lloguer_m2,
+        preu_m2: +r.preu_m2,
+        anys_lloguer: Math.round(10 * (+r.preu_m2) / (12 * (+r.lloguer_m2))) / 10,
+      }));
+  },
+});
+
+dash.calc('p4_taula', {
+  title: 'Comparació entre barris: coeficients',
+  description: "Exposició de grans propietaris privats (O-HB). Diferència en % per cada 10 punts, sense i amb efectes fixos de districte.",
+  inputs: ['p4'],
+  fn: (p4) => {
+    const noms = {lloguer_m2: 'Lloguer €/m²', preu_m2: 'Preu de compra €/m²', ratio: 'Preu / lloguer'};
+    return Object.keys(noms).map((v) => {
+      const g = (ef) => p4.find((r) => r.variable === v && r.exposicio === 'privat_5_o_mes' && r.efectes_districte === ef) || {};
+      return {fila: v, variable: noms[v], sense: g('no').coef_pct, sense_se: g('no').se_pct, amb: g('si').coef_pct, amb_se: g('si').se_pct};
+    });
+  },
+});
+</script>
+
+<script>
+(function () {
+  document.querySelectorAll('.cl-sw[data-sw]').forEach((sw) => {
+    const c = sw.dataset.sw;
+    sw.style.background = c === 'muted' ? 'var(--cds-chart-muted)' : dash.colors[+c];
+    sw.style.opacity = sw.dataset.op || '1';
+  });
+  const range = document.getElementById('cl-ef');
+  if (range) {
+    range.style.accentColor = dash.colors[0];
+    CL.state.ef = +range.value;
+    range.addEventListener('input', () => {
+      CL.state.ef = +range.value;
+      dash.draw('c_model');
+      dash.draw('ef_val');
+      dash.draw('s_star');
+    });
+  }
+  document.querySelectorAll('.cl-seg[data-group]').forEach((group) => {
+    const key = group.dataset.group;
+    const redraw = (group.dataset.redraw || '').split(' ').filter(Boolean);
+    group.querySelectorAll('button[data-value]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        CL.state[key] = btn.dataset.value;
+        group.querySelectorAll('button[data-value]').forEach((o) => o.setAttribute('aria-pressed', String(o === btn)));
+        if (key === 'step') {
+          document.querySelectorAll('[data-step-text]').forEach((p) => p.classList.toggle('cl-off', p.dataset.stepText !== btn.dataset.value));
+          document.querySelectorAll('[data-step-legend]').forEach((p) => p.classList.toggle('cl-off', p.dataset.stepLegend !== btn.dataset.value));
+        }
+        redraw.forEach((n) => dash.draw(n));
+      });
+    });
+  });
+})();
+</script>
+
+<script>
+dash.draw('num', (el) => {
+  const d = dash.data(el.dataset.source);
+  const rows = Array.isArray(d.data) ? d.data : [];
+  let row = null;
+  if (d.status === 'ok') {
+    if (el.dataset.row != null) {
+      row = rows[+el.dataset.row] || null;
+    } else if (el.dataset.where) {
+      const conds = el.dataset.where.split('&').map((p) => p.split('=').map(decodeURIComponent));
+      row = rows.find((r) => conds.every(([k, v]) => String(r[k]) === v)) || null;
+    }
+  }
+  const v = row ? row[el.dataset.field] : null;
+  if (v == null || v === '') {
+    el.textContent = '—';
+    return;
+  }
+  const kind = el.dataset.fmt || 'pct1';
+  el.textContent = kind === 'text' ? String(v) : CL.f[kind](+v);
+});
+
+dash.draw('ef_val', (el) => { el.textContent = CL.n1(CL.state.ef); });
+
+dash.draw('s_star', (el) => {
+  const ef = CL.state.ef;
+  el.textContent = CL.n1(100 * 0.05 * (0.5 + ef) / (1 + 0.05 * ef));
+});
+</script>
+
+<script>
+dash.draw('c_waffle', (el) => {
+  const t = dash.data('trams_ciutat');
+  const q = dash.data('quotes_grups');
+  if (CL.fail(el, t)) return;
+  if (!CL.ok(t)) return;
+  CL.clean(el);
+  const trams = t.data;
+  const grups = CL.ok(q) ? q.data : [];
+  const counts = trams.map((r) => Math.floor(+r.pct));
+  const rest = 100 - d3.sum(counts);
+  trams.map((r, i) => [+r.pct - Math.floor(+r.pct), i])
+    .sort((a, b) => b[0] - a[0])
+    .slice(0, Math.max(0, rest))
+    .forEach(([, i]) => { counts[i] += 1; });
+  const cells = [];
+  for (let i = trams.length - 1; i >= 0; i -= 1) {
+    for (let k = 0; k < counts[i]; k += 1) cells.push({tram: trams[i].tram, etiqueta: trams[i].etiqueta, pct: +trams[i].pct});
+  }
+  cells.forEach((c, i) => { c.i = i; });
+  const gap = 3;
+  const W = Math.max(200, Math.min(el.clientWidth || 360, 400));
+  const s = (W - 9 * gap) / 10;
+  const svg = CL.svgIn(el, W, W, 'Cent quadrats: cadascun és un 1 % dels pisos llogats de Barcelona, segons qui en és el propietari');
+  svg.style('max-width', W + 'px');
+  const pos = (i) => [(i % 10) * (s + gap), Math.floor(i / 10) * (s + gap)];
+  const step = CL.state.step;
+  const big = new Set(['cinc_deu', 'onze_quinze', 'setze_49', 'cinquanta']);
+  const muted = 'var(--cds-chart-muted)';
+  const fill = (c) => {
+    if (step === '0') return c.tram === 'un' ? muted : dash.colors[0];
+    if (step === '1') return big.has(c.tram) ? dash.colors[0] : muted;
+    return muted;
+  };
+  const op = (c) => (step === '0' ? CL.ramp[c.tram] : step === '1' ? 1 : 0.45);
+  const tip = CL.tip(el);
+  const rx = Math.min(4, s / 6);
+  const first = !el.__clDone;
+  el.__clDone = true;
+
+  const gc = CL.layer(svg, 'cl-cells');
+  const rects = gc.selectAll('rect').data(cells, (c) => c.i).join('rect')
+    .attr('x', (c) => pos(c.i)[0]).attr('y', (c) => pos(c.i)[1])
+    .attr('width', s).attr('height', s).attr('rx', rx)
+    .style('fill', fill)
+    .on('pointermove', (ev, c) => {
+      const [x, y] = CL.pointer(el, ev);
+      CL.showTip(el, tip, 'Propietaris de ' + c.etiqueta, [['Part dels pisos llogats', CL.f.pct1(c.pct) + ' %']], x, y);
+    })
+    .on('pointerleave', () => CL.hideTip(tip));
+  CL.anim(first, rects, 450).attr('fill-opacity', op);
+
+  const segs = [];
+  if (step === '2') {
+    let start = 0;
+    grups.forEach((g) => {
+      const v = +g.quota_pct;
+      const n = Math.max(1, Math.ceil(v));
+      for (let k = 0; k < n; k += 1) {
+        segs.push({key: g.grup + '|' + k, grup: g.grup, tipus: g.tipus, habitatges: g.habitatges, quota: v, cell: start + k, frac: Math.max(0.04, Math.min(1, v - k))});
+      }
+      start += n;
+    });
+  }
+  const go = CL.layer(svg, 'cl-groups');
+  go.selectAll('rect').data(segs, (d) => d.key).join(
+    (enter) => enter.append('rect').attr('width', 0),
+    (update) => update,
+    (exit) => exit.transition().duration(CL.dur(250)).attr('width', 0).remove(),
+  )
+    .attr('x', (d) => pos(d.cell)[0]).attr('y', (d) => pos(d.cell)[1])
+    .attr('height', s).attr('rx', rx)
+    .style('fill', (d) => (d.tipus === 'public' ? dash.colors[1] : dash.colors[0]))
+    .on('pointermove', (ev, d) => {
+      const [x, y] = CL.pointer(el, ev);
+      CL.showTip(el, tip, d.grup, [['Pisos a la ciutat', CL.n0(d.habitatges)], ['Part del lloguer', CL.f.pct2(d.quota) + ' %']], x, y);
+    })
+    .on('pointerleave', () => CL.hideTip(tip))
+    .transition().delay((d, i) => (CL.reduce() ? 0 : 120 + i * 70)).duration(CL.dur(500))
+    .attr('width', (d) => d.frac * s);
+
+  CL.once('waffle', el, () => {
+    gc.selectAll('rect').attr('fill-opacity', 0)
+      .transition().delay((c) => c.i * 9).duration(320).attr('fill-opacity', op);
+  });
+});
+
+dash.draw('c_model', (el) => {
+  const q = dash.data('quotes_grups');
+  if (CL.fail(el, q)) return;
+  CL.clean(el);
+  const grups = CL.ok(q) ? q.data : [];
+  const ef = CL.state.ef;
+  const ed = 0.5;
+  const L = (s) => s / (ed + ef * (1 - s));
+  const w = Math.max(280, el.clientWidth || 600);
+  const h = 270;
+  const m = {t: 14, r: 14, b: 40, l: 44};
+  const xMax = 0.12, yMax = 0.25;
+  const svg = CL.svgIn(el, w, h, 'Marge que pot posar un grup segons la seva part del lloguer. Resposta dels altres propietaris: ' + CL.n1(ef));
+  const first = !el.__clDone;
+  el.__clDone = true;
+  const x = d3.scaleLinear([0, xMax], [m.l, w - m.r]);
+  const y = d3.scaleLinear([0, yMax], [h - m.b, m.t]);
+  const tip = CL.tip(el);
+
+  const band = CL.layer(svg, 'cl-band');
+  band.selectAll('rect').data([0]).join('rect').attr('class', 'cl-zone')
+    .attr('x', m.l).attr('width', w - m.l - m.r).attr('y', y(yMax)).attr('height', y(0.05) - y(yMax));
+  band.selectAll('text').data([0]).join('text').attr('class', 'cl-zone-t')
+    .attr('x', w - m.r - 6).attr('y', y(yMax) + 14).attr('text-anchor', 'end').text('marge del 5 % o més');
+
+  CL.layer(svg, 'cl-ax-y').attr('transform', 'translate(' + m.l + ',0)')
+    .call(d3.axisLeft(y).ticks(5).tickSize(-(w - m.l - m.r)).tickFormat((v) => CL.n0(v * 100) + ' %'))
+    .call((g) => g.select('.domain').remove());
+  CL.layer(svg, 'cl-ax-x').attr('transform', 'translate(0,' + (h - m.b) + ')')
+    .call(d3.axisBottom(x).ticks(w < 420 ? 4 : 6).tickFormat((v) => CL.n0(v * 100) + ' %'));
+  CL.layer(svg, 'cl-xl').selectAll('text').data([0]).join('text').attr('class', 'cl-axis-label')
+    .attr('x', w - m.r).attr('y', h - 4).attr('text-anchor', 'end').text('part del grup al lloguer de la ciutat');
+
+  const xs = d3.range(0, xMax + 1e-9, xMax / 120);
+  const line = d3.line().x((s) => x(s)).y((s) => y(Math.min(L(s), yMax)));
+  const curve = CL.layer(svg, 'cl-curve').selectAll('path').data([xs]).join('path')
+    .attr('fill', 'none').style('stroke', dash.colors[0]).attr('stroke-width', 2.2);
+  CL.anim(first, curve, 380).attr('d', line);
+
+  const sStar = 0.05 * (ed + ef) / (1 + 0.05 * ef);
+  const st = CL.layer(svg, 'cl-star');
+  const starLine = st.selectAll('line').data([sStar]).join('line').attr('class', 'cl-guide')
+    .attr('y1', y(0.05)).attr('y2', h - m.b);
+  CL.anim(first, starLine, 380).attr('x1', x(sStar)).attr('x2', x(sStar));
+  const right = x(sStar) > w * 0.72;
+  const starText = st.selectAll('text').data([sStar]).join('text').attr('class', 'cl-zone-t')
+    .attr('y', h - m.b - 6).attr('text-anchor', right ? 'end' : 'start')
+    .text('cal el ' + CL.n1(100 * sStar) + ' %');
+  CL.anim(first, starText, 380).attr('x', x(sStar) + (right ? -6 : 6));
+
+  const pts = grups.map((g) => ({grup: g.grup, tipus: g.tipus, habitatges: g.habitatges, quota: +g.quota_pct, s: +g.quota_pct / 100}))
+    .filter((g) => g.s <= xMax);
+  const gp = CL.layer(svg, 'cl-pts');
+  const circles = gp.selectAll('circle').data(pts, (d) => d.grup).join('circle')
+    .attr('r', 5.5).style('fill', (d) => (d.tipus === 'public' ? dash.colors[1] : dash.colors[0]))
+    .style('stroke', 'var(--color-panel)').attr('stroke-width', 2)
+    .on('pointermove', (ev, d) => {
+      const [px, py] = CL.pointer(el, ev);
+      CL.showTip(el, tip, d.grup, [['Part del lloguer', CL.f.pct2(d.quota) + ' %'], ['Marge que permetria', CL.f.pct1(100 * L(d.s)) + ' %']], px, py);
+    })
+    .on('pointerleave', () => CL.hideTip(tip));
+  CL.anim(first, circles, 380)
+    .attr('cx', (d) => x(d.s)).attr('cy', (d) => y(Math.min(L(d.s), yMax)));
+  const etiquetes = pts.filter((d) => d.tipus === 'public' ? d.quota >= 2 : d === pts.find((p) => p.tipus !== 'public'));
+  const labels = gp.selectAll('text').data(etiquetes, (d) => d.grup).join('text').attr('class', 'cl-end')
+    .attr('text-anchor', 'start').text((d) => (d.grup.length > 14 ? d.grup.split(' ')[0] : d.grup));
+  CL.anim(first, labels, 380)
+    .attr('x', (d) => x(d.s) + 8).attr('y', (d) => y(Math.min(L(d.s), yMax)) - 8);
+});
+
+dash.draw('c_grups', (el) => {
+  const q = dash.data('quotes_grups');
+  if (CL.fail(el, q)) return;
+  if (!CL.ok(q)) return;
+  CL.clean(el);
+  const rows = q.data;
+  const w = Math.max(260, el.clientWidth || 560);
+  const rowH = 46;
+  const m = {t: 24, r: 64, b: 6, l: 0};
+  const h = m.t + rows.length * rowH + m.b;
+  const svg = CL.svgIn(el, w, h, 'Part del lloguer de la ciutat de cada grup, amb una línia al 2,5 %');
+  const xMax = Math.max(5, d3.max(rows, (r) => +r.quota_pct) * 1.12);
+  const x = d3.scaleLinear([0, xMax], [m.l, w - m.r]);
+  const tip = CL.tip(el);
+  const llindar = 2.5;
+  const first = !el.__clDone;
+  el.__clDone = true;
+
+  const thr = CL.layer(svg, 'cl-thr');
+  thr.selectAll('line').data([llindar]).join('line').attr('class', 'cl-guide')
+    .attr('x1', x(llindar)).attr('x2', x(llindar)).attr('y1', m.t - 8).attr('y2', h - m.b);
+  thr.selectAll('text').data([llindar]).join('text').attr('class', 'cl-axis-label')
+    .attr('x', x(llindar) + 4).attr('y', m.t - 12).text(CL.f.pct1(llindar) + ' %');
+
+  const target = (r) => Math.max(2, x(+r.quota_pct) - x(0));
+  const g = CL.layer(svg, 'cl-bars').selectAll('g.cl-row').data(rows, (r) => r.grup).join((enter) => {
+    const e = enter.append('g').attr('class', 'cl-row');
+    e.append('text').attr('class', 'cl-bar-l');
+    e.append('rect').attr('width', 0);
+    e.append('text').attr('class', 'cl-end');
+    return e;
+  });
+  g.attr('transform', (r, i) => 'translate(0,' + (m.t + i * rowH) + ')');
+  g.select('text.cl-bar-l').attr('x', 0).attr('y', 12).text((r) => r.grup);
+  const bars = g.select('rect').attr('x', x(0)).attr('y', 19).attr('height', 14).attr('rx', 3)
+    .style('fill', (r) => (r.tipus === 'public' ? dash.colors[1] : dash.colors[0]))
+    .on('pointermove', (ev, r) => {
+      const [px, py] = CL.pointer(el, ev);
+      CL.showTip(el, tip, r.grup, [['Pisos a la ciutat', CL.n0(r.habitatges)], ['Part del lloguer', CL.f.pct2(+r.quota_pct) + ' %']], px, py);
+    })
+    .on('pointerleave', () => CL.hideTip(tip));
+  CL.anim(first, bars, 500).attr('width', target);
+  const endLabels = g.select('text.cl-end').attr('y', 31).text((r) => CL.f.pct2(+r.quota_pct) + ' %');
+  CL.anim(first, endLabels, 500).attr('x', (r) => x(0) + target(r) + 6);
+
+  CL.once('grups', el, () => {
+    g.select('rect').attr('width', 0).transition().delay((r, i) => i * 110).duration(700).ease(d3.easeCubicOut).attr('width', target);
+    g.select('text.cl-end').attr('x', x(0) + 6).transition().delay((r, i) => i * 110).duration(700).ease(d3.easeCubicOut).attr('x', (r) => x(0) + target(r) + 6);
+  });
+});
+
+dash.draw('tb_grups', (tb) => {
+  const d = dash.data('grups');
+  if (!CL.ok(d)) {
+    tb.replaceChildren();
+    return;
+  }
+  const ambit = {ciutat: 'Ciutat', ciutat_historic: 'Ciutat (abans)', area: 'Àrea'};
+  const verif = {si: 'Sí', no: 'No', parcial: 'En part'};
+  const rows = d3.select(tb).selectAll('tr').data(d.data, (r) => r.entitat).join((enter) => {
+    const tr = enter.append('tr');
+    tr.append('td').attr('class', 'cl-l');
+    tr.append('td').attr('class', 'cl-l').append('a').attr('target', '_blank').attr('rel', 'noopener');
+    tr.append('td');
+    tr.append('td').attr('class', 'cl-l');
+    tr.append('td').attr('class', 'cl-l');
+    tr.append('td').attr('class', 'cl-l');
+    return tr;
+  });
+  rows.each(function (r) {
+    const td = this.children;
+    td[0].textContent = r.grup;
+    const a = td[1].firstChild;
+    a.textContent = r.entitat;
+    if (/^https:\/\//.test(r.url || '')) a.setAttribute('href', r.url); else a.removeAttribute('href');
+    td[2].textContent = CL.n0(+r.habitatges);
+    td[3].textContent = ambit[r.ambit] || r.ambit;
+    td[4].textContent = String(r.data_ref || '').slice(0, 7);
+    td[5].textContent = verif[r.verificat] || r.verificat;
+  });
+});
+
+dash.draw('tb_p4', (tb) => {
+  const d = dash.data('p4_taula');
+  if (!CL.ok(d)) {
+    tb.replaceChildren();
+    return;
+  }
+  const rows = d3.select(tb).selectAll('tr').data(d.data, (r) => r.fila).join((enter) => {
+    const tr = enter.append('tr');
+    for (let i = 0; i < 5; i += 1) tr.append('td');
+    return tr;
+  });
+  rows.attr('data-key', (r) => r.fila).each(function (r) {
+    const td = this.children;
+    td[0].textContent = r.variable;
+    td[1].textContent = r.sense == null ? '—' : CL.f.signed1(r.sense) + ' %';
+    td[2].textContent = r.sense_se == null ? '—' : CL.n1(r.sense_se);
+    td[3].textContent = r.amb == null ? '—' : CL.f.signed1(r.amb) + ' %';
+    td[4].textContent = r.amb_se == null ? '—' : CL.n1(r.amb_se);
+  });
+});
+
+dash.draw('c_barris', (el) => {
+  const d = dash.data('punts_barris');
+  if (CL.fail(el, d)) return;
+  if (!CL.ok(d)) return;
+  CL.clean(el);
+  const pts = d.data;
+  const v = CL.state.yvar;
+  const conf = {
+    lloguer_m2: {label: 'lloguer, €/m² al mes', fmt: (n) => CL.n1(n) + ' €/m²', tick: (n) => CL.n0(n)},
+    preu_m2: {label: 'preu de compra, €/m²', fmt: (n) => CL.n0(n) + ' €/m²', tick: (n) => CL.n0(n)},
+    anys_lloguer: {label: 'preu / lloguer anual, anys', fmt: (n) => CL.n1(n) + ' anys', tick: (n) => CL.n0(n)},
+  }[v];
+  const w = Math.max(280, el.clientWidth || 600);
+  const h = 320;
+  const m = {t: 16, r: 16, b: 42, l: 52};
+  const svg = CL.svgIn(el, w, h, "Barris de Barcelona el 2023: exposició als grans propietaris privats i " + conf.label);
+  const first = !el.__clDone;
+  el.__clDone = true;
+  const tip = CL.tip(el);
+  const x = d3.scaleLinear([0, d3.max(pts, (p) => p.exposicio) * 1.05], [m.l, w - m.r]).nice();
+  const ext = d3.extent(pts, (p) => p[v]);
+  const pad = (ext[1] - ext[0]) * 0.08;
+  const y = d3.scaleLinear([ext[0] - pad, ext[1] + pad], [h - m.b, m.t]).nice();
+
+  CL.anim(first, CL.layer(svg, 'cl-ax-y').attr('transform', 'translate(' + m.l + ',0)'), 600)
+    .call(d3.axisLeft(y).ticks(5).tickSize(-(w - m.l - m.r)).tickFormat(conf.tick));
+  CL.layer(svg, 'cl-ax-x').attr('transform', 'translate(0,' + (h - m.b) + ')')
+    .call(d3.axisBottom(x).ticks(w < 420 ? 4 : 8).tickFormat((n) => CL.n0(n) + ' %'));
+  CL.layer(svg, 'cl-labels').selectAll('text').data([
+    {k: 'x', t: "% d'habitatges de grans propietaris privats", x: w - m.r, y: h - 4, a: 'end'},
+    {k: 'y', t: conf.label, x: m.l, y: m.t - 4, a: 'start'},
+  ], (o) => o.k).join('text').attr('class', 'cl-axis-label')
+    .attr('x', (o) => o.x).attr('y', (o) => o.y).attr('text-anchor', (o) => o.a).text((o) => o.t);
+
+  const n = pts.length;
+  const mx = d3.mean(pts, (p) => p.exposicio);
+  const my = d3.mean(pts, (p) => p[v]);
+  const sxy = d3.sum(pts, (p) => (p.exposicio - mx) * (p[v] - my));
+  const sxx = d3.sum(pts, (p) => (p.exposicio - mx) ** 2);
+  const slope = n > 2 && sxx > 0 ? sxy / sxx : 0;
+  const x0 = x.domain()[0], x1 = d3.max(pts, (p) => p.exposicio);
+  CL.anim(first, CL.layer(svg, 'cl-trend').selectAll('line').data([0]).join('line')
+    .style('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1.5).attr('stroke-dasharray', '5 4'), 600)
+    .attr('x1', x(x0)).attr('x2', x(x1))
+    .attr('y1', y(my + slope * (x0 - mx))).attr('y2', y(my + slope * (x1 - mx)));
+
+  const dots = CL.layer(svg, 'cl-dots').selectAll('circle').data(pts, (p) => p.codi_barri).join(
+    (enter) => enter.append('circle').attr('cx', (p) => x(p.exposicio)).attr('cy', (p) => y(p[v])).attr('r', first ? 5 : 0),
+  )
+    .style('fill', dash.colors[0]).attr('fill-opacity', 0.85)
+    .style('stroke', 'var(--color-panel)').attr('stroke-width', 1.5)
+    .on('pointermove', (ev, p) => {
+      const [px, py] = CL.pointer(el, ev);
+      CL.showTip(el, tip, p.barri, [['Districte', p.districte], ['Exposició', CL.n1(p.exposicio) + ' %'], ['Lloguer', CL.n1(p.lloguer_m2) + ' €/m²'], ['Preu', CL.n0(p.preu_m2) + ' €/m²'], ['Preu / lloguer', CL.n1(p.anys_lloguer) + ' anys']], px, py);
+    })
+    .on('pointerleave', () => CL.hideTip(tip));
+  (first || CL.reduce() ? dots : dots.transition().duration(700).delay((p, i) => (i % 20) * 12).ease(d3.easeCubicInOut))
+    .attr('cx', (p) => x(p.exposicio)).attr('cy', (p) => y(p[v])).attr('r', 5);
+});
+
+dash.draw('c_cadastre', (el) => {
+  const d = dash.data('serie_cadastre');
+  if (CL.fail(el, d)) return;
+  if (!CL.ok(d)) return;
+  CL.clean(el);
+  const rows = d.data;
+  const w = Math.max(280, el.clientWidth || 600);
+  const h = 260;
+  const m = {t: 14, r: 52, b: 28, l: 40};
+  const svg = CL.svgIn(el, w, h, 'Percentatge d\'habitatges de Barcelona en mans de persones jurídiques i d\'empreses, 2009–2026');
+  const tip = CL.tip(el);
+  const x = d3.scaleLinear(d3.extent(rows, (r) => r.any), [m.l, w - m.r]);
+  const y = d3.scaleLinear([0, Math.max(18, d3.max(rows, (r) => r.pct_juridica) + 2)], [h - m.b, m.t]);
+  CL.layer(svg, 'cl-ax-y').attr('transform', 'translate(' + m.l + ',0)')
+    .call(d3.axisLeft(y).ticks(5).tickSize(-(w - m.l - m.r)).tickFormat((n) => CL.n0(n) + ' %'))
+    .call((g) => g.select('.domain').remove());
+  CL.layer(svg, 'cl-ax-x').attr('transform', 'translate(0,' + (h - m.b) + ')')
+    .call(d3.axisBottom(x).ticks(w < 420 ? 4 : 9).tickFormat((n) => String(n)));
+  const series = [{k: 'pct_juridica', c: dash.colors[0]}, {k: 'pct_empreses', c: dash.colors[1]}];
+  const lines = CL.layer(svg, 'cl-lines').selectAll('path').data(series, (s) => s.k).join('path')
+    .attr('fill', 'none').attr('stroke-width', 2.2).style('stroke', (s) => s.c)
+    .attr('d', (s) => d3.line().defined((r) => r[s.k] != null).x((r) => x(r.any)).y((r) => y(r[s.k]))(rows));
+  const ends = series.map((s) => {
+    const last = rows.filter((r) => r[s.k] != null).slice(-1)[0];
+    return last ? {k: s.k, any: last.any, v: last[s.k]} : null;
+  }).filter(Boolean);
+  CL.layer(svg, 'cl-ends').selectAll('text').data(ends, (e) => e.k).join('text').attr('class', 'cl-end')
+    .attr('x', (e) => x(e.any) + 6).attr('y', (e) => y(e.v) + 4).text((e) => CL.n1(e.v) + ' %');
+  const rule = CL.layer(svg, 'cl-rule').selectAll('line').data([0]).join('line').attr('class', 'cl-guide').attr('y1', m.t).attr('y2', h - m.b).style('opacity', 0);
+  CL.layer(svg, 'cl-hit').selectAll('rect').data([0]).join('rect')
+    .attr('x', m.l).attr('y', m.t).attr('width', w - m.l - m.r).attr('height', h - m.t - m.b).attr('fill', 'transparent')
+    .on('pointermove', (ev) => {
+      const [px, py] = CL.pointer(el, ev);
+      const any = Math.round(x.invert(px));
+      const r = rows.find((o) => o.any === any);
+      if (!r) return;
+      rule.attr('x1', x(any)).attr('x2', x(any)).style('opacity', 1);
+      const lines2 = [['Persones jurídiques', CL.n1(r.pct_juridica) + ' %']];
+      if (r.pct_empreses != null) lines2.push(['Empreses', CL.n1(r.pct_empreses) + ' %']);
+      CL.showTip(el, tip, String(any), lines2, px, py);
+    })
+    .on('pointerleave', () => { rule.style('opacity', 0); CL.hideTip(tip); });
+  CL.once('cadastre', el, () => {
+    lines.each(function () {
+      const len = this.getTotalLength();
+      d3.select(this).attr('stroke-dasharray', len + ' ' + len).attr('stroke-dashoffset', len)
+        .transition().duration(1400).ease(d3.easeCubicOut).attr('stroke-dashoffset', 0)
+        .on('end', function () { d3.select(this).attr('stroke-dasharray', null); });
+    });
+  });
+});
+
+dash.draw('c_topall', (el) => {
+  const d = dash.data('p3');
+  if (CL.fail(el, d)) return;
+  if (!CL.ok(d)) return;
+  CL.clean(el);
+  const v = el.dataset.var;
+  const expo = CL.state.expo;
+  const rows = d.data.filter((r) => r.variable === v && r.exposicio === expo)
+    .map((r) => ({any: +r.any, b: +r.beta_pct, se: +r.se_pct}))
+    .sort((a, b) => a.any - b.any);
+  if (!rows.length) return;
+  const w = Math.max(200, el.clientWidth || 300);
+  const h = 210;
+  const m = {t: 16, r: 10, b: 26, l: 40};
+  const svg = CL.svgIn(el, w, h, 'Efecte de 10 punts més d\'exposició sobre ' + v + ', per any, respecte del 2023');
+  const first = !el.__clDone;
+  el.__clDone = true;
+  const tip = CL.tip(el);
+  const all = d.data.filter((r) => r.variable === v).map((r) => [+r.beta_pct - 1.96 * +r.se_pct, +r.beta_pct + 1.96 * +r.se_pct]).flat();
+  const lo = Math.min(0, d3.min(all)), hi = Math.max(0, d3.max(all));
+  const x = d3.scaleLinear([rows[0].any, rows[rows.length - 1].any], [m.l, w - m.r]);
+  const y = d3.scaleLinear([lo, hi], [h - m.b, m.t]).nice();
+  CL.layer(svg, 'cl-ax-y').attr('transform', 'translate(' + m.l + ',0)')
+    .call(d3.axisLeft(y).ticks(4).tickSize(-(w - m.l - m.r)).tickFormat((n) => (n > 0 ? '+' : n < 0 ? '−' : '') + CL.n0(Math.abs(n)) + ' %'))
+    .call((g) => g.select('.domain').remove());
+  CL.layer(svg, 'cl-ax-x').attr('transform', 'translate(0,' + (h - m.b) + ')')
+    .call(d3.axisBottom(x).tickValues([2017, 2019, 2021, 2023, 2025]).tickFormat((n) => String(n)));
+  CL.layer(svg, 'cl-zero').selectAll('line').data([0]).join('line').attr('class', 'cl-zero')
+    .attr('x1', m.l).attr('x2', w - m.r).attr('y1', y(0)).attr('y2', y(0));
+  const tx = x(2023.5);
+  CL.layer(svg, 'cl-cap').selectAll('line').data([0]).join('line').attr('class', 'cl-guide')
+    .attr('x1', tx).attr('x2', tx).attr('y1', m.t).attr('y2', h - m.b);
+  CL.layer(svg, 'cl-cap').selectAll('text').data([0]).join('text').attr('class', 'cl-axis-label')
+    .attr('x', tx - 4).attr('y', m.t + 2).attr('text-anchor', 'end').text('topall');
+  const area = d3.area().x((r) => x(r.any)).y0((r) => y(r.b - 1.96 * r.se)).y1((r) => y(r.b + 1.96 * r.se));
+  const line = d3.line().x((r) => x(r.any)).y((r) => y(r.b));
+  CL.anim(first, CL.layer(svg, 'cl-ci-g').selectAll('path').data([rows]).join('path').attr('class', 'cl-ci').style('fill', dash.colors[0]), 500).attr('d', area);
+  const path = CL.layer(svg, 'cl-line-g').selectAll('path').data([rows]).join('path')
+    .attr('fill', 'none').style('stroke', dash.colors[0]).attr('stroke-width', 2.2);
+  CL.anim(first, path, 500).attr('d', line);
+  const nom = {contractes: 'Contractes nous', lloguer: 'Lloguer', preu_m2: 'Preu de compra'}[v] || v;
+  const tpts = CL.layer(svg, 'cl-pts').selectAll('circle').data(rows, (r) => r.any).join('circle')
+    .attr('r', 4).style('fill', dash.colors[0]).style('stroke', 'var(--color-panel)').attr('stroke-width', 1.5)
+    .attr('cx', (r) => x(r.any))
+    .on('pointermove', (ev, r) => {
+      const [px, py] = CL.pointer(el, ev);
+      const t = r.any === 2023 ? [['Any de referència', '0 %']] : [['Canvi per 10 punts', CL.f.signed1(r.b) + ' %'], ['Error estàndard', CL.n1(r.se)]];
+      CL.showTip(el, tip, nom + ', ' + r.any, t, px, py);
+    })
+    .on('pointerleave', () => CL.hideTip(tip));
+  CL.anim(first, tpts, 500).attr('cy', (r) => y(r.b));
+  CL.once('topall_' + v, el, () => {
+    path.each(function () {
+      const len = this.getTotalLength();
+      d3.select(this).attr('stroke-dasharray', len + ' ' + len).attr('stroke-dashoffset', len)
+        .transition().duration(1200).ease(d3.easeCubicOut).attr('stroke-dashoffset', 0)
+        .on('end', function () { d3.select(this).attr('stroke-dasharray', null); });
+    });
+    CL.layer(svg, 'cl-ci-g').selectAll('path').style('opacity', 0).transition().delay(300).duration(900).style('opacity', 1);
+  });
+});
+</script>

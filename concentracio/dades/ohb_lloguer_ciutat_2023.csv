@@ -1,0 +1,7 @@
+tram,descripcio,propietaris,habitatges,pct_propietaris,pct_habitatges
+total,Tots els propietaris,113527,240369,100,100
+un,Propietaris d'1 habitatge llogat,,,70.7,33.4
+cinc_o_mes,Propietaris de 5 o més habitatges llogats,8538,107539,7.5,44.7
+mes_de_10,Propietaris de més de 10 habitatges llogats,3155,78380,2.8,32.6
+mes_de_15,Propietaris de més de 15 habitatges llogats,1863,65076,1.6,27.1
+cinquanta_o_mes,Propietaris de 50 o més habitatges llogats,319,34212,0.3,14.2
