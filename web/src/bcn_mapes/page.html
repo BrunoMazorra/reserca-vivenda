@@ -1,0 +1,547 @@
+<meta name="dash-one-writer">
+<style>
+.bc { display: flex; flex-direction: column; gap: var(--cds-gap-lg); max-width: 1100px; }
+.bc-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.15; margin: 0; max-width: 30ch; }
+.bc-lede { font-size: var(--cds-font-size-body); color: var(--color-fg); margin: var(--cds-gap-sm) 0 0; max-width: 68ch; line-height: 1.55; }
+.bc-lede b { font-weight: var(--cds-font-weight-medium); font-variant-numeric: tabular-nums; }
+.bc-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cds-gap-sm) var(--cds-gap-md); }
+.bc-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.bc-controls .dash-select { min-width: 0; max-width: 100%; }
+.bc-desc { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; max-width: 70ch; line-height: 1.5; flex-basis: 100%; }
+.bc-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); }
+.bc-h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0 0 var(--cds-gap-xs); }
+.bc-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-md); max-width: 70ch; line-height: 1.5; }
+.bc-map { position: relative; min-height: 320px; }
+.bc-scatter { position: relative; min-height: 300px; }
+.bc-map svg, .bc-scatter svg { display: block; width: 100%; height: auto; touch-action: manipulation; }
+.bc-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); font-size: var(--cds-font-size-caption); line-height: 1.45; max-width: 240px; z-index: 2; }
+.bc-tip strong { display: block; font-weight: var(--cds-font-weight-medium); margin-bottom: 2px; }
+.bc-tip span { display: block; color: var(--cds-text-secondary); font-variant-numeric: tabular-nums; }
+.bc-tip span.bc-tip-main { color: var(--color-fg); }
+.bc-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-md); margin-top: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--cds-text-secondary); font-variant-numeric: tabular-nums; }
+.bc-legend i { display: inline-block; width: 14px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.bc-fail { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.bc-axis text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+.bc-axis line, .bc-axis path { stroke: var(--cds-chart-axis); }
+.bc-grid line { stroke: var(--cds-chart-grid); }
+.bc-dotlabel { fill: var(--color-fg); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+.bc-details { border-top: 1px solid var(--color-border-line); padding-top: var(--cds-pad-md); }
+.bc-details summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
+.bc-tablewrap { overflow-x: auto; margin-top: var(--cds-gap-md); max-height: 520px; overflow-y: auto; }
+.bc-table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+.bc-table th, .bc-table td { padding: 6px 10px; border-bottom: 1px solid var(--color-border-line); text-align: right; white-space: nowrap; }
+.bc-table th:first-child, .bc-table td:first-child { text-align: left; white-space: normal; min-width: 12ch; }
+.bc-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.bc-prose { max-width: 70ch; font-size: var(--cds-font-size-body); line-height: 1.6; }
+.bc-prose p { margin: var(--cds-gap-sm) 0; }
+.bc-h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: var(--cds-gap-md) 0 var(--cds-gap-xs); }
+.bc-effects { position: relative; min-height: 190px; }
+.bc-effects svg { display: block; width: 100%; height: auto; touch-action: manipulation; }
+.bc-effects-legend i { border: 1.5px solid; border-radius: 50%; width: 9px; height: 9px; background: transparent; }
+.bc-note-foot { margin-top: var(--cds-gap-md); }
+.bc-effects .bc-zero { stroke: var(--cds-chart-reference); stroke-dasharray: 3 3; }
+[data-dash-source-state=refreshing] { opacity: .5; }
+</style>
+
+<div class="bc">
+  <header id="cabecera">
+    <h1 class="bc-title">Dónde se concentra la propiedad de vivienda en Barcelona</h1>
+    <p class="bc-lede">El barrio con más vivienda en manos de grandes propietarios privados es <b data-draw="top-nom">—</b>: el <b data-draw="top-val">—</b> de sus viviendas es de titulares con más de 10 en la ciudad. Entre los 73 barrios, ese porcentaje y el peso del alquiler van muy de la mano (correlación <b data-draw="corr" data-source="relacion">—</b>).</p>
+  </header>
+
+  <div class="bc-controls" id="controles">
+    <label class="bc-label" for="bc-ind">Qué se pinta</label>
+    <select id="bc-ind" class="dash-select">
+      <optgroup label="Propiedad por barrio (O-HB, 2025)">
+        <option value="pct_mes_10_privats">Grandes propietarios privados (más de 10 viviendas)</option>
+        <option value="pct_5_o_mes">Propietarios con 5 o más viviendas</option>
+        <option value="pct_mes_10">Propietarios con más de 10 (incluye sector público)</option>
+        <option value="pct_mes_15">Propietarios con más de 15 (incluye sector público)</option>
+        <option value="pct_empreses">Empresas</option>
+        <option value="pct_admin_publica">Administración pública</option>
+        <option value="pct_persones_fisiques">Personas físicas</option>
+      </optgroup>
+      <optgroup label="Propiedad por sección censal (Catastro, 2025)">
+        <option value="sec:pct_empreses">Empresas, por sección censal</option>
+        <option value="sec:pct_admin_publica">Sector público, por sección censal</option>
+        <option value="sec:pct_persones_fisiques">Personas físicas, por sección censal</option>
+        <option value="sec:pct_edificis_sencers">Viviendas en edificios enteros de un solo titular</option>
+      </optgroup>
+      <optgroup label="Cotas del HHI por sección censal (Catastro, 2026)">
+        <option value="sec:hhi_min_edificis">HHI mínimo por edificios enteros, todo el parque</option>
+        <option value="sec:hhi_max_conj">HHI máximo posible por sección</option>
+        <option value="sec:hhi_min_500m">HHI mínimo en un radio de 500 m</option>
+        <option value="sec:hhi_lloguer_si_edificis_llogats">HHI del alquiler si los edificios enteros están alquilados (escenario)</option>
+      </optgroup>
+      <optgroup label="Cotas del HHI por barrio (escala 0–10.000)">
+        <option value="hhi_max_conj">HHI máximo posible, todo el parque</option>
+        <option value="hhi_max_lloguer_conj">HHI máximo posible, mercado de alquiler</option>
+        <option value="hhi_aleatori">HHI si cada propietario repartiera sus pisos al azar</option>
+        <option value="hhi_min">HHI mínimo posible, todo el parque (O-HB y Catastro)</option>
+      </optgroup>
+      <optgroup label="Alquiler (Censo 2021)">
+        <option value="pct_lloguer">Hogares de alquiler, por barrio</option>
+        <option value="sec:pct_lloguer">Hogares de alquiler, por sección censal</option>
+      </optgroup>
+      <optgroup label="Precio del alquiler de particulares (SERPAVI)">
+        <option value="sec:renda_m2_mediana_2024">Alquiler mediano por m², 2024</option>
+        <option value="sec:renda_m2_creixement_2015_2024">Subida del alquiler por m², 2015–2024</option>
+        <option value="sec:serpavi_cobertura_2021">Cobertura del SERPAVI frente al Censo 2021</option>
+      </optgroup>
+      <optgroup label="Cambios 2018–2026 (Catastro)">
+        <option value="sec:panel_canvi_pct_empreses_2018_2026">Cambio del % de viviendas de empresas</option>
+      </optgroup>
+      <optgroup label="Pisos turísticos (registro HUT)">
+        <option value="sec:hut_per_100_hab">Pisos turísticos por cada 100 viviendas</option>
+        <option value="sec:hut_pct_hab_edificis_sencers_turistics">Edificios enteros con pisos turísticos</option>
+      </optgroup>
+    </select>
+    <p class="bc-desc" data-ind="pct_mes_10_privats">Porcentaje de las viviendas del barrio cuyo titular tiene más de 10 viviendas en toda la ciudad, restando la vivienda pública. Mide presencia de grandes tenedores, no su cuota dentro del barrio.</p>
+    <p class="bc-desc" data-ind="pct_5_o_mes" hidden>Porcentaje de viviendas del barrio cuyo titular tiene 5 o más en toda la ciudad. Incluye la administración pública.</p>
+    <p class="bc-desc" data-ind="pct_mes_10" hidden>Porcentaje de viviendas del barrio cuyo titular tiene más de 10 en toda la ciudad. Incluye la administración pública, que explica los valores altos de Can Peguera o Torre Baró.</p>
+    <p class="bc-desc" data-ind="pct_mes_15" hidden>Porcentaje de viviendas del barrio cuyo titular tiene más de 15 en toda la ciudad. Incluye la administración pública.</p>
+    <p class="bc-desc" data-ind="pct_empreses" hidden>Porcentaje de viviendas del barrio cuyo titular es una empresa, según la letra del NIF. No consolida grupos: varias sociedades de un mismo grupo cuentan como titulares distintos.</p>
+    <p class="bc-desc" data-ind="pct_admin_publica" hidden>Porcentaje de viviendas del barrio de titularidad pública.</p>
+    <p class="bc-desc" data-ind="pct_persones_fisiques" hidden>Porcentaje de viviendas del barrio cuyo titular es una persona física.</p>
+    <p class="bc-desc" data-ind="sec:pct_empreses" hidden>Viviendas cuyo titular es una sociedad (SL, SA, cooperativa, entidad extranjera…) en cada una de las 1.068 secciones censales. Fuente: estadística catastral del Ayuntamiento, 1 de enero de 2025. Cuenta algo más de viviendas que el O-HB porque usa locales catastrales de uso vivienda.</p>
+    <p class="bc-desc" data-ind="sec:pct_admin_publica" hidden>Viviendas de corporaciones locales, organismos públicos, Estado o Generalitat, por sección censal (Catastro, 2025).</p>
+    <p class="bc-desc" data-ind="sec:pct_persones_fisiques" hidden>Viviendas de personas físicas, españolas o extranjeras, por sección censal (Catastro, 2025).</p>
+    <p class="bc-desc" data-ind="sec:pct_edificis_sencers" hidden>Viviendas que están en un edificio sin división horizontal: un único inmueble catastral con 3 o más viviendas dentro, que solo puede tener un titular del IBI. Fuente: fichero CAT del Catastro, agosto de 2026.</p>
+    <p class="bc-desc" data-ind="sec:hhi_min_edificis" hidden>Cota inferior del HHI: cada edificio entero cuenta como un titular y el resto de viviendas como titulares distintos. Si dos edificios fueran del mismo dueño el HHI sería mayor, así que el real no puede estar por debajo. Falla si un edificio está en proindiviso entre varios titulares.</p>
+    <p class="bc-desc" data-ind="sec:hhi_max_conj" hidden>Cota superior por sección: tipos de titular de la sección y viviendas de multipropietarios del barrio, con los mayores titulares posibles de cada tipo. Sin tamaños de cartera por sección queda alta casi siempre; solo informa donde es baja.</p>
+    <p class="bc-desc" data-ind="sec:hhi_min_500m" hidden>Cota inferior por edificios enteros contando todas las viviendas a menos de 500 m del centro de la sección, que se parece más al mercado donde busca un inquilino.</p>
+    <p class="bc-desc" data-ind="sec:hhi_lloguer_si_edificis_llogats" hidden>No es una cota: es el HHI del parque de alquiler de la sección (Censo 2021) suponiendo que todas las viviendas de edificios enteros están alquiladas. Es un supuesto razonable para edificios de un solo dueño, pero no está comprobado.</p>
+    <p class="bc-desc" data-ind="hhi_max_conj" hidden>El HHI más alto compatible con los datos: cada tramo de propietarios del barrio se llena con los mayores titulares que existen en la ciudad, sin superar las viviendas de empresas, personas físicas o sector público que tiene el barrio. Si incluso este peor caso sale bajo, el barrio no puede estar concentrado. Por encima de 1.800 se considera mercado muy concentrado.</p>
+    <p class="bc-desc" data-ind="hhi_max_lloguer_conj" hidden>Igual que el anterior, pero suponiendo además que las viviendas alquiladas (Censo 2021) son justo las de los mayores titulares. Con un denominador más pequeño la cota sube mucho: un valor alto significa que no se puede descartar concentración, no que la haya.</p>
+    <p class="bc-desc" data-ind="hhi_aleatori" hidden>Valor esperado si cada propietario tuviera sus viviendas repartidas al azar por la ciudad: 1/N + Σ s²·H, con s la cuota local de cada tipo de titular y H la concentración de ese tipo en toda la ciudad. Ignora que los pisos se agrupan en edificios enteros, así que la realidad estará por encima.</p>
+    <p class="bc-desc" data-ind="hhi_min" hidden>El HHI más bajo compatible con los datos: el mayor entre dos cotas, repartir cada tramo del O-HB entre todos sus titulares y contar cada edificio entero del Catastro como un único titular. En Baró de Viver la cota del Catastro supera la cota máxima del O-HB: las dos fuentes no cuadran allí.</p>
+    <p class="bc-desc" data-ind="pct_lloguer" hidden>Hogares en alquiler sobre viviendas principales, sumando las secciones censales del barrio. Censo 2021, cuatro años antes que los datos de propiedad.</p>
+    <p class="bc-desc" data-ind="sec:pct_lloguer" hidden>Hogares en alquiler sobre viviendas principales en cada una de las 1.068 secciones censales. Es la única capa disponible en abierto por debajo del barrio; los datos de propiedad solo se publican por barrio.</p>
+    <p class="bc-desc" data-ind="sec:renda_m2_mediana_2024" hidden>Renta mensual mediana por m² de los pisos alquilados como vivienda habitual, según el IRPF (SERPAVI, Ministerio de Vivienda). Solo incluye arrendadores personas físicas: no recoge lo que cobran las empresas. Siete secciones sin dato.</p>
+    <p class="bc-desc" data-ind="sec:renda_m2_creixement_2015_2024" hidden>Cuánto ha subido la renta mediana por m² de los particulares entre 2015 y 2024 (SERPAVI). La mediana de las secciones es un 45 %.</p>
+    <p class="bc-desc" data-ind="sec:serpavi_cobertura_2021" hidden>Pisos alquilados que ve el SERPAVI en 2021 por cada hogar de alquiler del Censo 2021 (1 = todos). Baja donde hay más empresas y sector público, porque el SERPAVI solo ve a particulares; por eso el Censo sigue siendo el denominador del alquiler en las cotas del HHI.</p>
+    <p class="bc-desc" data-ind="sec:panel_canvi_pct_empreses_2018_2026" hidden>Puntos porcentuales que ha ganado o perdido el peso de las viviendas de empresas (SA, SL, civiles y entidades extranjeras) entre 2018 y 2026, con categorías homogéneas entre años. Sin dato en 16 secciones con saltos bruscos en el número de viviendas (obra nueva o cambio de límites).</p>
+    <p class="bc-desc" data-ind="sec:hut_per_100_hab" hidden>Pisos con licencia de uso turístico (registro del Ayuntamiento) por cada 100 viviendas del Catastro. Es un registro de licencias: no dice si están activas.</p>
+    <p class="bc-desc" data-ind="sec:hut_pct_hab_edificis_sencers_turistics" hidden>De las viviendas en edificios enteros de un solo titular, qué parte está en edificios con al menos un piso turístico. Cada licencia se ha casado con su parcela del Catastro por dirección o por proximidad. Sin dato donde no hay edificios enteros.</p>
+  </div>
+
+  <section id="mapa" class="bc-card">
+    <div class="bc-map" data-draw="map" data-source="barris seccions geo_barris geo_seccions"></div>
+  </section>
+
+  <section id="dispersion" class="bc-card">
+    <h2 class="bc-h2">Alquiler frente a grandes propietarios privados</h2>
+    <p class="bc-note">Cada punto es un barrio; su tamaño, el número de viviendas. Eje horizontal: hogares de alquiler (Censo 2021). Eje vertical: viviendas de titulares privados con más de 10 (O-HB 2025).</p>
+    <div class="bc-scatter" data-draw="scatter" data-source="barris"></div>
+  </section>
+
+  <section id="alquileres" class="bc-card">
+    <h2 class="bc-h2">¿Son más caros los alquileres donde la propiedad está más concentrada?</h2>
+    <p class="bc-note">No se ve. Comparando secciones del mismo distrito con renta de los hogares, peso del alquiler y pisos turísticos parecidos, más concentración no va con alquileres más altos ni con subidas mayores desde 2015. Los edificios enteros van con alquileres algo más bajos, probablemente porque son edificios viejos y sin rehabilitar. Es una asociación, no un efecto causal.</p>
+    <p class="bc-note">Ojo: el precio viene del SERPAVI, que solo ve a arrendadores particulares. El gráfico dice si los particulares cobran más donde hay más concentración, no lo que cobran las empresas.</p>
+    <h3 class="bc-h3">Nivel del alquiler por m², 2024 (%)</h3>
+    <div class="bc-effects" data-draw="efectos" data-model="nivell" data-source="associacions"></div>
+    <h3 class="bc-h3">Subida del alquiler por m², 2015–2024 (puntos)</h3>
+    <div class="bc-effects" data-draw="efectos" data-model="creixement" data-source="associacions"></div>
+    <p class="bc-legend bc-effects-legend"><span><i class="bc-dot-fill"></i>dentro del mismo distrito</span><span><i class="bc-dot-hollow"></i>dentro del mismo barrio</span><span>línea: intervalo de confianza del 95 %</span></p>
+    <p class="bc-note bc-note-foot">Cada punto es el cambio en el alquiler asociado a una desviación típica más de la medida de concentración. Si la línea cruza el cero, no se distingue de no tener relación. 1.055 secciones; errores agrupados por barrio.</p>
+    <details id="tabla-alquileres" class="bc-details">
+      <summary>Tabla de coeficientes</summary>
+      <div class="bc-tablewrap">
+        <table class="bc-table" data-source="associacions" data-row-key="model,mesura,efectes_fixos">
+          <thead><tr>
+            <th data-field="mesura">Medida</th>
+            <th data-field="model">Alquiler</th>
+            <th data-field="efectes_fixos">Comparación</th>
+            <th data-field="efecte">Efecto</th>
+            <th data-field="ic95_inf">IC 95 % inf.</th>
+            <th data-field="ic95_sup">IC 95 % sup.</th>
+            <th data-field="p">p</th>
+            <th data-field="n">Secciones</th>
+          </tr></thead>
+          <tbody data-draw="efectos-rows"></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <details id="tabla" class="bc-details">
+    <summary>Tabla de los 73 barrios</summary>
+    <div class="bc-tablewrap">
+      <table class="bc-table" data-source="barris" data-row-key="barri">
+        <thead><tr>
+          <th data-field="nom">Barrio</th>
+          <th data-field="habitatges">Viviendas</th>
+          <th data-field="pct_mes_10_privats">Privados &gt;10 (%)</th>
+          <th data-field="pct_5_o_mes">Titulares ≥5 (%)</th>
+          <th data-field="pct_empreses">Empresas (%)</th>
+          <th data-field="pct_admin_publica">Público (%)</th>
+          <th data-field="pct_lloguer">Alquiler (%)</th>
+          <th data-field="hhi_min">HHI mín. parque</th>
+          <th data-field="hhi_max_conj">HHI máx. parque</th>
+          <th data-field="hhi_max_lloguer_conj">HHI máx. alquiler</th>
+        </tr></thead>
+        <tbody data-draw="rows"></tbody>
+      </table>
+    </div>
+  </details>
+
+  <details id="notas" class="bc-details">
+    <summary>Cómo se calculan las cotas del HHI y por qué no hay HHI por sección</summary>
+    <div class="bc-prose">
+      <p>Por barrio sabemos qué parte del parque es de titulares de cada tamaño (1–4, 5–10, 11–15, más de 15 viviendas en toda la ciudad) y del sector público, y de la ciudad sabemos cuántos titulares hay en cada tamaño y el tamaño de los diez mayores. La cota máxima llena cada tramo del barrio con los titulares más grandes posibles; la mínima lo reparte entre todos. Como el HHI es convexo, ambas son exactas dadas esas restricciones.</p>
+      <p>Por sección censal solo se publica el tipo de titular, no el tamaño de su cartera. Sin tamaños, en cualquier sección de 700 viviendas cabe que un solo propietario tenga cientos, así que la cota máxima sale por encima de 1.800 en la mayoría de secciones y no informa. Por eso las secciones solo tienen cota mínima.</p>
+      <p>La cota mínima por sección sale del fichero CAT del Catastro: un inmueble residencial con 3 o más viviendas que es el único de su parcela, o tiene el 100% del coeficiente de propiedad, es un edificio sin división horizontal y tiene un único contribuyente del IBI. Cada uno aporta n² a la suma de cuadrados. Para el HHI real hace falta el identificador seudonimizado del contribuyente por referencia catastral.</p>
+      <p>Supuestos: toda la vivienda pública cae en el tramo de más de 15; los barrios sin dato publicado cuentan como cero en ese tramo; el alquiler es de 2021 y la propiedad de 2025.</p>
+    </div>
+  </details>
+</div>
+
+<script>
+window.bcState = window.bcState || { ind: 'pct_mes_10_privats' };
+window.bcFmt = function (v, d) {
+  if (v == null || v === '' || isNaN(+v)) return 's.d.';
+  return d3.format(',.' + (d == null ? 1 : d) + 'f')(+v).replace(/,/g, '\u202F').replace('.', ',');
+};
+window.bcLabels = {
+  pct_mes_10_privats: 'Privados con más de 10',
+  pct_5_o_mes: 'Titulares con 5 o más',
+  pct_mes_10: 'Titulares con más de 10',
+  pct_mes_15: 'Titulares con más de 15',
+  pct_empreses: 'Empresas',
+  pct_admin_publica: 'Administración pública',
+  pct_persones_fisiques: 'Personas físicas',
+  pct_lloguer: 'Hogares de alquiler',
+  hhi_max: 'HHI máximo (parque)',
+  hhi_max_lloguer: 'HHI máximo (alquiler)',
+  hhi_max_conj: 'HHI máximo (parque)',
+  hhi_max_lloguer_conj: 'HHI máximo (alquiler)',
+  hhi_min_500m: 'HHI mínimo a 500 m',
+  hhi_aleatori: 'HHI al azar',
+  hhi_min: 'HHI mínimo',
+  pct_edificis_sencers: 'En edificios enteros',
+  hhi_min_edificis: 'HHI mínimo (edificios enteros)',
+  hhi_lloguer_si_edificis_llogats: 'HHI alquiler, escenario',
+  renda_m2_mediana_2024: 'Alquiler mediano 2024',
+  renda_m2_creixement_2015_2024: 'Subida del alquiler 2015–2024',
+  serpavi_cobertura_2021: 'Cobertura del SERPAVI',
+  panel_canvi_pct_empreses_2018_2026: 'Cambio de empresas 2018–2026',
+  hut_per_100_hab: 'Pisos turísticos por 100 viviendas',
+  hut_pct_hab_edificis_sencers_turistics: 'Edificios enteros con pisos turísticos'
+};
+window.bcIsHHI = function (f) { return f.indexOf('hhi') === 0; };
+// Unidad y decimales de cada indicador; por defecto, porcentaje con un decimal.
+window.bcUnits = {
+  renda_m2_mediana_2024: [' €/m²', 2],
+  serpavi_cobertura_2021: ['', 2],
+  panel_canvi_pct_empreses_2018_2026: [' pp', 1, true],
+  hut_per_100_hab: ['', 2]
+};
+window.bcNum = function (f, v) {
+  if (window.bcIsHHI(f)) return window.bcFmt(v, 0);
+  const u = window.bcUnits[f] || [' %', 1];
+  const s = window.bcFmt(v, u[1]);
+  return (u[2] && +v > 0) ? '+' + s : s;
+};
+window.bcSuffix = function (f) { return window.bcIsHHI(f) ? '' : (window.bcUnits[f] || [' %'])[0]; };
+window.bcVal = function (f, v) {
+  const n = window.bcNum(f, v);
+  return n === 's.d.' ? n : n + window.bcSuffix(f);
+};
+document.querySelectorAll('.bc-dot-fill').forEach(function (i) { i.style.background = dash.colors[0]; i.style.borderColor = dash.colors[0]; });
+document.querySelectorAll('.bc-dot-hollow').forEach(function (i) { i.style.borderColor = dash.colors[0]; });
+document.querySelectorAll('#bc-ind').forEach(function (sel) {
+  sel.value = window.bcState.ind;
+  sel.addEventListener('change', function () {
+    window.bcState.ind = sel.value;
+    document.querySelectorAll('[data-ind]').forEach(function (p) { p.hidden = p.getAttribute('data-ind') !== sel.value; });
+    dash.draw('map');
+  });
+});
+
+dash.calc('relacion', {
+  inputs: ['barris'],
+  title: 'Correlación alquiler y grandes propietarios',
+  description: 'Correlación de Pearson entre barrios: % de hogares de alquiler (Censo 2021) y % de viviendas de titulares privados con más de 10 (O-HB 2025).',
+  fn: (barris) => {
+    const pts = barris.map(r => [+r.pct_lloguer, +r.pct_mes_10_privats]).filter(p => isFinite(p[0]) && isFinite(p[1]));
+    if (pts.length < 3) return null;
+    const mx = d3.mean(pts, p => p[0]), my = d3.mean(pts, p => p[1]);
+    let sxy = 0, sxx = 0, syy = 0;
+    pts.forEach(([x, y]) => { sxy += (x - mx) * (y - my); sxx += (x - mx) ** 2; syy += (y - my) ** 2; });
+    return Math.round(sxy / Math.sqrt(sxx * syy) * 100) / 100;
+  }
+});
+</script>
+
+<script>
+function bcTop() {
+  const B = dash.data('barris');
+  if (B.status !== 'ok' || !B.data.length) return { status: B.status, row: null };
+  return { status: 'ok', row: B.data.slice().sort((a, b) => (+b.pct_mes_10_privats) - (+a.pct_mes_10_privats))[0] };
+}
+dash.draw('top-nom', (el) => {
+  const t = bcTop();
+  el.replaceChildren();
+  if (!t.row) { el.textContent = '—'; return; }
+  const s = document.createElement('span');
+  s.setAttribute('data-source', 'barris'); s.setAttribute('data-field', 'nom'); s.setAttribute('data-where', 'barri=' + encodeURIComponent(t.row.barri));
+  s.textContent = t.row.nom; el.append(s);
+});
+dash.draw('top-val', (el) => {
+  const t = bcTop();
+  el.replaceChildren();
+  if (!t.row) { el.textContent = '—'; return; }
+  const s = document.createElement('span');
+  s.setAttribute('data-source', 'barris'); s.setAttribute('data-field', 'pct_mes_10_privats'); s.setAttribute('data-where', 'barri=' + encodeURIComponent(t.row.barri));
+  s.textContent = window.bcFmt(t.row.pct_mes_10_privats) + ' %'; el.append(s);
+});
+dash.draw('corr', (el) => {
+  const c = dash.data('relacion');
+  el.textContent = (c.status === 'ok' && c.data != null) ? window.bcFmt(c.data, 2) : '—';
+});
+</script>
+
+<script>
+dash.draw('map', (el) => {
+  const ind = window.bcState.ind;
+  const isSec = ind.indexOf('sec:') === 0;
+  const field = isSec ? ind.slice(4) : ind;
+  const srcs = ['barris', 'geo_barris'].concat(isSec ? ['seccions', 'geo_seccions'] : []).map(id => dash.data(id));
+  el.replaceChildren();
+  if (srcs.some(s => s.status === 'loading')) { el.classList.add('dash-skeleton'); return; }
+  el.classList.remove('dash-skeleton');
+  if (srcs.some(s => s.status !== 'ok')) {
+    const p = document.createElement('p'); p.className = 'bc-fail'; p.textContent = 'Failed to load'; el.append(p); return;
+  }
+  const B = srcs[0].data, GB = srcs[1].data;
+  const byBarri = new Map(B.map(r => [r.barri, r]));
+  const rows = isSec ? srcs[2].data : B;
+  const geo = isSec ? srcs[3].data : GB;
+  const keyOf = isSec ? (r => r.tract_code) : (r => r.barri);
+  const byId = new Map(rows.map(r => [keyOf(r), r]));
+  const val = id => { const r = byId.get(id); const v = r ? r[field] : null; return (v == null || v === '' || isNaN(+v)) ? null : +v; };
+
+  const w = Math.max(280, el.clientWidth || 600);
+  const h = Math.round(w * (w < 560 ? 0.95 : 0.72));
+  const proj = d3.geoMercator().fitExtent([[6, 6], [w - 6, h - 6]], geo);
+  const path = d3.geoPath(proj);
+  const vals = geo.features.map(f => val(f.properties.id)).filter(v => v != null);
+  const q = d3.scaleQuantile().domain(vals).range([0, 1, 2, 3, 4]);
+  const ops = [0.12, 0.3, 0.5, 0.7, 0.93];
+  const base = dash.colors[0];
+
+  const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('width', '100%')
+    .attr('role', 'img').attr('aria-label', 'Mapa de Barcelona por ' + (isSec ? 'sección censal' : 'barrio') + ': ' + window.bcLabels[field]);
+  const tip = d3.select(el).append('div').attr('class', 'bc-tip').style('display', 'none');
+
+  const g = svg.append('g');
+  g.selectAll('path.bc-area').data(geo.features).join('path').attr('class', 'bc-area').attr('d', path)
+    .style('fill', d => val(d.properties.id) == null ? 'var(--color-border-line)' : base)
+    .style('fill-opacity', d => { const v = val(d.properties.id); return v == null ? 0.5 : ops[q(v)]; })
+    .style('stroke', 'var(--color-bg)').style('stroke-width', isSec ? 0.35 : 0.8)
+    .on('pointerenter pointermove pointerdown', function (ev, d) {
+      d3.select(this).style('stroke', 'var(--color-fg)').style('stroke-width', 1.4).raise();
+      const r = byId.get(d.properties.id) || {};
+      const b = byBarri.get(isSec ? r.barri : d.properties.id) || {};
+      const lines = [];
+      if (isSec) {
+        lines.push(['Sección ' + (r.districte || '') + '-' + (r.seccio || '') + ', ' + (b.nom || ''), 'strong']);
+        lines.push([window.bcLabels[field] + ': ' + window.bcVal(field, r[field]), 'main']);
+        lines.push(['Viviendas (Catastro): ' + window.bcFmt(r.habitatges, 0), '']);
+        if (field !== 'pct_empreses') lines.push(['Empresas: ' + window.bcFmt(r.pct_empreses) + ' %', '']);
+        if (field !== 'pct_admin_publica') lines.push(['Sector público: ' + window.bcFmt(r.pct_admin_publica) + ' %', '']);
+        if (field !== 'pct_lloguer') lines.push(['Hogares de alquiler: ' + window.bcFmt(r.pct_lloguer) + ' %', '']);
+        if (+r.edificis_sencers > 0) lines.push(['Edificios enteros: ' + window.bcFmt(r.edificis_sencers, 0) + ' (el mayor, ' + window.bcFmt(r.edifici_mes_gran, 0) + ' viviendas)', '']);
+        if (field !== 'hhi_min_edificis') lines.push(['HHI mínimo por edificios: ' + window.bcFmt(r.hhi_min_edificis, 0), '']);
+        if (field !== 'hhi_max_conj') lines.push(['HHI máximo: ' + window.bcFmt(r.hhi_max_conj, 0), '']);
+        if (field !== 'renda_m2_mediana_2024') lines.push(['Alquiler de particulares 2024: ' + window.bcVal('renda_m2_mediana_2024', r.renda_m2_mediana_2024) + ' (' + window.bcFmt(r.renda_mediana_2024, 0) + ' €/mes)', '']);
+        if (field !== 'renda_m2_creixement_2015_2024') lines.push(['Subida 2015–2024: ' + window.bcVal('renda_m2_creixement_2015_2024', r.renda_m2_creixement_2015_2024), '']);
+        if (field !== 'hut_per_100_hab' && +r.hut > 0) lines.push(['Pisos turísticos: ' + window.bcFmt(r.hut, 0) + (+r.hut_edificis_sencers_turistics > 0 ? ' (' + window.bcFmt(r.hut_edificis_sencers_turistics, 0) + ' edificios enteros con alguno)' : ''), '']);
+      } else {
+        lines.push([b.nom || '', 'strong']);
+        lines.push([window.bcLabels[field] + ': ' + window.bcVal(field, b[field]), 'main']);
+        lines.push(['Viviendas: ' + window.bcFmt(b.habitatges, 0), '']);
+        if (window.bcIsHHI(field)) {
+          lines.push(['HHI entre ' + window.bcFmt(b.hhi_min, 0) + ' y ' + window.bcFmt(b.hhi_max_conj, 0) + ' (al azar: ' + window.bcFmt(b.hhi_aleatori, 0) + ')', '']);
+          lines.push(['Máximo en el alquiler: ' + window.bcFmt(b.hhi_max_lloguer_conj, 0), '']);
+        }
+        if (field !== 'pct_mes_10_privats') lines.push(['Privados con más de 10: ' + window.bcFmt(b.pct_mes_10_privats) + ' %', '']);
+        if (field !== 'pct_empreses') lines.push(['Empresas: ' + window.bcFmt(b.pct_empreses) + ' %', '']);
+        if (field !== 'pct_lloguer') lines.push(['Hogares de alquiler: ' + window.bcFmt(b.pct_lloguer) + ' %', '']);
+      }
+      tip.selectAll('*').remove();
+      lines.forEach(([t, k]) => tip.append(k === 'strong' ? 'strong' : 'span').attr('class', k === 'main' ? 'bc-tip-main' : null).text(t));
+      const [px, py] = d3.pointer(ev, el);
+      tip.style('display', 'block');
+      const tw = tip.node().offsetWidth, th = tip.node().offsetHeight;
+      tip.style('left', Math.max(0, Math.min(px + 14, el.clientWidth - tw)) + 'px')
+         .style('top', Math.max(0, (py + 14 + th > el.clientHeight ? py - th - 10 : py + 14)) + 'px');
+    })
+    .on('pointerleave', function () {
+      d3.select(this).style('stroke', 'var(--color-bg)').style('stroke-width', isSec ? 0.35 : 0.8);
+      tip.style('display', 'none');
+    });
+  if (isSec) {
+    g.append('g').attr('pointer-events', 'none').selectAll('path').data(GB.features).join('path').attr('d', path)
+      .style('fill', 'none').style('stroke', 'var(--color-fg)').style('stroke-opacity', 0.45).style('stroke-width', 0.7);
+  }
+
+  const leg = d3.select(el).append('div').attr('class', 'bc-legend');
+  const qs = q.quantiles(), mn = d3.min(vals), mx = d3.max(vals);
+  const edges = [mn].concat(qs).concat([mx]);
+  for (let i = 0; i < 5; i++) {
+    const item = leg.append('span');
+    item.append('i').style('background', base).style('opacity', ops[i]);
+    item.append('span').text(window.bcNum(field, edges[i]) + ' a ' + window.bcNum(field, edges[i + 1]) + window.bcSuffix(field));
+  }
+  if (geo.features.some(f => val(f.properties.id) == null)) {
+    const item = leg.append('span');
+    item.append('i').style('background', 'var(--color-border-line)');
+    item.append('span').text('sin dato');
+  }
+});
+</script>
+
+<script>
+dash.draw('scatter', (el) => {
+  const B = dash.data('barris');
+  el.replaceChildren();
+  if (B.status === 'loading') { el.classList.add('dash-skeleton'); return; }
+  el.classList.remove('dash-skeleton');
+  if (B.status !== 'ok') { const p = document.createElement('p'); p.className = 'bc-fail'; p.textContent = 'Failed to load'; el.append(p); return; }
+  const pts = B.data.map(r => ({ r, x: +r.pct_lloguer, y: +r.pct_mes_10_privats, n: +r.habitatges })).filter(p => isFinite(p.x) && isFinite(p.y));
+  const w = Math.max(280, el.clientWidth || 600), h = w < 560 ? 300 : 340;
+  const m = { t: 12, r: 14, b: 40, l: 44 };
+  const x = d3.scaleLinear().domain([0, Math.ceil(d3.max(pts, p => p.x) / 10) * 10]).range([m.l, w - m.r]);
+  const y = d3.scaleLinear().domain([0, Math.ceil(d3.max(pts, p => p.y) / 10) * 10]).range([h - m.b, m.t]);
+  const rr = d3.scaleSqrt().domain([0, d3.max(pts, p => p.n)]).range([2, w < 560 ? 8 : 11]);
+  const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('width', '100%').attr('role', 'img')
+    .attr('aria-label', 'Dispersión por barrio: porcentaje de hogares de alquiler frente a porcentaje de viviendas de grandes propietarios privados');
+  const nx = w < 560 ? 4 : 6;
+  svg.append('g').attr('class', 'bc-grid').selectAll('line').data(y.ticks(5)).join('line')
+    .attr('x1', m.l).attr('x2', w - m.r).attr('y1', d => y(d)).attr('y2', d => y(d));
+  svg.append('g').attr('class', 'bc-axis').attr('transform', `translate(0,${h - m.b})`).call(d3.axisBottom(x).ticks(nx).tickFormat(d => d + ' %'));
+  svg.append('g').attr('class', 'bc-axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat(d => d + ' %')).call(g => g.select('.domain').remove());
+  svg.append('text').attr('class', 'bc-axis').attr('x', w - m.r).attr('y', h - 6).attr('text-anchor', 'end')
+    .style('fill', 'var(--cds-text-secondary)').style('font-size', 'var(--cds-font-size-caption)').text('hogares de alquiler');
+  const tip = d3.select(el).append('div').attr('class', 'bc-tip').style('display', 'none');
+  svg.append('g').selectAll('circle').data(pts.sort((a, b) => b.n - a.n)).join('circle')
+    .attr('cx', p => x(p.x)).attr('cy', p => y(p.y)).attr('r', p => rr(p.n))
+    .style('fill', dash.colors[0]).style('fill-opacity', 0.5).style('stroke', dash.colors[0]).style('stroke-width', 1)
+    .on('pointerenter pointermove pointerdown', function (ev, p) {
+      d3.select(this).style('fill-opacity', 0.9);
+      tip.selectAll('*').remove();
+      tip.append('strong').text(p.r.nom);
+      tip.append('span').attr('class', 'bc-tip-main').text('Privados con más de 10: ' + window.bcFmt(p.y) + ' %');
+      tip.append('span').text('Hogares de alquiler: ' + window.bcFmt(p.x) + ' %');
+      tip.append('span').text('Viviendas: ' + window.bcFmt(p.n, 0));
+      const [px, py] = d3.pointer(ev, el);
+      tip.style('display', 'block');
+      const tw = tip.node().offsetWidth;
+      tip.style('left', Math.max(0, Math.min(px + 12, el.clientWidth - tw)) + 'px').style('top', Math.max(0, py - 70) + 'px');
+    })
+    .on('pointerleave', function () { d3.select(this).style('fill-opacity', 0.5); tip.style('display', 'none'); });
+  const top = pts.slice().sort((a, b) => b.y - a.y).slice(0, 3);
+  svg.append('g').selectAll('text').data(top).join('text').attr('class', 'bc-dotlabel')
+    .attr('x', p => x(p.x) - rr(p.n) - 4).attr('y', p => y(p.y) + 4).attr('text-anchor', 'end').text(p => p.r.nom);
+});
+</script>
+
+<script>
+dash.draw('rows', (tb) => {
+  const B = dash.data('barris');
+  tb.replaceChildren();
+  if (B.status !== 'ok') return;
+  const cols = ['nom', 'habitatges', 'pct_mes_10_privats', 'pct_5_o_mes', 'pct_empreses', 'pct_admin_publica', 'pct_lloguer', 'hhi_min', 'hhi_max_conj', 'hhi_max_lloguer_conj'];
+  B.data.slice().sort((a, b) => (+b.pct_mes_10_privats) - (+a.pct_mes_10_privats)).forEach(r => {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', encodeURIComponent(r.barri));
+    cols.forEach(c => {
+      const td = document.createElement('td');
+      td.textContent = c === 'nom' ? r.nom : ((c === 'habitatges' || window.bcIsHHI(c)) ? window.bcFmt(r[c], 0) : window.bcFmt(r[c]));
+      tr.append(td);
+    });
+    tb.append(tr);
+  });
+});
+</script>
+
+<script>
+window.bcMesures = [
+  ['pct_empreses', '% de empresas (2025)'],
+  ['pct_edificis_sencers', '% en edificios enteros'],
+  ['log_hhi_min', 'HHI mínimo (edificios)'],
+  ['grans_tenidors', 'Grandes tenedores (barrio)'],
+  ['canvi_empreses', 'Cambio de empresas 2018–26']
+];
+window.bcFE = { districte: 'mismo distrito', barri: 'mismo barrio' };
+window.bcModel = { nivell: 'nivel 2024', creixement: 'subida 2015–2024' };
+
+dash.draw('efectos', (el) => {
+  const model = el.getAttribute('data-model');
+  const A = dash.data('associacions');
+  el.replaceChildren();
+  if (A.status === 'loading') { el.classList.add('dash-skeleton'); return; }
+  el.classList.remove('dash-skeleton');
+  if (A.status !== 'ok') { const p = document.createElement('p'); p.className = 'bc-fail'; p.textContent = 'Failed to load'; el.append(p); return; }
+  const rows = A.data.filter(r => r.model === model).map(r => ({ r, e: +r.efecte, lo: +r.ic95_inf, hi: +r.ic95_sup }));
+  const mes = window.bcMesures.filter(m => rows.some(x => x.r.mesura === m[0]));
+  if (!rows.length) { el.textContent = '—'; return; }
+  const unit = model === 'nivell' ? ' %' : ' puntos';
+  const w = Math.max(280, el.clientWidth || 600);
+  const band = 34, top = 6, bottom = 30;
+  const h = top + bottom + band * mes.length;
+  const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('width', '100%').attr('role', 'img')
+    .attr('aria-label', 'Efecto de cada medida de concentración sobre el alquiler (' + window.bcModel[model] + '), con intervalos de confianza del 95 %');
+  // Margen izquierdo medido sobre las etiquetas dibujadas
+  const lab = svg.append('g').attr('class', 'bc-axis');
+  const texts = lab.selectAll('text').data(mes).join('text').attr('x', 0).attr('y', (d, i) => top + band * i + band / 2 + 4).text(d => d[1]);
+  const lw = d3.max(texts.nodes(), n => n.getComputedTextLength()) || 140;
+  const ml = Math.min(lw + 12, w * 0.5), mr = 14;
+  const ext = d3.max(rows, d => Math.max(Math.abs(d.lo), Math.abs(d.hi))) || 1;
+  const x = d3.scaleLinear().domain([-ext, ext]).nice().range([ml, w - mr]);
+  svg.append('g').attr('class', 'bc-grid').selectAll('line').data(x.ticks(w < 560 ? 4 : 6)).join('line')
+    .attr('x1', d => x(d)).attr('x2', d => x(d)).attr('y1', top).attr('y2', h - bottom);
+  svg.append('line').attr('class', 'bc-zero').attr('x1', x(0)).attr('x2', x(0)).attr('y1', top).attr('y2', h - bottom);
+  svg.append('g').attr('class', 'bc-axis').attr('transform', `translate(0,${h - bottom})`)
+    .call(d3.axisBottom(x).ticks(w < 560 ? 4 : 6).tickFormat(d => window.bcFmt(d, Math.abs(ext) < 3 ? 1 : 0)));
+  const yOf = (r) => { const i = mes.findIndex(m => m[0] === r.mesura); return top + band * i + band / 2 + (r.efectes_fixos === 'barri' ? 6 : -6); };
+  const c = dash.colors[0];
+  const tip = d3.select(el).append('div').attr('class', 'bc-tip').style('display', 'none');
+  const g = svg.append('g').selectAll('g').data(rows).join('g');
+  g.append('line').attr('x1', d => x(d.lo)).attr('x2', d => x(d.hi)).attr('y1', d => yOf(d.r)).attr('y2', d => yOf(d.r))
+    .style('stroke', c).style('stroke-width', 1.6);
+  g.append('circle').attr('cx', d => x(d.e)).attr('cy', d => yOf(d.r)).attr('r', 4.5)
+    .style('fill', d => d.r.efectes_fixos === 'barri' ? 'var(--color-panel)' : c).style('stroke', c).style('stroke-width', 1.6);
+  g.append('rect').attr('x', ml).attr('width', w - ml - mr).attr('y', d => yOf(d.r) - 6).attr('height', 12).style('fill', 'transparent')
+    .on('pointerenter pointermove pointerdown', function (ev, d) {
+      tip.selectAll('*').remove();
+      const m = mes.find(k => k[0] === d.r.mesura);
+      tip.append('strong').text((m ? m[1] : d.r.mesura) + ', ' + window.bcFE[d.r.efectes_fixos]);
+      tip.append('span').attr('class', 'bc-tip-main').text('Efecto: ' + (d.e > 0 ? '+' : '') + window.bcFmt(d.e, 2) + unit);
+      tip.append('span').text('IC 95 %: ' + window.bcFmt(d.lo, 2) + ' a ' + window.bcFmt(d.hi, 2));
+      tip.append('span').text('p = ' + window.bcFmt(d.r.p, 3) + ' · ' + window.bcFmt(d.r.n, 0) + ' secciones');
+      const [px, py] = d3.pointer(ev, el);
+      tip.style('display', 'block');
+      const tw = tip.node().offsetWidth;
+      tip.style('left', Math.max(0, Math.min(px + 12, el.clientWidth - tw)) + 'px').style('top', Math.max(0, py - 80) + 'px');
+    })
+    .on('pointerleave', function () { tip.style('display', 'none'); });
+});
+
+dash.draw('efectos-rows', (tb) => {
+  const A = dash.data('associacions');
+  tb.replaceChildren();
+  if (A.status !== 'ok') return;
+  const lab = new Map(window.bcMesures);
+  A.data.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-key', [r.model, r.mesura, r.efectes_fixos].map(encodeURIComponent).join(','));
+    [lab.get(r.mesura) || r.mesura, window.bcModel[r.model] || r.model, window.bcFE[r.efectes_fixos] || r.efectes_fixos,
+     window.bcFmt(r.efecte, 2), window.bcFmt(r.ic95_inf, 2), window.bcFmt(r.ic95_sup, 2), window.bcFmt(r.p, 3), window.bcFmt(r.n, 0)]
+      .forEach(t => { const td = document.createElement('td'); td.textContent = t; tr.append(td); });
+    tb.append(tr);
+  });
+});
+</script>

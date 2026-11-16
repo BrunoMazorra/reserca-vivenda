@@ -1,0 +1,19 @@
+{
+  "description": "Por sección censal: viviendas por tipo de titular (Catastro, 2025), hogares de alquiler (Censo 2021), edificios enteros (fichero CAT, agosto de 2026), alquiler de particulares 2015–2024 (SERPAVI), cambio de empresas 2018–2026, pisos turísticos (registro HUT) y renta de los hogares (INE).",
+  "edit": {
+    "at": "2026-11-12T17:56:21Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "csv",
+    "kind": "file",
+    "name": "seccions.csv",
+    "url": "/_blob/1460c033c680e8fa062f5eba9342d9a8"
+  },
+  "title": "Propiedad, alquiler, precios y pisos turísticos por sección",
+  "updated": {
+    "at": "2026-11-12T17:56:21Z",
+    "by": "Claude"
+  }
+}

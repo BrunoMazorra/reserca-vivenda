@@ -1,0 +1,19 @@
+{
+  "description": "Préstamos hipotecarios firmados ante notario con finalidad de comprar vivienda, provincia de León, 2007–2025 (Consejo General del Notariado, CIEN).",
+  "edit": {
+    "at": "2026-11-16T16:51:14Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "prestamos.json",
+    "url": "/_blob/809cc6a2839045653f34835d10a7e857"
+  },
+  "title": "Préstamos para comprar vivienda (notarios)",
+  "updated": {
+    "at": "2026-11-16T16:51:14Z",
+    "by": "Claude"
+  }
+}

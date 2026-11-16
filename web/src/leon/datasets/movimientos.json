@@ -1,0 +1,19 @@
+{
+  "description": "Saldo natural y saldos migratorios de la provincia (2010–2024) y de la capital (2021–2024), INE.",
+  "edit": {
+    "at": "2026-11-16T16:40:20Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "movimientos.json",
+    "url": "/_blob/9c88a13f18b55a334157339cb2d7cdaa"
+  },
+  "title": "Nacimientos, defunciones y migraciones",
+  "updated": {
+    "at": "2026-11-16T16:40:20Z",
+    "by": "Claude"
+  }
+}

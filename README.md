@@ -78,6 +78,7 @@ concentracio/        tema 1: concentració del mercat
   analisi/           scripts i notebooks
   figures/           gràfics generats pels scripts
 requirements.txt     dependències de Python dels scripts d'anàlisi
+web/                 el web «Atles de l'habitatge», que reuneix les pàgines del projecte
 ```
 
 ## Fonts de dades transversals

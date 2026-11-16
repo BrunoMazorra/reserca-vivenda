@@ -1,0 +1,19 @@
+{
+  "description": "Hogares por número de personas y personas por hogar, trimestral 2021–2026 (INE, Estadística Continua de Población).",
+  "edit": {
+    "at": "2026-11-16T16:40:20Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "hogares.json",
+    "url": "/_blob/852ab9ffd71126813db674aee8049d0e"
+  },
+  "title": "Hogares de la provincia",
+  "updated": {
+    "at": "2026-11-16T16:40:20Z",
+    "by": "Claude"
+  }
+}

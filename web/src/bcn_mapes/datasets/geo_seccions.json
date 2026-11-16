@@ -1,0 +1,19 @@
+{
+  "description": "Polígonos de las 1.068 secciones censales del Ayuntamiento de Barcelona (copia en martgnz/bcn-geodata), simplificados.",
+  "edit": {
+    "at": "2026-11-12T15:22:38Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "geo_seccions.json",
+    "url": "/_blob/87ddd9018e945afeeebcb18d03da77bb"
+  },
+  "title": "Límites de las secciones censales",
+  "updated": {
+    "at": "2026-11-12T15:22:38Z",
+    "by": "Claude"
+  }
+}

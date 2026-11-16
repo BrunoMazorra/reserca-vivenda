@@ -1,0 +1,19 @@
+{
+  "description": "Último año con estimación de compras de inversión capitalista (mínimo y máximo, estricta y amplia) y de compras de administraciones públicas y entidades sin ánimo de lucro, para cada capital de provincia, Ceuta y Melilla, generado con el framework vivienda_capitales.",
+  "edit": {
+    "at": "2026-11-16T18:36:02Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "capitales_resumen.json",
+    "url": "/_blob/2e5989383be6a2c8be97e67c6cd2cb61"
+  },
+  "title": "Compras de inversión capitalista en las 52 capitales",
+  "updated": {
+    "at": "2026-11-16T18:36:02Z",
+    "by": "Claude"
+  }
+}

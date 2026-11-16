@@ -1,0 +1,19 @@
+{
+  "description": "Habitantes a 1 de enero de la provincia y la capital (Padrón), y españoles y extranjeros de la provincia (Estadística Continua de Población), 2010–2026.",
+  "edit": {
+    "at": "2026-11-16T16:40:20Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "poblacion.json",
+    "url": "/_blob/5afef57d98c5197d8e4d0a078151fa5b"
+  },
+  "title": "Población de León",
+  "updated": {
+    "at": "2026-11-16T16:40:20Z",
+    "by": "Claude"
+  }
+}

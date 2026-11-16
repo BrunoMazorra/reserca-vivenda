@@ -1,0 +1,19 @@
+{
+  "description": "Valor tasado de la vivienda libre (provincia, capital y España), IPC de León y renta media por hogar de la capital.",
+  "edit": {
+    "at": "2026-11-16T16:40:20Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "precios.json",
+    "url": "/_blob/62d7d1bb4463a291be60097840608974"
+  },
+  "title": "Valor tasado, IPC y renta",
+  "updated": {
+    "at": "2026-11-16T16:40:20Z",
+    "by": "Claude"
+  }
+}

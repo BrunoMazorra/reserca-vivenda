@@ -1,0 +1,19 @@
+{
+  "description": "Declaraciones de IRPF con ingresos por alquiler y con viviendas a disposición, provincia y León capital, 2013–2024 (AEAT).",
+  "edit": {
+    "at": "2026-11-16T16:51:14Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "irpf.json",
+    "url": "/_blob/ee37d263d79d53c227c3c0f2b57ad928"
+  },
+  "title": "IRPF: alquileres y viviendas a disposición",
+  "updated": {
+    "at": "2026-11-16T16:51:14Z",
+    "by": "Claude"
+  }
+}

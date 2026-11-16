@@ -1,0 +1,856 @@
+<meta name="dash-one-writer">
+<style>
+  .lv { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+  .lv h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .lv h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .lv h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: 0; }
+  .lv p { margin: 0; max-width: 70ch; line-height: 1.5; }
+  .lv-lead { font-size: var(--cds-font-size-body); }
+  .lv-muted { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .lv-sec { display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+  .lv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--cds-gap-lg); }
+  .lv-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+  .lv-chart { position: relative; min-height: 220px; min-width: 0; }
+  .lv-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .lv-chart .tick text, .lv-chart .lv-axis-label { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+  .lv-chart .domain { stroke: var(--cds-chart-axis); }
+  .lv-chart .tick line { stroke: var(--cds-chart-grid); }
+  .lv-chart .lv-zero { stroke: var(--cds-chart-reference); }
+  .lv-chart .lv-end { font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; font-family: var(--font-anthropic-sans); }
+  .lv-chart .lv-guide { stroke: var(--cds-chart-reference); stroke-dasharray: 3 3; }
+  .lv-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); font-size: var(--cds-font-size-caption); line-height: 1.45; white-space: nowrap; z-index: 2; font-variant-numeric: tabular-nums; }
+  .lv-tip b { font-weight: var(--cds-font-weight-medium); }
+  .lv-tip .lv-tip-k { color: var(--cds-text-secondary); }
+  .lv-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-md); list-style: none; margin: 0; padding: 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .lv-legend li { display: inline-flex; align-items: center; gap: 6px; }
+  .lv-sw { width: 12px; height: 3px; border-radius: 2px; display: inline-block; background: var(--cds-chart-muted); }
+  .lv-fail { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding-top: var(--cds-pad-lg); }
+  .lv-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--cds-gap-md); }
+  .lv-kpi { display: flex; flex-direction: column; gap: 2px; }
+  .lv-kpi .lv-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+  .lv-num { font-variant-numeric: tabular-nums; font-weight: var(--cds-font-weight-medium); }
+  .lv-tablewrap { overflow-x: auto; }
+  .lv table { border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; width: 100%; }
+  .lv th, .lv td { padding: 4px 8px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+  .lv th:first-child, .lv td:first-child { text-align: left; }
+  .lv th { font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); }
+  .lv details { border-top: 1px solid var(--color-border-line); padding-top: var(--cds-pad-md); }
+  .lv summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
+  .lv details ul { padding-left: 1.2em; margin: var(--cds-gap-sm) 0 0; display: flex; flex-direction: column; gap: var(--cds-gap-xs); max-width: 75ch; line-height: 1.5; }
+  .lv-list { padding-left: 1.2em; margin: 0; display: flex; flex-direction: column; gap: var(--cds-gap-xs); max-width: 75ch; line-height: 1.5; }
+  .lv-note { border-left: 3px solid var(--cds-chart-reference); padding-left: var(--cds-pad-md); }
+</style>
+
+<div class="lv">
+  <header class="lv-sec" id="cabecera">
+    <h1>Vivienda y población en León</h1>
+    <p class="lv-lead">Entre 2020 y 2025 las compraventas de vivienda en la provincia pasaron de
+      <span class="lv-num" data-draw="t_v20" data-source="compraventas" data-field="compraventas_notarios" data-where="anio=2020">—</span> a
+      <span class="lv-num" data-draw="t_v25" data-source="compraventas" data-field="compraventas_notarios" data-where="anio=2025">—</span>
+      al año. En ese tiempo la población apenas cambió, los hogares crecieron en
+      <span class="lv-num" data-draw="t_dh" data-source="resumen" data-field="hogares_nuevos_2021_2026" data-row="0">—</span>
+      y se terminaron
+      <span class="lv-num" data-draw="t_term" data-source="resumen" data-field="terminadas_2021_2025" data-row="0">—</span>
+      viviendas nuevas en cinco años. Entre el
+      <span class="lv-num" data-draw="t_emin" data-source="inversion_anual" data-field="pct_estricta_min" data-where="anio=2025">—</span> y el
+      <span class="lv-num" data-draw="t_emax" data-source="inversion_anual" data-field="pct_estricta_max" data-where="anio=2025">—</span>
+      de las compras de 2025 fueron de inversión: de empresas, o de particulares sin hipoteca que no viven en la vivienda.</p>
+    <p class="lv-muted">Provincia y capital de León. Datos oficiales del INE y del Ministerio de Vivienda, por año salvo que se indique. Cada cifra lleva a su fuente en «Fuentes».</p>
+  </header>
+
+  <section class="lv-sec" id="poblacion">
+    <h2>1. Población</h2>
+    <div class="lv-grid">
+      <div class="lv-card" id="pob-provincia">
+        <h3>Provincia, habitantes a 1 de enero</h3>
+        <div class="lv-chart" data-draw="c_pob_prov" data-source="poblacion"></div>
+        <p class="lv-muted">Padrón municipal. 2026 aún no publicado.</p>
+      </div>
+      <div class="lv-card" id="pob-capital">
+        <h3>León capital, habitantes a 1 de enero</h3>
+        <div class="lv-chart" data-draw="c_pob_cap" data-source="poblacion"></div>
+        <p class="lv-muted">Padrón municipal.</p>
+      </div>
+      <div class="lv-card" id="pob-nacionalidad">
+        <h3>Provincia: población extranjera a 1 de enero</h3>
+        <div class="lv-chart" data-draw="c_ext" data-source="poblacion"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Provincia</li><li><span class="lv-sw" data-i="1"></span>Capital (aprox.)</li></ul>
+        <p class="lv-muted">Provincia: Estadística Continua de Población. Capital: calculado con el porcentaje de población española del Atlas de Renta (±60 personas).</p>
+      </div>
+      <div class="lv-card" id="pob-espanoles">
+        <h3>Provincia: población de nacionalidad española a 1 de enero</h3>
+        <div class="lv-chart" data-draw="c_esp" data-source="poblacion"></div>
+        <p class="lv-muted">Estadística Continua de Población.</p>
+      </div>
+    </div>
+    <div class="lv-card" id="saldos">
+      <h3>Provincia: de dónde viene el cambio de población</h3>
+      <div class="lv-chart" data-draw="c_saldos" data-source="movimientos"></div>
+      <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Nacimientos menos defunciones</li><li><span class="lv-sw" data-i="1"></span>Saldo migratorio con el extranjero</li><li><span class="lv-sw" data-i="2"></span>Saldo migratorio con el resto de España</li></ul>
+      <p class="lv-muted">En 2021 cambia la estadística de migraciones del INE; los años anteriores y posteriores no son del todo comparables.</p>
+    </div>
+    <div class="lv-card" id="saldos-capital">
+      <h3>León capital: saldo migratorio</h3>
+      <div class="lv-chart" data-draw="c_saldos_cap" data-source="movimientos"></div>
+      <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Con el extranjero</li><li><span class="lv-sw" data-i="1"></span>Con otros municipios de España (incluye el alfoz)</li></ul>
+      <p class="lv-muted">Solo hay dato municipal desde 2021.</p>
+    </div>
+  </section>
+
+  <section class="lv-sec" id="hogares">
+    <h2>2. Hogares</h2>
+    <div class="lv-grid">
+      <div class="lv-card" id="hogares-tamano">
+        <h3>Provincia: hogares según número de personas</h3>
+        <div class="lv-chart" data-draw="c_hog_tam" data-source="hogares"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>1 persona</li><li><span class="lv-sw" data-i="1"></span>2 personas</li><li><span class="lv-sw" data-i="2"></span>3 personas</li><li><span class="lv-sw" data-i="3"></span>4 o más</li></ul>
+        <p class="lv-muted">Trimestral, 2021–2026. Estadística Continua de Población.</p>
+      </div>
+      <div class="lv-card" id="hogares-total">
+        <h3>Provincia: total de hogares y personas por hogar</h3>
+        <div class="lv-chart" data-draw="c_hog_tot" data-source="hogares"></div>
+        <div class="lv-chart" data-draw="c_hog_size" data-source="hogares" style="min-height:150px"></div>
+        <p class="lv-muted">Arriba, hogares. Abajo, personas por hogar.</p>
+      </div>
+      <div class="lv-card" id="parque">
+        <h3>Provincia: viviendas principales y no principales</h3>
+        <div class="lv-chart" data-draw="c_parque" data-source="viviendas"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Principales (residencia habitual)</li><li><span class="lv-sw" data-i="1"></span>No principales (segunda residencia o vacías)</li></ul>
+        <p class="lv-muted">Estimación del Ministerio de Vivienda, no un recuento.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="lv-sec" id="construccion">
+    <h2>3. Viviendas nuevas</h2>
+    <div class="lv-grid">
+      <div class="lv-card" id="obra">
+        <h3>Provincia: viviendas libres iniciadas y terminadas</h3>
+        <div class="lv-chart" data-draw="c_obra" data-source="viviendas"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Iniciadas</li><li><span class="lv-sw" data-i="1"></span>Terminadas</li></ul>
+        <p class="lv-muted">Visados y certificados de fin de obra. No incluye vivienda protegida, que es muy poca en León.</p>
+      </div>
+      <div class="lv-card" id="hogares-vs-obra">
+        <h3>Provincia: hogares nuevos frente a viviendas terminadas</h3>
+        <div class="lv-chart" data-draw="c_hog_obra" data-source="hogares_anual"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Hogares nuevos en el año</li><li><span class="lv-sw" data-i="1"></span>Viviendas terminadas</li></ul>
+        <p class="lv-muted">Hogares nuevos = hogares a 1 de enero del año siguiente menos los de este 1 de enero.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="lv-sec" id="compraventas">
+    <h2>4. Compraventas</h2>
+    <div class="lv-grid">
+      <div class="lv-card" id="ventas-provincia">
+        <h3>Provincia: compraventas de vivienda</h3>
+        <div class="lv-chart" data-draw="c_ventas" data-source="compraventas"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Total</li><li><span class="lv-sw" data-i="1"></span>Vivienda nueva</li></ul>
+        <p class="lv-muted">Escrituras ante notario (Ministerio de Vivienda).</p>
+      </div>
+      <div class="lv-card" id="ventas-capital">
+        <h3>León capital y alfoz: compraventas de vivienda</h3>
+        <div class="lv-chart" data-draw="c_ventas_cap" data-source="compraventas"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>León capital</li><li><span class="lv-sw" data-i="1"></span>San Andrés del Rabanedo + Villaquilambre</li></ul>
+        <p class="lv-muted">Escrituras ante notario.</p>
+      </div>
+      <div class="lv-card" id="compradores">
+        <h3>Provincia: quién compra</h3>
+        <div class="lv-chart" data-draw="c_compradores" data-source="compraventas"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Residentes en otra provincia</li><li><span class="lv-sw" data-i="1"></span>Extranjeros residentes en España</li><li><span class="lv-sw" data-i="2"></span>No residentes en España</li></ul>
+        <p class="lv-muted">Compras en la provincia de León según dónde vive el comprador.</p>
+      </div>
+      <div class="lv-card" id="compradores-pct">
+        <h3>Provincia: peso de los compradores de fuera</h3>
+        <div class="lv-chart" data-draw="c_compradores_pct" data-source="compradores_pct"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>% residentes en otra provincia</li><li><span class="lv-sw" data-i="1"></span>de ellos, % de Madrid y Asturias</li></ul>
+        <p class="lv-muted">Porcentaje sobre las compras de residentes en España.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="lv-sec" id="inversion">
+    <h2>5. Compras sin hipoteca y compras de inversión</h2>
+    <div class="lv-grid">
+      <div class="lv-card" id="hipotecas">
+        <h3>Provincia: compraventas inscritas e hipotecas sobre vivienda</h3>
+        <div class="lv-chart" data-draw="c_hip" data-source="compraventas"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Compraventas (registro)</li><li><span class="lv-sw" data-i="1"></span>Hipotecas sobre vivienda</li></ul>
+        <p class="lv-muted">INE. Antes de 2013 había más hipotecas que compras (refinanciaciones y autopromoción), así que la resta solo tiene sentido después.</p>
+      </div>
+      <div class="lv-card" id="prestamos-notarios">
+        <h3>Provincia: compraventas y préstamos para comprar vivienda, ante notario</h3>
+        <div class="lv-chart" data-draw="c_prest" data-source="sin_hipoteca"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Compraventas</li><li><span class="lv-sw" data-i="1"></span>Préstamos hipotecarios para comprar vivienda</li></ul>
+        <p class="lv-muted">Consejo General del Notariado y Ministerio de Vivienda (también con datos de notarios).</p>
+      </div>
+      <div class="lv-card" id="sin-hipoteca">
+        <h3>Provincia: compras sin hipoteca, dos cálculos</h3>
+        <div class="lv-chart" data-draw="c_sinhip" data-source="sin_hipoteca"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Mínimo (registro: compraventas − todas las hipotecas)</li><li><span class="lv-sw" data-i="1"></span>Notarios (compraventas − préstamos para comprar)</li></ul>
+        <div class="lv-chart" data-draw="c_sinhip_pct" data-source="sin_hipoteca" style="min-height:150px"></div>
+        <p class="lv-muted">Arriba, número; abajo, porcentaje de las compraventas. La cifra real está entre las dos líneas: el mínimo resta hipotecas que no financian compras; el de notarios no cuenta préstamos firmados en otra provincia o sin hipoteca.</p>
+      </div>
+      <div class="lv-card" id="turisticas">
+        <h3>Viviendas de uso turístico anunciadas</h3>
+        <div class="lv-chart" data-draw="c_tur" data-source="turisticas"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Provincia</li><li><span class="lv-sw" data-i="1"></span>León capital</li></ul>
+        <p class="lv-muted">INE, estadística experimental a partir de plataformas de alquiler turístico.</p>
+      </div>
+    </div>
+    <h3 id="alquiler-titulo">Alquiler y viviendas sin uso habitual</h3>
+    <div class="lv-grid">
+      <div class="lv-card" id="alquiladas">
+        <h3>Viviendas alquiladas como residencia habitual del inquilino</h3>
+        <div class="lv-chart" data-draw="c_alq_n" data-source="alquiler"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Provincia</li><li><span class="lv-sw" data-i="1"></span>León capital</li></ul>
+        <p class="lv-muted">Ministerio de Vivienda (SERPAVI), a partir del IRPF de los caseros particulares. Total de alquileres vivos cada año.</p>
+      </div>
+      <div class="lv-card" id="alquiler-precio">
+        <h3>Alquiler mediano de un piso, €/mes</h3>
+        <div class="lv-chart" data-draw="c_alq_p" data-source="alquiler"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Provincia</li><li><span class="lv-sw" data-i="1"></span>León capital</li></ul>
+        <p class="lv-muted">SERPAVI. Euros de cada año.</p>
+      </div>
+      <div class="lv-card" id="irpf-provincia">
+        <h3>Provincia: declarantes de IRPF con alquileres o con viviendas a disposición</h3>
+        <div class="lv-chart" data-draw="c_irpf_p" data-source="irpf"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Con viviendas a disposición (ni habitual ni alquilada)</li><li><span class="lv-sw" data-i="1"></span>Con ingresos por alquiler</li></ul>
+        <p class="lv-muted">AEAT. Por domicilio del declarante. El número de declaraciones también creció en esos años.</p>
+      </div>
+      <div class="lv-card" id="irpf-capital">
+        <h3>León capital: declarantes de IRPF con alquileres o con viviendas a disposición</h3>
+        <div class="lv-chart" data-draw="c_irpf_c" data-source="irpf"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Con viviendas a disposición</li><li><span class="lv-sw" data-i="1"></span>Con ingresos por alquiler</li></ul>
+        <p class="lv-muted">AEAT. Por domicilio del declarante.</p>
+      </div>
+    </div>
+    <div class="lv-card" id="uso-viviendas">
+      <h3>Uso de las viviendas de particulares según Hacienda</h3>
+      <div class="lv-tablewrap">
+        <table data-source="uso_viviendas" data-row-key="anio">
+          <thead><tr><th data-field="anio">Provincia</th><th data-field="prov_viviendas">Viviendas</th><th data-field="prov_habitual_propietario">Habitual del dueño</th><th data-field="prov_arrendadas">Alquiladas</th><th data-field="prov_a_disposicion">A disposición</th></tr></thead>
+          <tbody data-draw="tb_uso_p"></tbody>
+        </table>
+      </div>
+      <div class="lv-tablewrap">
+        <table data-source="uso_viviendas" data-row-key="anio">
+          <thead><tr><th data-field="anio">León capital</th><th data-field="cap_uso_habitual">Uso habitual</th><th data-field="cap_alquiladas_habitual">de ellas, alquiladas</th><th data-field="cap_alquiladas_otros_usos">Alquiladas para otros usos</th><th data-field="cap_a_disposicion">A disposición</th></tr></thead>
+          <tbody data-draw="tb_uso_c"></tbody>
+        </table>
+      </div>
+      <p class="lv-muted">AEAT, viviendas declaradas en el IRPF por personas físicas, según dónde está la vivienda. Solo hay 2023 y 2024. «A disposición»: ni residencia habitual ni alquilada (segunda residencia o vacía). «Otros usos» incluye alquiler turístico y de temporada.</p>
+    </div>
+    <div class="lv-card lv-note" id="estimacion">
+      <h3>Compras de inversión por año (estimación)</h3>
+      <p>En 2025, entre el <span class="lv-num" data-draw="v_emin" data-source="inversion_anual" data-field="pct_estricta_min" data-where="anio=2025">—</span> y el
+        <span class="lv-num" data-draw="v_emax" data-source="inversion_anual" data-field="pct_estricta_max" data-where="anio=2025">—</span> de las compras de vivienda de la provincia fueron de inversión en sentido estricto: hechas por empresas, o por particulares sin hipoteca y para no vivir en ellas. Son entre
+        <span class="lv-num" data-draw="v_nmin" data-source="inversion_anual" data-field="estricta_min" data-where="anio=2025">—</span> y
+        <span class="lv-num" data-draw="v_nmax" data-source="inversion_anual" data-field="estricta_max" data-where="anio=2025">—</span> viviendas de
+        <span class="lv-num" data-draw="v_t" data-source="inversion_anual" data-field="compras" data-where="anio=2025">—</span>.
+        Si se cuenta también lo comprado con hipoteca para alquilar o como segunda residencia, la parte es de entre el
+        <span class="lv-num" data-draw="v_amin" data-source="inversion_anual" data-field="pct_amplia_min" data-where="anio=2025">—</span> y el
+        <span class="lv-num" data-draw="v_amax" data-source="inversion_anual" data-field="pct_amplia_max" data-where="anio=2025">—</span>.</p>
+      <div class="lv-chart" data-draw="c_inv" data-source="inversion_anual"></div>
+      <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Estricta: empresas + particulares sin hipoteca que no viven en ella</li><li><span class="lv-sw" data-i="1"></span>Amplia: empresas + particulares que no viven en ella</li></ul>
+      <p class="lv-muted">Porcentaje de las compras ante notario de la provincia. Cada franja va del mínimo al máximo estimado.</p>
+      <div class="lv-tablewrap">
+        <table data-source="inversion_anual" data-row-key="anio">
+          <thead><tr><th data-field="anio">Año</th><th data-field="compras">Compras</th><th data-field="empresas">Empresas</th><th data-field="otra_provincia">Compradores de otra provincia</th><th data-field="aumento_alquiler">Aumento de pisos alquilados</th><th data-field="aumento_turisticas">Aumento de turísticas</th><th data-field="pct_estricta_min">Estricta mín. %</th><th data-field="pct_estricta_max">Estricta máx. %</th><th data-field="pct_amplia_min">Amplia mín. %</th><th data-field="pct_amplia_max">Amplia máx. %</th><th data-field="nota">Nota</th></tr></thead>
+          <tbody data-draw="tb_inv"></tbody>
+        </table>
+      </div>
+      <h3>Cómo se calcula</h3>
+      <ul class="lv-list">
+        <li><b>Empresas:</b> el porcentaje de compras de vivienda hechas por personas jurídicas en Castilla y León (Registradores), aplicado a las compras de la provincia. No hay dato publicado para la provincia de León.</li>
+        <li><b>Particulares que no van a vivir en la vivienda:</b> como mínimo, el mayor de dos números: los compradores que viven en otra provincia, o el aumento de pisos alquilados (SERPAVI) más el de viviendas turísticas. Como máximo, la suma de los dos, si no se solapan.</li>
+        <li><b>Sin hipoteca:</b> en la versión estricta, a esos particulares se les aplica el porcentaje de compras sin hipoteca del año: el mínimo del registro para la cifra baja y el de notarios para la alta.</li>
+        <li><b>2025:</b> el aumento de pisos alquilados aún no se ha publicado. Se usa la media de 2021–2024
+          (<span class="lv-num" data-draw="v_med" data-source="control_inversion" data-field="alquiler_medio_2021_2024" data-row="0">—</span> al año).</li>
+        <li><b>Comprobación:</b> según Hacienda, en 2024 las viviendas de particulares alquiladas o a disposición aumentaron en
+          <span class="lv-num" data-draw="v_aeat" data-source="control_inversion" data-field="aumento_no_habitual_aeat_2024" data-row="0">—</span>, más que el máximo estimado para particulares
+          (<span class="lv-num" data-draw="v_pmax" data-source="control_inversion" data-field="particulares_max_2024" data-row="0">—</span>). La diferencia encaja con herencias y con viviendas que pasan de empresas a particulares.</li>
+        <li><b>Lo que no capta:</b> leoneses que compran en la provincia una segunda residencia o una vivienda que dejan vacía sin alquilar (la cifra se queda corta), y compradores de fuera que se mudan a León (la cifra se pasa).</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="lv-sec" id="precios">
+    <h2>6. Precios, para comparar con lo anterior</h2>
+    <div class="lv-grid">
+      <div class="lv-card" id="precio-nominal">
+        <h3>Valor tasado de la vivienda libre, €/m²</h3>
+        <div class="lv-chart" data-draw="c_precio" data-source="precios"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>León capital</li><li><span class="lv-sw" data-i="1"></span>Provincia</li><li><span class="lv-sw" data-i="2"></span>España</li></ul>
+        <p class="lv-muted">Euros de cada año. Capital desde 2010.</p>
+      </div>
+      <div class="lv-card" id="precio-real">
+        <h3>El mismo valor en euros de 2025</h3>
+        <div class="lv-chart" data-draw="c_precio_real" data-source="precios_reales"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>León capital</li><li><span class="lv-sw" data-i="1"></span>Provincia</li><li><span class="lv-sw" data-i="2"></span>España</li></ul>
+        <p class="lv-muted">Descontada la inflación con el IPC de la provincia de León.</p>
+      </div>
+      <div class="lv-card" id="precio-renta">
+        <h3>León capital: precio frente a renta de los hogares (2015 = 100)</h3>
+        <div class="lv-chart" data-draw="c_precio_renta" data-source="precios_reales"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Valor tasado €/m²</li><li><span class="lv-sw" data-i="1"></span>Renta neta media por hogar</li></ul>
+        <p class="lv-muted">Ambos en euros de cada año. La renta llega hasta 2024.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="lv-sec" id="capital">
+    <h2>7. León capital: series largas y compras de inversión</h2>
+    <p class="lv-lead">En 2025, entre el
+      <span class="lv-num" data-draw="k_emin" data-source="capital_inversion" data-field="pct_estricta_min" data-where="anio=2025">—</span> y el
+      <span class="lv-num" data-draw="k_emax" data-source="capital_inversion" data-field="pct_estricta_max" data-where="anio=2025">—</span> de las compras de vivienda en León capital fueron de inversión en sentido estricto
+      (entre <span class="lv-num" data-draw="k_nmin" data-source="capital_inversion" data-field="estricta_min" data-where="anio=2025">—</span> y
+      <span class="lv-num" data-draw="k_nmax" data-source="capital_inversion" data-field="estricta_max" data-where="anio=2025">—</span> de
+      <span class="lv-num" data-draw="k_t" data-source="capital_inversion" data-field="compras" data-where="anio=2025">—</span>). En sentido amplio, entre el
+      <span class="lv-num" data-draw="k_amin" data-source="capital_inversion" data-field="pct_amplia_min" data-where="anio=2025">—</span> y el
+      <span class="lv-num" data-draw="k_amax" data-source="capital_inversion" data-field="pct_amplia_max" data-where="anio=2025">—</span>.</p>
+    <div class="lv-grid">
+      <div class="lv-card" id="cap-poblacion-larga">
+        <h3>Habitantes a 1 de enero</h3>
+        <div class="lv-chart" data-draw="c_cap_pob" data-source="capital_serie"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Padrón</li><li><span class="lv-sw" data-i="1"></span>Censo anual</li></ul>
+        <p class="lv-muted">INE. El padrón empieza en 1996; el censo anual, en 2021.</p>
+      </div>
+      <div class="lv-card" id="cap-ventas-larga">
+        <h3>Compraventas de vivienda</h3>
+        <div class="lv-chart" data-draw="c_cap_ventas" data-source="capital_serie"></div>
+        <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Total</li><li><span class="lv-sw" data-i="1"></span>Segunda mano</li><li><span class="lv-sw" data-i="2"></span>Nueva</li></ul>
+        <p class="lv-muted">Escrituras ante notario (Ministerio de Vivienda), desde 2004.</p>
+      </div>
+      <div class="lv-card" id="cap-hogares">
+        <h3>Hogares: personas por hogar y hogares de una persona</h3>
+        <div class="lv-chart" data-draw="c_cap_tam" data-source="capital_serie" style="min-height:150px"></div>
+        <div class="lv-chart" data-draw="c_cap_uni" data-source="capital_serie" style="min-height:150px"></div>
+        <p class="lv-muted">Arriba, personas por hogar (con un decimal en la fuente); abajo, % de hogares de una persona. INE, Atlas de Distribución de Renta de los Hogares. Censo 2021: <span class="lv-num" data-draw="k_hog21" data-source="capital_serie" data-field="hogares_censo_2021" data-where="anio=2021">—</span> hogares.</p>
+      </div>
+    </div>
+    <div class="lv-card lv-note" id="cap-inversion">
+      <h3>León capital: compras de inversión por año (estimación)</h3>
+      <div class="lv-chart" data-draw="c_cap_inv" data-source="capital_inversion"></div>
+      <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Estricta: empresas + particulares sin hipoteca que no viven en ella</li><li><span class="lv-sw" data-i="1"></span>Amplia: empresas + particulares que no viven en ella</li></ul>
+      <div class="lv-tablewrap">
+        <table data-source="capital_inversion" data-row-key="anio">
+          <thead><tr><th data-field="anio">Año</th><th data-field="compras">Compras</th><th data-field="empresas">Empresas</th><th data-field="compradores_otra_provincia_estimados">De otra provincia (est.)</th><th data-field="aumento_alquiler">Aumento de pisos alquilados</th><th data-field="aumento_turisticas">Aumento de turísticas</th><th data-field="pct_estricta_min">Estricta mín. %</th><th data-field="pct_estricta_max">Estricta máx. %</th><th data-field="pct_amplia_min">Amplia mín. %</th><th data-field="pct_amplia_max">Amplia máx. %</th><th data-field="notas">Notas</th></tr></thead>
+          <tbody data-draw="tb_cap_inv"></tbody>
+        </table>
+      </div>
+      <ul class="lv-list">
+        <li>Igual que para la provincia, con dos diferencias. No hay dato de cuántos compradores de la capital viven fuera: se aplica el porcentaje provincial y solo cuenta para el máximo. El mínimo usa solo datos de la propia capital: aumento de pisos alquilados y de viviendas turísticas.</li>
+        <li>El porcentaje de compras sin hipoteca y el de empresas son los de la provincia y la comunidad autónoma, porque no se publican por municipio.</li>
+        <li>Antes de 2021 no hay dato de viviendas turísticas, que cuentan como cero.</li>
+        <li>Entre 2012 y 2015 los pisos alquilados declarados crecen mucho, en parte porque mejoró la declaración de alquileres en el IRPF; esos años la estimación sale alta y conviene leerla con cautela.</li>
+      </ul>
+      <p class="lv-muted">Calculado con el framework <code>vivienda_capitales</code>, que repite el proceso para cualquier capital de provincia.</p>
+    </div>
+  </section>
+
+  <section class="lv-sec" id="capitales">
+    <h2>8. Todas las capitales de provincia</h2>
+    <p class="lv-lead">Compras de inversión en cada capital en el último año con datos, calculadas con el mismo método que para León capital. Las capitales están ordenadas por el punto medio de la estimación estricta.</p>
+    <div class="lv-card" id="caps-rangos">
+      <h3>Compras de inversión por capital, % de las compras</h3>
+      <div class="lv-chart" data-draw="c_caps" data-source="capitales_resumen" style="min-height:400px"></div>
+      <ul class="lv-legend"><li><span class="lv-sw" data-i="0"></span>Estricta (mínimo a máximo)</li><li><span class="lv-sw" data-i="1"></span>Amplia (mínimo a máximo)</li></ul>
+      <p class="lv-muted">Mismas limitaciones que en León: los porcentajes de compras sin hipoteca y de compradores de fuera son provinciales, y el de empresas es de la comunidad autónoma. Ceuta y Melilla usan el dato nacional de empresas. En País Vasco y Navarra no hay datos de alquiler declarados (régimen foral), así que su estimación se queda corta. En capitales de provincias con muchas segundas residencias de compradores de fuera (Ávila, Segovia, Toledo, Guadalajara, Cuenca, Teruel) el máximo sale alto, porque esa proporción provincial se aplica a la capital.</p>
+    </div>
+    <div class="lv-card" id="caps-tabla">
+      <h3>Detalle por capital</h3>
+      <div class="lv-tablewrap">
+        <table data-source="capitales_resumen" data-row-key="codigo">
+          <thead><tr><th data-field="capital">Capital</th><th data-field="poblacion">Habitantes</th><th data-field="anio">Año</th><th data-field="compras">Compras</th><th data-field="pct_estricta_min">Estricta mín. %</th><th data-field="pct_estricta_max">Estricta máx. %</th><th data-field="pct_amplia_min">Amplia mín. %</th><th data-field="pct_amplia_max">Amplia máx. %</th><th data-field="pct_estricta_media_5_anios">Estricta, media 5 años %</th></tr></thead>
+          <tbody data-draw="tb_caps"></tbody>
+        </table>
+      </div>
+      <p class="lv-muted">Generado con <code>python ejecutar.py --todas</code> del framework <code>vivienda_capitales</code>. Población del padrón a 1 de enero del último año publicado.</p>
+    </div>
+  </section>
+
+  <details id="notas">
+    <summary>Definiciones y límites de los datos</summary>
+    <ul>
+      <li>Las compraventas de notarios (Ministerio de Vivienda) cuentan la firma de la escritura; las del registro (INE) cuentan su inscripción, semanas después. Por eso no coinciden.</li>
+      <li>«Vivienda nueva» no significa lo mismo en las dos fuentes: el INE cuenta como nueva la primera transmisión tras la obra, que incluye más casos que la estadística de notarios.</li>
+      <li>Las hipotecas sobre vivienda incluyen préstamos que no financian una compra (refinanciaciones, autopromoción). Por eso «compraventas menos hipotecas» es un mínimo de las compras sin hipoteca.</li>
+      <li>Viviendas principales y no principales son una estimación del Ministerio a partir del censo y de proyecciones de hogares, no un recuento anual.</li>
+      <li>Los hogares de la Estadística Continua de Población solo existen desde 2021. No hay dato oficial de hogares de León capital después del Censo de 2021 (55.185 hogares).</li>
+      <li>Los préstamos del Notariado son préstamos hipotecarios con finalidad de comprar vivienda, no compras financiadas: incluyen ampliaciones y préstamos firmados en otra escritura, y no cuentan compras pagadas con préstamos personales.</li>
+      <li>Los datos de Hacienda (IRPF) y SERPAVI solo cubren a particulares. Las viviendas de empresas, incluidas las que alquilan, no aparecen.</li>
+      <li>Ninguna estadística oficial cruza «compra sin hipoteca» con «uso que se da a la vivienda». La estimación de compras de inversión combina varias fuentes y da un intervalo, no una cifra exacta.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+(function () {
+  const NNBSP = ' ';
+  function fmt(v, dec) {
+    if (v == null || Number.isNaN(+v)) return '—';
+    const s = d3.format(',.' + (dec || 0) + 'f')(+v);
+    return s.replace(/,/g, NNBSP).replace('.', ',');
+  }
+  function color(i) { return (dash.colors && dash.colors[i % dash.colors.length]) || 'currentColor'; }
+  function placeholder(el, st) {
+    const loading = !st || st === 'loading';
+    el.classList.toggle('dash-skeleton', loading);
+    el.replaceChildren();
+    if (st === 'error' || st === 'missing' || st === 'declined') {
+      const p = document.createElement('p'); p.className = 'lv-fail'; p.textContent = 'No se pudo cargar'; el.appendChild(p);
+    }
+  }
+  function textWidth(svg, strings, cls) {
+    const g = svg.append('g').attr('class', 'tick');
+    let w = 0;
+    strings.forEach((s) => { const t = g.append('text').attr('class', cls || '').text(s); w = Math.max(w, t.node().getComputedTextLength() || s.length * 7); });
+    g.remove();
+    return w;
+  }
+  // opt: rows, x (campo), xType 'year'|'date', series [{key,label}], kind 'line'|'bar', dec, unit, height, aria, colorOffset
+  function chart(el, opt) {
+    const st = opt.status;
+    if (st !== 'ok') { placeholder(el, st); return; }
+    el.classList.remove('dash-skeleton');
+    el.replaceChildren();
+    const rows = (opt.rows || []).filter((r) => opt.series.some((s) => r[s.key] != null));
+    if (!rows.length) { const p = document.createElement('p'); p.className = 'lv-fail'; p.textContent = 'Sin datos'; el.appendChild(p); return; }
+    const W = Math.max(260, el.clientWidth || 560), H = opt.height || 220;
+    const dec = opt.dec || 0, unit = opt.unit || '';
+    const xv = (r) => (opt.xType === 'date' ? new Date(r[opt.x] + 'T00:00:00Z') : +r[opt.x]);
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', opt.aria || '');
+    const vals = [];
+    rows.forEach((r) => opt.series.forEach((s) => { if (r[s.key] != null) vals.push(+r[s.key]); }));
+    let lo = d3.min(vals), hi = d3.max(vals);
+    if (opt.kind === 'bar' || opt.zero) lo = Math.min(0, lo);
+    if (opt.kind === 'bar') hi = Math.max(0, hi);
+    if (lo === hi) { hi = hi + 1; }
+    const y0 = d3.scaleLinear().domain([lo, hi]).nice(5);
+    const yTicks = y0.ticks(H < 180 ? 3 : 5);
+    const yfmt = (v) => fmt(v, dec && Math.abs(hi - lo) < 5 ? dec : 0) + unit;
+    const left = textWidth(svg, yTicks.map(yfmt)) + 10;
+    const lastRow = rows[rows.length - 1];
+    const endLabels = opt.kind === 'bar' ? [] : opt.bands ? opt.bands.map((b, i) => {
+      const r = [...rows].reverse().find((rr) => rr[b.lo] != null && rr[b.hi] != null);
+      return r ? { i, s: { key: b.lo }, r, mid: (+r[b.lo] + +r[b.hi]) / 2, text: fmt(r[b.lo], dec) + '–' + fmt(r[b.hi], dec) + unit } : null;
+    }).filter(Boolean) : opt.series.map((s, i) => {
+      const r = [...rows].reverse().find((rr) => rr[s.key] != null);
+      return r ? { i, s, r, text: fmt(r[s.key], dec) + unit } : null;
+    }).filter(Boolean);
+    const right = opt.kind === 'bar' ? 8 : textWidth(svg, endLabels.map((e) => e.text), 'lv-end') + 12;
+    const m = { t: 10, r: right, b: 24, l: left };
+    const y = y0.range([H - m.b, m.t]);
+    let x, xAxis, band = null;
+    if (opt.kind === 'bar') {
+      band = d3.scaleBand().domain(rows.map((r) => r[opt.x])).range([m.l, W - m.r]).paddingInner(0.2).paddingOuter(0.1);
+      const every = Math.max(1, Math.ceil(rows.length / Math.max(2, Math.floor((W - m.l - m.r) / 44))));
+      xAxis = d3.axisBottom(band).tickValues(band.domain().filter((d, i) => i % every === 0 || i === rows.length - 1)).tickSizeOuter(0);
+    } else if (opt.xType === 'date') {
+      x = d3.scaleUtc().domain(d3.extent(rows, xv)).range([m.l, W - m.r]);
+      xAxis = d3.axisBottom(x).ticks(Math.max(2, Math.floor((W - m.l - m.r) / 70))).tickFormat(d3.utcFormat('%Y')).tickSizeOuter(0);
+      const yrs = d3.utcYear.range(d3.utcYear.ceil(x.domain()[0]), d3.utcDay.offset(x.domain()[1], 1));
+      const step = Math.max(1, Math.ceil(yrs.length / Math.max(2, Math.floor((W - m.l - m.r) / 50))));
+      xAxis.tickValues(yrs.filter((d, i) => i % step === 0));
+    } else {
+      x = d3.scaleLinear().domain(d3.extent(rows, xv)).range([m.l, W - m.r]);
+      const n = Math.max(2, Math.floor((W - m.l - m.r) / 48));
+      const [a, b] = x.domain();
+      const step = Math.max(1, Math.ceil((b - a) / n));
+      const tv = d3.range(a, b + 1, step);
+      xAxis = d3.axisBottom(x).tickValues(tv).tickFormat(d3.format('d')).tickSizeOuter(0);
+    }
+    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(xAxis).call((g) => g.selectAll('.tick line').remove());
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).tickValues(yTicks).tickFormat(yfmt).tickSize(-(W - m.l - m.r)))
+      .call((g) => g.select('.domain').remove());
+    if (lo < 0) svg.append('line').attr('class', 'lv-zero').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(0)).attr('y2', y(0));
+    const off = opt.colorOffset || 0;
+    if (opt.kind === 'bar') {
+      const inner = d3.scaleBand().domain(opt.series.map((s) => s.key)).range([0, band.bandwidth()]).padding(0.08);
+      opt.series.forEach((s, i) => {
+        svg.append('g').selectAll('rect').data(rows.filter((r) => r[s.key] != null)).join('rect')
+          .attr('x', (r) => band(r[opt.x]) + inner(s.key)).attr('width', inner.bandwidth())
+          .attr('y', (r) => y(Math.max(0, +r[s.key]))).attr('height', (r) => Math.abs(y(+r[s.key]) - y(0)))
+          .style('fill', color(i + off));
+      });
+    } else {
+      if (opt.bands) opt.bands.forEach((b, i) => {
+        const ok = (r) => r[b.lo] != null && r[b.hi] != null;
+        const area = d3.area().defined(ok).x((r) => x(xv(r))).y0((r) => y(+r[b.lo])).y1((r) => y(+r[b.hi]));
+        svg.append('path').datum(rows).attr('d', area).style('fill', color(i + off)).style('fill-opacity', 0.22).style('stroke', 'none');
+        [b.lo, b.hi].forEach((k) => {
+          const ln = d3.line().defined((r) => r[k] != null).x((r) => x(xv(r))).y((r) => y(+r[k]));
+          svg.append('path').datum(rows).attr('d', ln).style('fill', 'none').style('stroke', color(i + off)).style('stroke-width', 1.5);
+        });
+      });
+      if (!opt.bands) opt.series.forEach((s, i) => {
+        const line = d3.line().defined((r) => r[s.key] != null).x((r) => x(xv(r))).y((r) => y(+r[s.key]));
+        svg.append('path').datum(rows).attr('d', line).style('fill', 'none').style('stroke', color(i + off)).style('stroke-width', 2);
+        if (rows.length <= 30) svg.append('g').selectAll('circle').data(rows.filter((r) => r[s.key] != null)).join('circle')
+          .attr('cx', (r) => x(xv(r))).attr('cy', (r) => y(+r[s.key])).attr('r', 2.2).style('fill', color(i + off));
+      });
+      const placed = endLabels.map((e) => ({ ...e, yy: e.mid != null ? y(e.mid) : y(+e.r[e.s.key]), xx: x(xv(e.r)) })).sort((a, b) => a.yy - b.yy);
+      for (let k = 1; k < placed.length; k++) if (placed[k].yy - placed[k - 1].yy < 13) placed[k].yy = placed[k - 1].yy + 13;
+      placed.forEach((e) => svg.append('text').attr('class', 'lv-end').attr('x', W - m.r + 6).attr('y', e.yy).attr('dy', '0.32em')
+        .style('fill', color(e.i + off)).text(e.text));
+    }
+    // tooltip
+    const tip = document.createElement('div'); tip.className = 'lv-tip'; tip.hidden = true; el.appendChild(tip);
+    const guide = svg.append('line').attr('class', 'lv-guide').attr('y1', m.t).attr('y2', H - m.b).style('opacity', 0);
+    const xs = rows.map((r) => (band ? band(r[opt.x]) + band.bandwidth() / 2 : x(xv(r))));
+    const label = (r) => (opt.xType === 'date' ? d3.utcFormat('%d/%m/%Y')(xv(r)) : String(r[opt.x]));
+    svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b)
+      .style('fill', 'transparent').style('cursor', 'crosshair')
+      .on('pointermove', (ev) => {
+        const [px] = d3.pointer(ev, svg.node());
+        const sx = px * (W / (svg.node().getBoundingClientRect().width || W));
+        let k = 0; let best = Infinity;
+        xs.forEach((v, j) => { const d = Math.abs(v - (px)); if (d < best) { best = d; k = j; } });
+        const r = rows[k];
+        tip.replaceChildren();
+        const h = document.createElement('b'); h.textContent = label(r); tip.appendChild(h);
+        opt.series.forEach((s) => {
+          if (r[s.key] == null) return;
+          const d = document.createElement('div');
+          const k1 = document.createElement('span'); k1.className = 'lv-tip-k'; k1.textContent = s.label + ': ';
+          const v1 = document.createElement('span'); v1.textContent = fmt(r[s.key], dec) + unit;
+          d.append(k1, v1); tip.appendChild(d);
+        });
+        tip.hidden = false;
+        const scale = (svg.node().getBoundingClientRect().width || W) / W;
+        const gx = xs[k] * scale;
+        guide.attr('x1', xs[k]).attr('x2', xs[k]).style('opacity', 1);
+        const tw = tip.offsetWidth, cw = el.clientWidth;
+        tip.style.left = Math.max(0, Math.min(cw - tw, gx + 12 > cw - tw ? gx - tw - 12 : gx + 12)) + 'px';
+        tip.style.top = (m.t * scale) + 'px';
+      })
+      .on('pointerleave', () => { tip.hidden = true; guide.style('opacity', 0); });
+  }
+  function num(name, source, field, opts) {
+    opts = opts || {};
+    dash.draw(name, (el) => {
+      const d = dash.data(source);
+      if (d.status !== 'ok') { el.classList.toggle('dash-skeleton', d.status === 'loading'); el.textContent = '—'; return; }
+      el.classList.remove('dash-skeleton');
+      const rows = Array.isArray(d.data) ? d.data : [d.data];
+      let r = rows[0];
+      if (opts.where) r = rows.find((rr) => String(rr[opts.where[0]]) === String(opts.where[1]));
+      const v = r ? r[field] : null;
+      el.textContent = v == null ? '—' : (opts.sign && v > 0 ? '+' : '') + fmt(v, opts.dec) + (opts.unit || '');
+    });
+  }
+  window.LV = { fmt, chart, num, color };
+})();
+</script>
+
+<script>
+// Cálculos a partir de los datos (se pueden revisar en Fuentes)
+dash.calc('resumen', {
+  title: 'Cifras resumen',
+  description: 'Variaciones entre años calculadas a partir de las series de población, hogares, viviendas y compraventas.',
+  inputs: ['poblacion', 'hogares', 'viviendas', 'compraventas'],
+  fn: (poblacion, hogares, viviendas, compraventas) => {
+    const p = (y) => poblacion.find((r) => r.anio === y) || {};
+    const h = (f) => (hogares.find((r) => r.fecha === f) || {});
+    const v = (y) => viviendas.find((r) => r.anio === y) || {};
+    const c = (y) => compraventas.find((r) => r.anio === y) || {};
+    const sum = (a, b, f, src) => d3.sum(d3.range(a, b + 1), (y) => +(src(y)[f] || 0));
+    const h21 = h('2021-01-01'), h26 = h('2026-01-01');
+    return [{
+      hogares_2021: h21.hogares, hogares_2026: h26.hogares,
+      hogares_nuevos_2021_2026: h26.hogares - h21.hogares,
+      hogares_1_nuevos: h26.hogares_1 - h21.hogares_1,
+      hogares_3mas_cambio: (h26.hogares_3 + h26.hogares_4_y_mas) - (h21.hogares_3 + h21.hogares_4_y_mas),
+      terminadas_2021_2025: sum(2021, 2025, 'viviendas_terminadas', v),
+      espanoles_cambio_2021_2026: p(2026).espanoles_provincia - p(2021).espanoles_provincia,
+      extranjeros_cambio_2021_2026: p(2026).extranjeros_provincia - p(2021).extranjeros_provincia,
+      ventas_x_2025_2020: Math.round((c(2025).compraventas_notarios / c(2020).compraventas_notarios) * 100) / 100,
+      otra_prov_x_2025_2020: Math.round((c(2025).compradores_otra_provincia / c(2020).compradores_otra_provincia) * 100) / 100,
+    }];
+  },
+});
+dash.calc('hogares_anual', {
+  title: 'Hogares nuevos y viviendas terminadas por año',
+  description: 'Hogares a 1 de enero del año siguiente menos los del 1 de enero del año, frente a viviendas libres terminadas en el año.',
+  inputs: ['hogares', 'viviendas'],
+  fn: (hogares, viviendas) => d3.range(2021, 2026).map((y) => {
+    const a = hogares.find((r) => r.fecha === `${y}-01-01`), b = hogares.find((r) => r.fecha === `${y + 1}-01-01`);
+    const v = viviendas.find((r) => r.anio === y);
+    return { anio: y, hogares_nuevos: a && b ? b.hogares - a.hogares : null, viviendas_terminadas: v ? v.viviendas_terminadas : null };
+  }),
+});
+dash.calc('sin_hipoteca', {
+  title: 'Compras sin hipoteca: dos cálculos',
+  description: 'Mínimo: compraventas inscritas menos todas las hipotecas sobre vivienda (INE). Notarios: compraventas ante notario menos préstamos para comprar vivienda (Notariado). Desde 2014.',
+  inputs: ['compraventas', 'prestamos'],
+  fn: (compraventas, prestamos) => compraventas.filter((r) => r.anio >= 2014 && r.compraventas_registro != null && r.hipotecas_vivienda != null).map((r) => {
+    const p = prestamos.find((x) => x.anio === r.anio);
+    const sinPrest = p && r.compraventas_notarios ? r.compraventas_notarios - p.prestamos_compra_vivienda : null;
+    return {
+      anio: r.anio,
+      compraventas_registro: r.compraventas_registro,
+      hipotecas_vivienda: r.hipotecas_vivienda,
+      sin_hipoteca_min: r.compraventas_registro - r.hipotecas_vivienda,
+      pct_sin_hipoteca_min: Math.round(((r.compraventas_registro - r.hipotecas_vivienda) / r.compraventas_registro) * 1000) / 10,
+      compraventas_notarios: r.compraventas_notarios,
+      prestamos_compra_vivienda: p ? p.prestamos_compra_vivienda : null,
+      sin_prestamo_notarios: sinPrest,
+      pct_sin_prestamo_notarios: sinPrest == null ? null : Math.round((sinPrest / r.compraventas_notarios) * 1000) / 10,
+    };
+  }),
+});
+dash.calc('inversion_anual', {
+  title: 'Compras de inversión por año (estimación)',
+  description: 'Compras de empresas más compras de particulares que no van a vivir en la vivienda; en la versión estricta, de estas últimas solo las hechas sin hipoteca. Mínimo y máximo por año.',
+  inputs: ['compraventas', 'prestamos', 'alquiler', 'turisticas', 'empresas'],
+  fn: (compraventas, prestamos, alquiler, turisticas, empresas) => {
+    const by = (rows, k) => new Map(rows.map((r) => [r[k], r]));
+    const cv = by(compraventas, 'anio'), pr = by(prestamos, 'anio'), al = by(alquiler, 'anio'), em = by(empresas, 'anio');
+    const tu = new Map(turisticas.map((r) => [r.fecha, r.turisticas_provincia]));
+    const dAlq = (y) => (al.get(y) && al.get(y - 1) ? al.get(y).prov_alquiladas - al.get(y - 1).prov_alquiladas : null);
+    const medio = Math.round(d3.sum(d3.range(2021, 2025), dAlq) / 4);
+    const dTur = (y) => {
+      for (const m of ['08', '11']) {
+        const a = tu.get(`${y}-${m}-01`), b = tu.get(`${y - 1}-${m}-01`);
+        if (a != null && b != null) return Math.max(0, a - b);
+      }
+      return 0;
+    };
+    const pct = (x, t) => Math.round((x / t) * 1000) / 10;
+    return d3.range(2016, 2026).filter((y) => cv.get(y) && pr.get(y) && em.get(y)).map((y) => {
+      const c = cv.get(y), T = c.compraventas_notarios;
+      const E = Math.round((T * em.get(y).pct_empresas_cyl) / 100);
+      const O = c.compradores_otra_provincia;
+      const estimado = dAlq(y) == null;
+      const R = estimado ? medio : dAlq(y);
+      const U = dTur(y);
+      const nMin = Math.max(O, R + U), nMax = O + R + U;
+      const sMin = (c.compraventas_registro - c.hipotecas_vivienda) / c.compraventas_registro;
+      const sMax = (T - pr.get(y).prestamos_compra_vivienda) / T;
+      const eMin = Math.round(E + nMin * sMin), eMax = Math.round(E + nMax * sMax);
+      return {
+        anio: y, compras: T, empresas: E, otra_provincia: O, aumento_alquiler: R, aumento_turisticas: U,
+        nota: estimado ? 'alquiler: media 2021–2024' : '',
+        particulares_min: nMin, particulares_max: nMax,
+        amplia_min: E + nMin, amplia_max: E + nMax, pct_amplia_min: pct(E + nMin, T), pct_amplia_max: pct(E + nMax, T),
+        estricta_min: eMin, estricta_max: eMax, pct_estricta_min: pct(eMin, T), pct_estricta_max: pct(eMax, T),
+      };
+    });
+  },
+});
+dash.calc('control_inversion', {
+  title: 'Comprobación con Hacienda, 2024',
+  description: 'Aumento en 2024 de las viviendas de particulares alquiladas o a disposición (AEAT) frente al máximo estimado de compras de particulares que no van a vivir en la vivienda; y aumento medio anual de pisos alquilados 2021–2024.',
+  inputs: ['uso_viviendas', 'inversion_anual', 'alquiler'],
+  fn: (uso_viviendas, inversion_anual, alquiler) => {
+    const u23 = uso_viviendas.find((r) => r.anio === 2023) || {}, u24 = uso_viviendas.find((r) => r.anio === 2024) || {};
+    const i24 = inversion_anual.find((r) => r.anio === 2024) || {};
+    const a = (y) => (alquiler.find((r) => r.anio === y) || {}).prov_alquiladas;
+    return [{
+      aumento_no_habitual_aeat_2024: (u24.prov_arrendadas + u24.prov_a_disposicion) - (u23.prov_arrendadas + u23.prov_a_disposicion),
+      particulares_max_2024: i24.particulares_max,
+      alquiler_medio_2021_2024: Math.round((a(2024) - a(2020)) / 4),
+    }];
+  },
+});
+dash.calc('compradores_pct', {
+  title: 'Peso de los compradores de fuera de la provincia',
+  description: 'Compras de residentes en otra provincia sobre el total de compras de residentes en España, y parte de ellas de Madrid y Asturias.',
+  inputs: ['compraventas'],
+  fn: (compraventas) => compraventas.filter((r) => r.compradores_residentes).map((r) => ({
+    anio: r.anio,
+    pct_otra_provincia: Math.round((r.compradores_otra_provincia / r.compradores_residentes) * 1000) / 10,
+    pct_madrid_asturias_de_fuera: Math.round(((r.compradores_madrid + r.compradores_asturias) / r.compradores_otra_provincia) * 1000) / 10,
+  })),
+});
+dash.calc('precios_reales', {
+  title: 'Valor tasado en euros de 2025 e índices',
+  description: 'Valor tasado dividido por el IPC de León (2025 = 100); y precio y renta de la capital como índice 2015 = 100.',
+  inputs: ['precios'],
+  fn: (precios) => {
+    const b = precios.find((r) => r.anio === 2015) || {};
+    return precios.map((r) => ({
+      anio: r.anio,
+      capital_real: r.tasado_capital && r.ipc_leon_base2025 ? Math.round((r.tasado_capital / r.ipc_leon_base2025) * 100) : null,
+      provincia_real: r.tasado_provincia && r.ipc_leon_base2025 ? Math.round((r.tasado_provincia / r.ipc_leon_base2025) * 100) : null,
+      espana_real: r.tasado_espana && r.ipc_leon_base2025 ? Math.round((r.tasado_espana / r.ipc_leon_base2025) * 100) : null,
+      indice_precio_capital: r.anio >= 2015 && r.tasado_capital ? Math.round((r.tasado_capital / b.tasado_capital) * 1000) / 10 : null,
+      indice_renta_capital: r.anio >= 2015 && r.renta_media_hogar_capital ? Math.round((r.renta_media_hogar_capital / b.renta_media_hogar_capital) * 1000) / 10 : null,
+    }));
+  },
+});
+</script>
+
+<script>
+(function () {
+  // Colores de las leyendas
+  document.querySelectorAll('.lv-sw[data-i]').forEach((sw) => { sw.style.background = LV.color(+sw.dataset.i); });
+
+  const C = (name, source, opt) => dash.draw(name, (el) => {
+    const d = dash.data(source);
+    LV.chart(el, Object.assign({ status: d.status, rows: d.data }, opt));
+  });
+  // 1. Población
+  C('c_pob_prov', 'poblacion', { x: 'anio', series: [{ key: 'pob_provincia_padron', label: 'Habitantes' }], aria: 'Población de la provincia de León a 1 de enero, 2010 a 2025' });
+  C('c_pob_cap', 'poblacion', { x: 'anio', series: [{ key: 'pob_capital_padron', label: 'Habitantes' }], aria: 'Población de León capital a 1 de enero, 2010 a 2025' });
+  C('c_ext', 'poblacion', { x: 'anio', zero: true, series: [{ key: 'extranjeros_provincia', label: 'Provincia' }, { key: 'extranjeros_capital_aprox', label: 'Capital (aprox.)' }], aria: 'Población extranjera en la provincia y en la capital' });
+  C('c_esp', 'poblacion', { x: 'anio', series: [{ key: 'espanoles_provincia', label: 'Nacionalidad española' }], aria: 'Población de nacionalidad española en la provincia' });
+  C('c_saldos', 'movimientos', { x: 'anio', kind: 'bar', series: [{ key: 'saldo_natural', label: 'Nacimientos − defunciones' }, { key: 'saldo_exterior', label: 'Saldo con el extranjero' }, { key: 'saldo_interior', label: 'Saldo con el resto de España' }], height: 240, aria: 'Saldo natural y saldos migratorios de la provincia por año' });
+  C('c_saldos_cap', 'movimientos', { x: 'anio', kind: 'bar', series: [{ key: 'capital_saldo_exterior', label: 'Con el extranjero' }, { key: 'capital_saldo_interior', label: 'Con otros municipios' }], aria: 'Saldo migratorio de León capital por año' });
+  // 2. Hogares
+  C('c_hog_tam', 'hogares', { x: 'fecha', xType: 'date', series: [{ key: 'hogares_1', label: '1 persona' }, { key: 'hogares_2', label: '2 personas' }, { key: 'hogares_3', label: '3 personas' }, { key: 'hogares_4_y_mas', label: '4 o más' }], aria: 'Hogares de la provincia por número de personas, trimestral' });
+  C('c_hog_tot', 'hogares', { x: 'fecha', xType: 'date', series: [{ key: 'hogares', label: 'Hogares' }], aria: 'Total de hogares en la provincia, trimestral' });
+  C('c_hog_size', 'hogares', { x: 'fecha', xType: 'date', dec: 2, height: 150, series: [{ key: 'personas_por_hogar', label: 'Personas por hogar' }], colorOffset: 1, aria: 'Personas por hogar en la provincia, trimestral' });
+  C('c_parque', 'viviendas', { x: 'anio', zero: true, series: [{ key: 'viviendas_principales', label: 'Principales' }, { key: 'viviendas_no_principales', label: 'No principales' }], aria: 'Viviendas principales y no principales en la provincia, 2001 a 2025' });
+  // 3. Obra nueva
+  C('c_obra', 'viviendas', { x: 'anio', zero: true, series: [{ key: 'viviendas_iniciadas', label: 'Iniciadas' }, { key: 'viviendas_terminadas', label: 'Terminadas' }], aria: 'Viviendas libres iniciadas y terminadas en la provincia, 2001 a 2025' });
+  C('c_hog_obra', 'hogares_anual', { x: 'anio', kind: 'bar', series: [{ key: 'hogares_nuevos', label: 'Hogares nuevos' }, { key: 'viviendas_terminadas', label: 'Viviendas terminadas' }], aria: 'Hogares nuevos y viviendas terminadas por año, 2021 a 2025' });
+  // 4. Compraventas
+  C('c_ventas', 'compraventas', { x: 'anio', zero: true, series: [{ key: 'compraventas_notarios', label: 'Total' }, { key: 'compraventas_nueva_notarios', label: 'Vivienda nueva' }], aria: 'Compraventas de vivienda en la provincia, 2007 a 2025' });
+  C('c_ventas_cap', 'compraventas', { x: 'anio', zero: true, series: [{ key: 'capital_compraventas', label: 'León capital' }, { key: 'alfoz_compraventas', label: 'San Andrés + Villaquilambre' }], aria: 'Compraventas de vivienda en León capital y alfoz, 2007 a 2025' });
+  C('c_compradores', 'compraventas', { x: 'anio', zero: true, series: [{ key: 'compradores_otra_provincia', label: 'Residentes en otra provincia' }, { key: 'compradores_extranjeros_residentes', label: 'Extranjeros residentes' }, { key: 'compradores_no_residentes', label: 'No residentes' }], aria: 'Compras en la provincia según residencia del comprador' });
+  C('c_compradores_pct', 'compradores_pct', { x: 'anio', zero: true, dec: 1, unit: ' %', series: [{ key: 'pct_otra_provincia', label: '% de otra provincia' }, { key: 'pct_madrid_asturias_de_fuera', label: '% Madrid + Asturias sobre los de fuera' }], aria: 'Porcentaje de compras de residentes en otra provincia' });
+  // 5. Inversión
+  C('c_hip', 'compraventas', { x: 'anio', zero: true, series: [{ key: 'compraventas_registro', label: 'Compraventas (registro)' }, { key: 'hipotecas_vivienda', label: 'Hipotecas sobre vivienda' }], aria: 'Compraventas inscritas e hipotecas sobre vivienda, 2007 a 2025' });
+  C('c_prest', 'sin_hipoteca', { x: 'anio', zero: true, series: [{ key: 'compraventas_notarios', label: 'Compraventas' }, { key: 'prestamos_compra_vivienda', label: 'Préstamos para comprar' }], aria: 'Compraventas y préstamos hipotecarios para comprar vivienda ante notario, 2014 a 2025' });
+  C('c_sinhip', 'sin_hipoteca', { x: 'anio', kind: 'bar', series: [{ key: 'sin_hipoteca_min', label: 'Mínimo (registro)' }, { key: 'sin_prestamo_notarios', label: 'Notarios' }], aria: 'Compras sin hipoteca según dos cálculos, 2014 a 2025' });
+  C('c_sinhip_pct', 'sin_hipoteca', { x: 'anio', zero: true, dec: 1, unit: ' %', height: 170, series: [{ key: 'pct_sin_hipoteca_min', label: '% mínimo (registro)' }, { key: 'pct_sin_prestamo_notarios', label: '% notarios' }], aria: 'Porcentaje de compras sin hipoteca según dos cálculos' });
+  C('c_alq_n', 'alquiler', { x: 'anio', zero: true, series: [{ key: 'prov_alquiladas', label: 'Provincia' }, { key: 'cap_alquiladas', label: 'León capital' }], aria: 'Viviendas alquiladas como residencia habitual, 2011 a 2024' });
+  C('c_alq_p', 'alquiler', { x: 'anio', zero: true, unit: ' €', series: [{ key: 'prov_alquiler_mediano_piso', label: 'Provincia' }, { key: 'cap_alquiler_mediano_piso', label: 'León capital' }], aria: 'Alquiler mensual mediano de un piso, 2011 a 2024' });
+  C('c_irpf_p', 'irpf', { x: 'anio', zero: true, series: [{ key: 'prov_con_viviendas_a_disposicion', label: 'Con viviendas a disposición' }, { key: 'prov_con_alquileres', label: 'Con ingresos por alquiler' }], aria: 'Declarantes de IRPF de la provincia con viviendas a disposición o con alquileres, 2013 a 2024' });
+  C('c_irpf_c', 'irpf', { x: 'anio', zero: true, series: [{ key: 'cap_con_viviendas_a_disposicion', label: 'Con viviendas a disposición' }, { key: 'cap_con_alquileres', label: 'Con ingresos por alquiler' }], aria: 'Declarantes de IRPF de León capital con viviendas a disposición o con alquileres, 2013 a 2024' });
+  const T = (name, cols) => dash.draw(name, (tb) => {
+    const d = dash.data('uso_viviendas');
+    tb.replaceChildren();
+    if (d.status !== 'ok') return;
+    d.data.forEach((r) => {
+      const tr = document.createElement('tr');
+      cols.forEach((k, j) => { const td = document.createElement('td'); td.textContent = j === 0 ? String(r[k]) : LV.fmt(r[k]); tr.appendChild(td); });
+      tb.appendChild(tr);
+    });
+  });
+  T('tb_uso_p', ['anio', 'prov_viviendas', 'prov_habitual_propietario', 'prov_arrendadas', 'prov_a_disposicion']);
+  T('tb_uso_c', ['anio', 'cap_uso_habitual', 'cap_alquiladas_habitual', 'cap_alquiladas_otros_usos', 'cap_a_disposicion']);
+  C('c_tur', 'turisticas', { x: 'fecha', xType: 'date', zero: true, series: [{ key: 'turisticas_provincia', label: 'Provincia' }, { key: 'turisticas_capital', label: 'León capital' }], aria: 'Viviendas de uso turístico en la provincia y la capital' });
+  // 6. Precios
+  C('c_precio', 'precios', { x: 'anio', zero: true, series: [{ key: 'tasado_capital', label: 'León capital' }, { key: 'tasado_provincia', label: 'Provincia' }, { key: 'tasado_espana', label: 'España' }], aria: 'Valor tasado de la vivienda en euros por metro cuadrado' });
+  C('c_precio_real', 'precios_reales', { x: 'anio', zero: true, series: [{ key: 'capital_real', label: 'León capital' }, { key: 'provincia_real', label: 'Provincia' }, { key: 'espana_real', label: 'España' }], aria: 'Valor tasado en euros de 2025' });
+  C('c_precio_renta', 'precios_reales', { x: 'anio', dec: 1, series: [{ key: 'indice_precio_capital', label: 'Valor tasado' }, { key: 'indice_renta_capital', label: 'Renta por hogar' }], aria: 'Índice de precio y renta por hogar en León capital, 2015 igual a 100' });
+
+  // 7. León capital
+  C('c_cap_pob', 'capital_serie', { x: 'anio', series: [{ key: 'poblacion_padron', label: 'Padrón' }, { key: 'poblacion_censo_anual', label: 'Censo anual' }], aria: 'Población de León capital a 1 de enero desde 1996' });
+  C('c_cap_ventas', 'capital_serie', { x: 'anio', zero: true, series: [{ key: 'compraventas', label: 'Total' }, { key: 'compraventas_segunda_mano', label: 'Segunda mano' }, { key: 'compraventas_nueva', label: 'Nueva' }], aria: 'Compraventas de vivienda en León capital desde 2004' });
+  C('c_cap_tam', 'capital_serie', { x: 'anio', dec: 1, height: 150, series: [{ key: 'personas_por_hogar_adrh', label: 'Personas por hogar' }], aria: 'Personas por hogar en León capital' });
+  C('c_cap_uni', 'capital_serie', { x: 'anio', dec: 1, unit: ' %', height: 150, colorOffset: 1, series: [{ key: 'pct_hogares_unipersonales_adrh', label: '% hogares de una persona' }], aria: 'Porcentaje de hogares de una persona en León capital' });
+  C('c_cap_inv', 'capital_inversion', { x: 'anio', zero: true, dec: 1, unit: ' %', height: 240,
+    bands: [{ lo: 'pct_estricta_min', hi: 'pct_estricta_max' }, { lo: 'pct_amplia_min', hi: 'pct_amplia_max' }],
+    series: [{ key: 'pct_estricta_min', label: 'Estricta, mín.' }, { key: 'pct_estricta_max', label: 'Estricta, máx.' }, { key: 'pct_amplia_min', label: 'Amplia, mín.' }, { key: 'pct_amplia_max', label: 'Amplia, máx.' }],
+    aria: 'Porcentaje de compras de vivienda de inversión en León capital, mínimo y máximo' });
+  dash.draw('tb_cap_inv', (tb) => {
+    const d = dash.data('capital_inversion');
+    tb.replaceChildren();
+    if (d.status !== 'ok') return;
+    const cols = [['anio'], ['compras'], ['empresas'], ['compradores_otra_provincia_estimados'], ['aumento_alquiler'], ['aumento_turisticas'], ['pct_estricta_min', 1], ['pct_estricta_max', 1], ['pct_amplia_min', 1], ['pct_amplia_max', 1], ['notas']];
+    d.data.forEach((r) => {
+      const tr = document.createElement('tr');
+      cols.forEach(([k, dec]) => { const td = document.createElement('td'); td.textContent = k === 'anio' || k === 'notas' ? String(r[k] || '') : LV.fmt(r[k], dec || 0); tr.appendChild(td); });
+      tb.appendChild(tr);
+    });
+  });
+  [['k_emin', 'pct_estricta_min'], ['k_emax', 'pct_estricta_max'], ['k_amin', 'pct_amplia_min'], ['k_amax', 'pct_amplia_max']]
+    .forEach(([n, f]) => LV.num(n, 'capital_inversion', f, { where: ['anio', 2025], dec: 1, unit: ' %' }));
+  [['k_nmin', 'estricta_min'], ['k_nmax', 'estricta_max'], ['k_t', 'compras']].forEach(([n, f]) => LV.num(n, 'capital_inversion', f, { where: ['anio', 2025] }));
+  LV.num('k_hog21', 'capital_serie', 'hogares_censo_2021', { where: ['anio', 2021] });
+
+  // 8. Todas las capitales
+  dash.draw('c_caps', (el) => {
+    const d = dash.data('capitales_resumen');
+    if (d.status !== 'ok') { el.classList.toggle('dash-skeleton', d.status === 'loading'); el.replaceChildren(); return; }
+    el.classList.remove('dash-skeleton');
+    el.replaceChildren();
+    const mid = (r) => (r.pct_estricta_min + r.pct_estricta_max) / 2;
+    const rows = d.data.filter((r) => r.pct_estricta_min != null && r.pct_amplia_max != null).sort((a, b) => mid(b) - mid(a));
+    const W = Math.max(300, el.clientWidth || 600), rowH = 18, top = 26, bottom = 6;
+    const H = top + rows.length * rowH + bottom;
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+      .attr('aria-label', 'Porcentaje de compras de inversión por capital de provincia, mínimo y máximo, estricta y amplia');
+    const g0 = svg.append('g').attr('class', 'tick');
+    let lw = 0;
+    rows.forEach((r) => { const t = g0.append('text').text(r.capital); lw = Math.max(lw, t.node().getComputedTextLength() || r.capital.length * 7); });
+    g0.remove();
+    const left = lw + 10, right = 44;
+    const x = d3.scaleLinear().domain([0, Math.max(10, d3.max(rows, (r) => r.pct_amplia_max))]).nice().range([left, W - right]);
+    svg.append('g').attr('transform', `translate(0,${top - 6})`)
+      .call(d3.axisTop(x).ticks(Math.max(2, Math.floor((W - left - right) / 70))).tickFormat((v) => `${v} %`).tickSize(-(rows.length * rowH)))
+      .call((g) => g.select('.domain').remove());
+    const tip = document.createElement('div'); tip.className = 'lv-tip'; tip.hidden = true; el.appendChild(tip);
+    rows.forEach((r, i) => {
+      const y = top + i * rowH;
+      const esLeon = r.codigo === '24089';
+      const g = svg.append('g');
+      g.append('text').attr('x', left - 6).attr('y', y + rowH / 2).attr('dy', '0.32em').attr('text-anchor', 'end')
+        .attr('class', 'lv-axis-label').style('font-weight', esLeon ? '600' : null).style('fill', esLeon ? 'var(--color-fg)' : null).text(r.capital);
+      g.append('rect').attr('x', x(r.pct_amplia_min)).attr('width', Math.max(1, x(r.pct_amplia_max) - x(r.pct_amplia_min)))
+        .attr('y', y + 3).attr('height', rowH - 6).attr('rx', 2).style('fill', LV.color(1)).style('fill-opacity', 0.35);
+      g.append('rect').attr('x', x(r.pct_estricta_min)).attr('width', Math.max(1, x(r.pct_estricta_max) - x(r.pct_estricta_min)))
+        .attr('y', y + 5).attr('height', rowH - 10).attr('rx', 2).style('fill', LV.color(0));
+      g.append('rect').attr('x', left).attr('y', y).attr('width', W - left - right).attr('height', rowH).style('fill', 'transparent')
+        .on('pointermove', (ev) => {
+          tip.replaceChildren();
+          const b = document.createElement('b'); b.textContent = `${r.capital} (${r.anio})`; tip.appendChild(b);
+          [['Estricta', r.pct_estricta_min, r.pct_estricta_max], ['Amplia', r.pct_amplia_min, r.pct_amplia_max]].forEach(([k, a, c]) => {
+            const dv = document.createElement('div'); const s1 = document.createElement('span'); s1.className = 'lv-tip-k'; s1.textContent = k + ': ';
+            const s2 = document.createElement('span'); s2.textContent = `${LV.fmt(a, 1)}–${LV.fmt(c, 1)} %`; dv.append(s1, s2); tip.appendChild(dv);
+          });
+          const dv = document.createElement('div'); dv.textContent = `${LV.fmt(r.compras)} compras`; tip.appendChild(dv);
+          tip.hidden = false;
+          const scale = (svg.node().getBoundingClientRect().width || W) / W;
+          const [px] = d3.pointer(ev, svg.node());
+          const tw = tip.offsetWidth, cw = el.clientWidth;
+          tip.style.left = Math.max(0, Math.min(cw - tw, px * scale + 12)) + 'px';
+          tip.style.top = (y * scale + rowH * scale + 2) + 'px';
+        })
+        .on('pointerleave', () => { tip.hidden = true; });
+    });
+  });
+  dash.draw('tb_caps', (tb) => {
+    const d = dash.data('capitales_resumen');
+    tb.replaceChildren();
+    if (d.status !== 'ok') return;
+    const cols = [['capital'], ['poblacion'], ['anio'], ['compras'], ['pct_estricta_min', 1], ['pct_estricta_max', 1], ['pct_amplia_min', 1], ['pct_amplia_max', 1], ['pct_estricta_media_5_anios', 1]];
+    [...d.data].sort((a, b) => String(a.capital).localeCompare(String(b.capital), 'es')).forEach((r) => {
+      const tr = document.createElement('tr'); tr.dataset.key = r.codigo;
+      cols.forEach(([k, dec]) => { const td = document.createElement('td'); td.textContent = k === 'capital' || k === 'anio' ? String(r[k] ?? '') : LV.fmt(r[k], dec || 0); tr.appendChild(td); });
+      tb.appendChild(tr);
+    });
+  });
+
+  // Cifras del texto
+  LV.num('t_v20', 'compraventas', 'compraventas_notarios', { where: ['anio', 2020] });
+  LV.num('t_v25', 'compraventas', 'compraventas_notarios', { where: ['anio', 2025] });
+  LV.num('t_dh', 'resumen', 'hogares_nuevos_2021_2026');
+  LV.num('t_term', 'resumen', 'terminadas_2021_2025');
+  LV.num('t_emin', 'inversion_anual', 'pct_estricta_min', { where: ['anio', 2025], dec: 1, unit: ' %' });
+  LV.num('t_emax', 'inversion_anual', 'pct_estricta_max', { where: ['anio', 2025], dec: 1, unit: ' %' });
+  C('c_inv', 'inversion_anual', { x: 'anio', zero: true, dec: 1, unit: ' %', height: 240,
+    bands: [{ lo: 'pct_estricta_min', hi: 'pct_estricta_max' }, { lo: 'pct_amplia_min', hi: 'pct_amplia_max' }],
+    series: [{ key: 'pct_estricta_min', label: 'Estricta, mín.' }, { key: 'pct_estricta_max', label: 'Estricta, máx.' }, { key: 'pct_amplia_min', label: 'Amplia, mín.' }, { key: 'pct_amplia_max', label: 'Amplia, máx.' }],
+    aria: 'Porcentaje de compras de vivienda que son de inversión, mínimo y máximo, 2016 a 2025' });
+  dash.draw('tb_inv', (tb) => {
+    const d = dash.data('inversion_anual');
+    tb.replaceChildren();
+    if (d.status !== 'ok') return;
+    const cols = [['anio'], ['compras'], ['empresas'], ['otra_provincia'], ['aumento_alquiler'], ['aumento_turisticas'], ['pct_estricta_min', 1], ['pct_estricta_max', 1], ['pct_amplia_min', 1], ['pct_amplia_max', 1], ['nota']];
+    d.data.forEach((r) => {
+      const tr = document.createElement('tr');
+      cols.forEach(([k, dec]) => { const td = document.createElement('td'); td.textContent = k === 'anio' || k === 'nota' ? String(r[k] || '') : LV.fmt(r[k], dec || 0); tr.appendChild(td); });
+      tb.appendChild(tr);
+    });
+  });
+  [['v_emin', 'pct_estricta_min'], ['v_emax', 'pct_estricta_max'], ['v_amin', 'pct_amplia_min'], ['v_amax', 'pct_amplia_max']]
+    .forEach(([n, f]) => LV.num(n, 'inversion_anual', f, { where: ['anio', 2025], dec: 1, unit: ' %' }));
+  [['v_nmin', 'estricta_min'], ['v_nmax', 'estricta_max'], ['v_t', 'compras']].forEach(([n, f]) => LV.num(n, 'inversion_anual', f, { where: ['anio', 2025] }));
+  [['v_med', 'alquiler_medio_2021_2024'], ['v_aeat', 'aumento_no_habitual_aeat_2024'], ['v_pmax', 'particulares_max_2024']].forEach(([n, f]) => LV.num(n, 'control_inversion', f));
+})();
+</script>

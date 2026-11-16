@@ -1,0 +1,19 @@
+{
+  "description": "Estimación anual (mínimo y máximo) de compras de inversión capitalista en la provincia de León, y aparte las de administraciones públicas y entidades sin ánimo de lucro, 2012–2025, generada con el framework vivienda_capitales.",
+  "edit": {
+    "at": "2026-11-16T18:36:02Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "provincia_inversion.json",
+    "url": "/_blob/00c825012bf0d850d92196b9a6147fee"
+  },
+  "title": "Provincia: compras de inversión capitalista",
+  "updated": {
+    "at": "2026-11-16T18:36:02Z",
+    "by": "Claude"
+  }
+}

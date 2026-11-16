@@ -1,0 +1,19 @@
+{
+  "description": "Anexos 1 y 2 del informe O-HB 2025 transcritos, hogares de alquiler del Censo 2021 y cotas del HHI calculadas con las tablas del O-HB, los tipos de titular y los edificios enteros del fichero CAT del Catastro (agosto de 2026).",
+  "edit": {
+    "at": "2026-11-12T16:26:30Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "csv",
+    "kind": "file",
+    "name": "barris.csv",
+    "url": "/_blob/0edaa9473cd136ff8faeb6b42d0a5294"
+  },
+  "title": "Propiedad, alquiler y cotas del HHI por barrio",
+  "updated": {
+    "at": "2026-11-12T16:26:30Z",
+    "by": "Claude"
+  }
+}

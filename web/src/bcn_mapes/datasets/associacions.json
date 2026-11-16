@@ -1,0 +1,19 @@
+{
+  "description": "Regresiones por sección censal del alquiler de particulares (SERPAVI) sobre cada medida de concentración, con controles de renta, alquiler, pisos turísticos y efectos fijos de distrito o barrio.",
+  "edit": {
+    "at": "2026-11-12T17:56:21Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "csv",
+    "kind": "file",
+    "name": "associacions.csv",
+    "url": "/_blob/a8bf6409f6c63cc1447f328ece3835b5"
+  },
+  "title": "Concentración y alquiler: coeficientes",
+  "updated": {
+    "at": "2026-11-12T17:56:21Z",
+    "by": "Claude"
+  }
+}

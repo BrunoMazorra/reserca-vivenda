@@ -1,0 +1,19 @@
+{
+  "description": "Población, compraventas, hogares, alquiler, valor tasado, viviendas turísticas y viviendas por tipo de propietario (Catastro) del municipio de León, 1996–2026, generado con el framework vivienda_capitales.",
+  "edit": {
+    "at": "2026-11-16T18:36:02Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "capital_serie.json",
+    "url": "/_blob/626e909e05c5f9c6fa69ccafd21cb5c2"
+  },
+  "title": "León capital: serie anual",
+  "updated": {
+    "at": "2026-11-16T18:36:02Z",
+    "by": "Claude"
+  }
+}

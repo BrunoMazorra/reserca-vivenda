@@ -1,0 +1,19 @@
+{
+  "description": "Compraventas por notarios y registro, hipotecas sobre vivienda y residencia del comprador, provincia y capital, 2007–2025.",
+  "edit": {
+    "at": "2026-11-16T16:40:20Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "compraventas.json",
+    "url": "/_blob/563a8742518a0cc5d1db4e645b0aa539"
+  },
+  "title": "Compraventas, hipotecas y compradores",
+  "updated": {
+    "at": "2026-11-16T16:40:20Z",
+    "by": "Claude"
+  }
+}

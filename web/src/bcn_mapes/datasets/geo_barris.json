@@ -1,0 +1,19 @@
+{
+  "description": "Polígonos de barrio del Ayuntamiento de Barcelona (copia en martgnz/bcn-geodata), simplificados.",
+  "edit": {
+    "at": "2026-11-12T15:22:38Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "geo_barris.json",
+    "url": "/_blob/679b292a929348be10d99debfbf6cbff"
+  },
+  "title": "Límites de los 73 barrios",
+  "updated": {
+    "at": "2026-11-12T15:22:38Z",
+    "by": "Claude"
+  }
+}

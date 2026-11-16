@@ -1,0 +1,19 @@
+{
+  "description": "Viviendas libres iniciadas y terminadas, y estimación de viviendas principales y no principales, provincia, 2001–2025 (Ministerio de Vivienda).",
+  "edit": {
+    "at": "2026-11-16T16:40:20Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "viviendas.json",
+    "url": "/_blob/df6bd8592f43805710256795a9307a36"
+  },
+  "title": "Parque de viviendas y obra nueva",
+  "updated": {
+    "at": "2026-11-16T16:40:20Z",
+    "by": "Claude"
+  }
+}

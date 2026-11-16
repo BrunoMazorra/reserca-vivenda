@@ -1,0 +1,19 @@
+{
+  "description": "Viviendas turísticas anunciadas en la provincia y en León capital, 2020–2026 (INE, experimental).",
+  "edit": {
+    "at": "2026-11-16T16:40:20Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "turisticas.json",
+    "url": "/_blob/21e04a40131d2e2dd6043f13d53e50fe"
+  },
+  "title": "Viviendas de uso turístico",
+  "updated": {
+    "at": "2026-11-16T16:40:20Z",
+    "by": "Claude"
+  }
+}

@@ -1,0 +1,477 @@
+<title>Atles de l'habitatge</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: sticky top bar with four routes; each route is a section of this page.
+   Data pages sit in a centred column; the Catalunya map takes the full stage under the bar. */
+:root {
+  --site-bg: #edf0ee;
+  --site-ink: #17201c;
+  --site-muted: #586460;
+  --site-line: rgba(23, 32, 28, 0.13);
+  --site-card: #ffffff;
+  --site-accent: #c9552a;
+  --site-accent-soft: rgba(201, 85, 42, 0.12);
+  --site-display: 'Archivo', system-ui, -apple-system, sans-serif;
+  --site-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --topbar-h: 58px;
+
+  /* Tokens the data pages expect */
+  --color-fg: #17201c;
+  --color-fg-muted: #586460;
+  --color-bg: #edf0ee;
+  --color-panel: #ffffff;
+  --color-border-line: rgba(23, 32, 28, 0.12);
+  --color-ok: #1d7f47;
+  --color-warn: #a86b12;
+  --color-bad: #b8342a;
+  --font-anthropic-sans: 'Archivo', system-ui, -apple-system, sans-serif;
+  --font-anthropic-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --cds-font-size-caption: 12.5px;
+  --cds-font-size-body: 15px;
+  --cds-font-size-heading: 19px;
+  --cds-font-size-title: 30px;
+  --cds-font-weight-medium: 600;
+  --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 12px; --cds-gap-lg: 18px; --cds-gap-xl: 32px;
+  --cds-pad-xs: 4px; --cds-pad-sm: 6px; --cds-pad-md: 10px; --cds-pad-lg: 18px; --cds-pad-xl: 28px;
+  --cds-radius: 10px;
+  --cds-chart-muted: #c6cdc9;
+  --cds-chart-grid: #e4e8e5;
+  --cds-chart-axis: #c2c9c5;
+  --cds-chart-reference: #7a8580;
+  --cds-chart-status-critical: #b8342a;
+  --cds-text-secondary: #586460;
+  --cds-surface-popover: #ffffff;
+  --cds-border: rgba(23, 32, 28, 0.16);
+  --cds-shadow-popover: 0 6px 18px rgba(16, 24, 20, 0.14);
+  --cds-dur-slow: 400ms;
+  --cds-ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --chart-1: #2a78d6; --chart-2: #eb6834; --chart-3: #1baf7a; --chart-4: #eda100;
+  --chart-5: #e87ba4; --chart-6: #008300; --chart-7: #6250d6; --chart-8: #e34948;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --site-bg: #101513; --site-ink: #e2e8e5; --site-muted: #95a39d; --site-line: rgba(226, 232, 229, 0.13);
+    --site-card: #18201d; --site-accent: #ef7d4c; --site-accent-soft: rgba(239, 125, 76, 0.16);
+    --color-fg: #e2e8e5; --color-fg-muted: #95a39d; --color-bg: #101513; --color-panel: #18201d;
+    --color-border-line: rgba(226, 232, 229, 0.12); --color-ok: #4cc283; --color-warn: #e0a64a; --color-bad: #f06d62;
+    --cds-chart-muted: #4b5551; --cds-chart-grid: #26302c; --cds-chart-axis: #3a4440; --cds-chart-reference: #8f9b96;
+    --cds-chart-status-critical: #f06d62; --cds-text-secondary: #95a39d; --cds-surface-popover: #1f2825;
+    --cds-border: rgba(226, 232, 229, 0.16); --cds-shadow-popover: 0 6px 18px rgba(0, 0, 0, 0.45);
+    --chart-1: #3987e5; --chart-2: #d95926; --chart-3: #199e70; --chart-4: #c98500;
+    --chart-5: #d55181; --chart-6: #008300; --chart-7: #9085e9; --chart-8: #e66767;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --site-bg: #101513; --site-ink: #e2e8e5; --site-muted: #95a39d; --site-line: rgba(226, 232, 229, 0.13);
+  --site-card: #18201d; --site-accent: #ef7d4c; --site-accent-soft: rgba(239, 125, 76, 0.16);
+  --color-fg: #e2e8e5; --color-fg-muted: #95a39d; --color-bg: #101513; --color-panel: #18201d;
+  --color-border-line: rgba(226, 232, 229, 0.12); --color-ok: #4cc283; --color-warn: #e0a64a; --color-bad: #f06d62;
+  --cds-chart-muted: #4b5551; --cds-chart-grid: #26302c; --cds-chart-axis: #3a4440; --cds-chart-reference: #8f9b96;
+  --cds-chart-status-critical: #f06d62; --cds-text-secondary: #95a39d; --cds-surface-popover: #1f2825;
+  --cds-border: rgba(226, 232, 229, 0.16); --cds-shadow-popover: 0 6px 18px rgba(0, 0, 0, 0.45);
+  --chart-1: #3987e5; --chart-2: #d95926; --chart-3: #199e70; --chart-4: #c98500;
+  --chart-5: #d55181; --chart-6: #008300; --chart-7: #9085e9; --chart-8: #e66767;
+}
+
+body { background: var(--site-bg); color: var(--site-ink); font-family: var(--site-display); font-size: 15px; line-height: 1.5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--site-card); }
+a { color: inherit; }
+.wrap { max-width: 1140px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* Top bar */
+.site-top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--site-card); border-bottom: 1px solid var(--site-line); }
+.site-top-in { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; min-height: var(--topbar-h); flex-wrap: wrap; padding-block: 8px; }
+.brand { display: inline-flex; align-items: baseline; gap: 10px; text-decoration: none; font-weight: 780; font-stretch: 118%; font-size: 18px; letter-spacing: -0.01em; white-space: nowrap; }
+.brand-mark { width: 12px; height: 12px; border-radius: 3px; background: var(--site-accent); align-self: center; box-shadow: 4px 4px 0 0 var(--site-ink); }
+.site-nav { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav a { text-decoration: none; font-size: 14px; font-weight: 560; color: var(--site-muted); padding: 7px 12px; border-radius: 999px; }
+.site-nav a:hover { color: var(--site-ink); background: var(--site-accent-soft); }
+.site-nav a[aria-current="page"] { color: var(--site-ink); background: var(--site-accent-soft); box-shadow: inset 0 0 0 1px var(--site-accent); }
+.site-nav a:focus-visible, .tabs a:focus-visible, .card:focus-visible, .brand:focus-visible { outline: 2px solid var(--site-accent); outline-offset: 2px; }
+
+/* Shared page header */
+.pg-head { padding-block: 28px 18px; display: flex; flex-direction: column; gap: 12px; }
+.eyebrow { margin: 0; font-family: var(--site-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--site-muted); }
+.pg-title { margin: 0; font-weight: 780; font-stretch: 115%; font-size: clamp(28px, 4.2vw, 40px); line-height: 1.05; letter-spacing: -0.015em; text-wrap: balance; }
+.pg-intro { margin: 0; max-width: 68ch; color: var(--site-muted); }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1px solid var(--site-line); }
+.tabs a { text-decoration: none; font-size: 14px; font-weight: 560; color: var(--site-muted); padding: 9px 12px 10px; border-bottom: 2px solid transparent; margin-bottom: -1px; display: inline-flex; gap: 8px; align-items: baseline; }
+.tabs a:hover { color: var(--site-ink); }
+.tabs a[aria-current="page"] { color: var(--site-ink); border-bottom-color: var(--site-accent); }
+.lang { font-family: var(--site-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--site-muted); border: 1px solid var(--site-line); border-radius: 4px; padding: 0 4px; }
+.pg-body { padding-block: 8px 48px; }
+
+/* Data pages */
+.dashroot { font-family: var(--font-anthropic-sans); color: var(--color-fg); font-size: var(--cds-font-size-body); line-height: 1.5; min-width: 0; }
+.dashroot .dash-select { font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg); background-color: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 8px; padding: 6px 28px 6px 10px; appearance: none; -webkit-appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--color-fg-muted) 50%), linear-gradient(135deg, var(--color-fg-muted) 50%, transparent 50%); background-position: calc(100% - 15px) 50%, calc(100% - 10px) 50%; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
+.dashroot .dash-skeleton { position: relative; color: transparent !important; }
+.dashroot .dash-skeleton > * { visibility: hidden; }
+.dashroot .dash-skeleton::after { content: ""; position: absolute; inset: 0; border-radius: 4px; background: var(--cds-chart-grid); }
+
+/* Home */
+.home { padding-block: 40px 56px; display: flex; flex-direction: column; gap: 36px; }
+.hero { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 28px; align-items: end; }
+.hero h1 { margin: 0; font-weight: 800; font-stretch: 122%; font-size: clamp(40px, 7vw, 76px); line-height: 0.95; letter-spacing: -0.025em; text-wrap: balance; }
+.hero .lead { margin: 0; font-size: 17px; color: var(--site-muted); max-width: 46ch; }
+.scale { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 2px solid var(--site-ink); }
+.scale span { font-family: var(--site-mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--site-muted); padding-top: 8px; }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.card { position: relative; display: flex; flex-direction: column; gap: 12px; text-decoration: none; background: var(--site-card); border: 1px solid var(--site-line); border-radius: 14px; padding: 22px; min-width: 0; transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease; }
+.card:hover { transform: translateY(-2px); border-color: var(--site-accent); box-shadow: 0 10px 28px rgba(16, 24, 20, 0.08); }
+.card h2 { margin: 0; font-weight: 760; font-stretch: 112%; font-size: 24px; line-height: 1.1; letter-spacing: -0.01em; }
+.card p { margin: 0; color: var(--site-muted); }
+.card ul { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.card .meta { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-top: auto; padding-top: 6px; font-size: 13px; color: var(--site-muted); }
+.card .go { margin-left: auto; font-weight: 640; color: var(--site-ink); }
+.card-art { height: 92px; border-radius: 10px; background: var(--site-bg); overflow: hidden; }
+.card-art svg { display: block; width: 100%; height: 100%; }
+.note { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 8px 28px; border-top: 1px solid var(--site-line); padding-top: 20px; }
+.note h2 { margin: 0; font-size: 15px; font-weight: 700; }
+.note p { margin: 0; color: var(--site-muted); max-width: 70ch; }
+
+/* Catalunya stage */
+.cat-stage { height: calc(100vh - var(--topbar-h)); height: calc(100svh - var(--topbar-h) - env(safe-area-inset-top, 0px)); min-height: 560px; position: relative; }
+#pg-catalunya .cat-stage > #app { position: absolute; inset: 0; height: auto; }
+
+.site-foot { padding-block: 22px 32px; border-top: 1px solid var(--site-line); color: var(--site-muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+body.on-cat .site-foot { display: none; }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .cards, .scale { grid-template-columns: minmax(0, 1fr); }
+  .scale { display: none; }
+  .note { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .site-top-in { gap: 6px; }
+  .site-nav { width: 100%; flex-wrap: nowrap; overflow-x: auto; }
+  .site-nav a { padding: 6px 10px; white-space: nowrap; }
+  :root { --topbar-h: 96px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+  .card:hover { transform: none; }
+}
+/*__PAGE_CSS__*/
+</style>
+
+<header class="site-top">
+  <div class="wrap site-top-in">
+    <a class="brand" href="#inici"><span class="brand-mark" aria-hidden="true"></span>Atles de l'habitatge</a>
+    <nav class="site-nav" aria-label="Seccions del web">
+      <a href="#inici" data-route="inici">Inici</a>
+      <a href="#ciutats" data-route="ciutats">Ciutats</a>
+      <a href="#catalunya" data-route="catalunya">Mapa de Catalunya</a>
+      <a href="#barcelona" data-route="barcelona">Barcelona</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section id="pg-inici" class="pg">
+    <div class="wrap home">
+      <div class="hero">
+        <div>
+          <p class="eyebrow">Recerca amb dades oficials</p>
+          <h1>Atles de l'habitatge</h1>
+        </div>
+        <p class="lead">Població, construcció, propietat i preus de l'habitatge, ordenats en tres escales: ciutats concretes, el conjunt de Catalunya i la ciutat de Barcelona.</p>
+      </div>
+      <div>
+        <div class="scale" aria-hidden="true"><span>Escala: ciutat i província</span><span>Escala: país</span><span>Escala: barri</span></div>
+        <div class="cards">
+          <a class="card" href="#ciutats">
+            <div class="card-art" aria-hidden="true">
+              <svg viewBox="0 0 300 92" preserveAspectRatio="none"><polyline points="0,70 30,66 60,68 90,60 120,62 150,52 180,55 210,40 240,44 270,30 300,34" fill="none" stroke="var(--chart-1)" stroke-width="2.5"/><polyline points="0,80 30,78 60,79 90,76 120,74 150,73 180,70 210,68 240,66 270,62 300,60" fill="none" stroke="var(--chart-2)" stroke-width="2.5"/></svg>
+            </div>
+            <h2>Ciutats</h2>
+            <p>Fitxes de ciutat amb sèries llargues de població, llars, construcció, compravendes i preus.</p>
+            <ul><li>León i la seva província</li></ul>
+            <div class="meta"><span class="lang">ES</span><span>1 ciutat</span><span class="go">Obre →</span></div>
+          </a>
+          <a class="card" href="#catalunya">
+            <div class="card-art" aria-hidden="true">
+              <svg viewBox="0 0 300 92" preserveAspectRatio="none"><g fill="var(--chart-2)"><rect x="40" y="62" width="10" height="30"/><rect x="58" y="70" width="10" height="22"/><rect x="76" y="54" width="10" height="38"/><rect x="94" y="74" width="10" height="18"/><rect x="112" y="40" width="10" height="52"/><rect x="130" y="66" width="10" height="26"/><rect x="148" y="12" width="10" height="80"/><rect x="166" y="34" width="10" height="58"/><rect x="184" y="58" width="10" height="34"/><rect x="202" y="72" width="10" height="20"/><rect x="220" y="64" width="10" height="28"/><rect x="238" y="78" width="10" height="14"/></g></svg>
+            </div>
+            <h2>Mapa de Catalunya</h2>
+            <p>Relleu 3D de la població per municipis, de 1981 al 2026, al costat dels habitatges nous per comarca.</p>
+            <ul><li>Densitat i creixement de la població</li><li>Habitatges iniciats per habitant</li></ul>
+            <div class="meta"><span class="lang">CA</span><span>Mapa interactiu</span><span class="go">Obre →</span></div>
+          </a>
+          <a class="card" href="#barcelona">
+            <div class="card-art" aria-hidden="true">
+              <svg viewBox="0 0 300 92" preserveAspectRatio="none"><g fill="var(--chart-1)"><rect x="20" y="10" width="20" height="20" rx="3"/><rect x="44" y="10" width="20" height="20" rx="3"/><rect x="68" y="10" width="20" height="20" rx="3"/><rect x="92" y="10" width="20" height="20" rx="3" fill-opacity="0.6"/><rect x="116" y="10" width="20" height="20" rx="3" fill-opacity="0.45"/><rect x="20" y="34" width="20" height="20" rx="3" fill-opacity="0.45"/><rect x="44" y="34" width="20" height="20" rx="3" fill-opacity="0.3"/><rect x="68" y="34" width="20" height="20" rx="3" fill-opacity="0.3"/></g><g fill="var(--cds-chart-muted)"><rect x="92" y="34" width="20" height="20" rx="3"/><rect x="116" y="34" width="20" height="20" rx="3"/><rect x="20" y="58" width="20" height="20" rx="3"/><rect x="44" y="58" width="20" height="20" rx="3"/><rect x="68" y="58" width="20" height="20" rx="3"/><rect x="92" y="58" width="20" height="20" rx="3"/><rect x="116" y="58" width="20" height="20" rx="3"/></g><polyline points="160,74 190,62 215,66 240,44 265,48 290,24" fill="none" stroke="var(--chart-2)" stroke-width="2.5"/></svg>
+            </div>
+            <h2>Barcelona</h2>
+            <p>Qui és propietari dels pisos de lloguer, on es concentra la propietat per barris i què va passar amb el topall del 2024.</p>
+            <ul><li>Lloguer i grans propietaris</li><li>Propietat per barris, amb mapes</li></ul>
+            <div class="meta"><span class="lang">CA</span><span class="lang">ES</span><span>2 pàgines</span><span class="go">Obre →</span></div>
+          </a>
+        </div>
+      </div>
+      <div class="note">
+        <h2>Com està fet</h2>
+        <p>Totes les xifres surten de fonts públiques: INE, Ministeri d'Habitatge, fiances de l'INCASÒL, cadastre, registres notarials i informes de l'Observatori Metropolità de l'Habitatge. Cada pàgina diu la font al costat de cada gràfic. Algunes pàgines encara són en castellà; les marca l'etiqueta ES. El codi de l'anàlisi de Barcelona és al repositori <a href="https://github.com/BrunoMazorra/reserca-vivenda" target="_blank" rel="noopener">reserca-vivenda</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pg-ciutats" class="pg" hidden>
+    <div class="wrap pg-head">
+      <p class="eyebrow">Ciutats</p>
+      <h1 class="pg-title">Fitxes de ciutat</h1>
+      <p class="pg-intro">Cada fitxa reuneix població, llars, construcció, compravendes, compres d'inversió i preus d'una ciutat i la seva província.</p>
+      <nav class="tabs" aria-label="Ciutats">
+        <a href="#ciutats" aria-current="page">León <span class="lang">ES</span></a>
+      </nav>
+    </div>
+    <div class="wrap pg-body">
+      <div class="dashroot" data-page="leon">
+<!--__LEON__-->
+      </div>
+    </div>
+  </section>
+
+  <section id="pg-catalunya" class="pg" hidden>
+    <div class="cat-stage">
+<!--__CATALUNYA__-->
+    </div>
+  </section>
+
+  <section id="pg-barcelona" class="pg" hidden>
+    <div class="wrap pg-head">
+      <p class="eyebrow">Barcelona</p>
+      <h1 class="pg-title">Propietat i lloguer a Barcelona</h1>
+      <p class="pg-intro">Dues anàlisis de la mateixa pregunta: si la propietat de l'habitatge està prou concentrada per fixar preus. La primera mira el lloguer i els grups propietaris; la segona, la propietat barri a barri.</p>
+      <nav class="tabs" aria-label="Pàgines de Barcelona">
+        <a href="#barcelona" data-sub="barcelona">Lloguer i grans propietaris <span class="lang">CA</span></a>
+        <a href="#barcelona-mapes" data-sub="barcelona-mapes">Propietat per barris <span class="lang">ES</span></a>
+      </nav>
+    </div>
+    <div class="wrap pg-body">
+      <div class="dashroot" data-page="bcn_lloguer" data-sub-of="barcelona">
+<!--__BCN_LLOGUER__-->
+      </div>
+      <div class="dashroot" data-page="bcn_mapes" data-sub-of="barcelona-mapes" hidden>
+<!--__BCN_MAPES__-->
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap site-foot">
+  <span>Atles de l'habitatge</span>
+  <span>Dades públiques, citades a cada pàgina</span>
+  <a href="https://github.com/BrunoMazorra/reserca-vivenda" target="_blank" rel="noopener">Codi de l'anàlisi de Barcelona</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+window.SITE = {pages: {}, started: {}};
+
+/* Minimal runtime for the data pages: dash.data, dash.calc, dash.draw and dash.colors. */
+SITE.makeDash = function (root, sources) {
+  const store = {};
+  const calcs = {};
+  const draws = new Map();
+  const memo = new Map();
+  let queued = false;
+  let ready = false;
+  const colors = [1, 2, 3, 4, 5, 6, 7, 8].map((i) => 'var(--chart-' + i + ')');
+
+  function parse(text, format) {
+    if (format === 'csv' || format === 'tsv') {
+      const rows = (format === 'csv' ? d3.csvParse : d3.tsvParse)(text);
+      return {data: rows.slice(), columns: rows.columns || []};
+    }
+    if (format === 'text') return {data: text, columns: []};
+    const v = JSON.parse(text);
+    let rows = null;
+    if (Array.isArray(v)) rows = v;
+    else if (v && Array.isArray(v.rows)) rows = v.rows;
+    else if (v && Array.isArray(v.data)) rows = v.data;
+    else if (v && Array.isArray(v.results)) rows = v.results;
+    if (rows) return {data: rows, columns: rows.length ? Object.keys(rows[0]) : [], meta: v && v.meta};
+    return {data: v, columns: []};
+  }
+  function load(id) {
+    const s = sources[id];
+    store[id] = {status: 'loading', data: [], columns: [], refreshing: false, truncated: false};
+    fetch(s.url)
+      .then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then((t) => {
+        const p = parse(t, s.format);
+        store[id] = {status: 'ok', data: p.data, columns: p.columns, meta: p.meta, refreshing: false, truncated: false};
+      })
+      .catch((e) => { store[id] = {status: 'error', data: [], columns: [], message: String(e)}; })
+      .finally(() => { memo.clear(); schedule(); });
+  }
+  function data(id) {
+    if (calcs[id]) {
+      if (memo.has(id)) return memo.get(id);
+      const c = calcs[id];
+      const ins = (c.inputs || []).map((i) => ({id: i, d: data(i)}));
+      let res;
+      if (ins.some((x) => x.d.status === 'error')) res = {status: 'error', data: null, columns: []};
+      else if (ins.every((x) => x.d.status === 'ok')) {
+        try {
+          const args = ins.map((x) => (calcs[x.id] ? x.d.data : (Array.isArray(x.d.data) ? x.d.data : [])));
+          const v = c.fn.apply(null, args);
+          res = {status: 'ok', data: v, columns: Array.isArray(v) && v.length && typeof v[0] === 'object' ? Object.keys(v[0]) : [], truncated: false};
+        } catch (e) {
+          console.error('[calc ' + id + ']', e);
+          res = {status: 'error', data: null, columns: [], message: String(e)};
+        }
+      } else res = {status: 'loading', data: null, columns: []};
+      memo.set(id, res);
+      return res;
+    }
+    if (!store[id]) {
+      if (!sources[id]) return {status: 'missing', data: [], columns: []};
+      load(id);
+    }
+    return store[id];
+  }
+  function runDraw(name) {
+    const d = draws.get(name);
+    if (!d) return;
+    root.querySelectorAll('[data-draw="' + name + '"]').forEach((el) => {
+      const hiddenParent = el.closest('[hidden]');
+      if (hiddenParent && root.contains(hiddenParent)) return;
+      try {
+        if (typeof d.def === 'function') d.def(el);
+        else {
+          let made = d.made.get(el);
+          if (!d.made.has(el)) {
+            el.replaceChildren();
+            made = d.def.mount ? d.def.mount(el) : undefined;
+            d.made.set(el, made);
+          }
+          if (d.def.update) d.def.update(el, made);
+        }
+      } catch (e) {
+        console.error('[draw ' + name + ']', e);
+      }
+    });
+  }
+  function runAll() {
+    queued = false;
+    listeners.forEach((fn) => { try { fn(); } catch (e) { console.error(e); } });
+    draws.forEach((_, name) => runDraw(name));
+  }
+  function schedule() {
+    if (!ready || queued) return;
+    queued = true;
+    setTimeout(runAll, 0);
+  }
+  const listeners = [];
+  let lastW = 0;
+  const ro = new ResizeObserver(() => {
+    const w = Math.round(root.clientWidth);
+    if (w && w !== lastW) { lastW = w; schedule(); }
+  });
+  ro.observe(root);
+  return {
+    data,
+    colors,
+    calc: (id, def) => { calcs[id] = def; memo.delete(id); },
+    loader: () => {},
+    draw: (name, def) => {
+      if (def) draws.set(name, {def, made: new Map()});
+      if (ready) runDraw(name);
+    },
+    onData: (fn) => { listeners.push(fn); if (ready) fn(); },
+    params: () => ({}),
+    setParams: () => {},
+    resetParams: () => {},
+    setLink: () => {},
+    refresh: () => {},
+    _start: () => { ready = true; schedule(); },
+  };
+};
+
+SITE.startPage = function (key) {
+  if (SITE.started[key]) return;
+  const page = SITE.pages[key];
+  const root = document.querySelector('[data-page="' + key + '"]');
+  if (!page || !root) return;
+  SITE.started[key] = true;
+  const dash = SITE.makeDash(root, page.sources);
+  try { page.run(dash); } catch (e) { console.error('[page ' + key + ']', e); }
+  dash._start();
+};
+
+SITE.loadScript = function (src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('No s\'ha pogut carregar ' + src));
+    document.head.appendChild(s);
+  });
+};
+
+SITE.startCatalunya = function () {
+  if (SITE.started.catalunya) return;
+  SITE.started.catalunya = true;
+  Promise.all([
+    SITE.loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js')
+      .then(() => SITE.loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js')),
+    fetch('data/catalunya.json').then((r) => r.json()),
+  ]).then(([, d]) => {
+    window.__CAT_DATA__ = d;
+    window.initCatalunya();
+  }).catch((e) => {
+    console.error('[catalunya]', e);
+    const stage = document.querySelector('#pg-catalunya .cat-stage');
+    if (stage) {
+      const p = document.createElement('p');
+      p.className = 'wrap';
+      p.textContent = "No s'ha pogut carregar el mapa.";
+      stage.prepend(p);
+    }
+  });
+};
+
+SITE.routes = {
+  inici: {pg: 'inici'},
+  ciutats: {pg: 'ciutats', pages: ['leon']},
+  catalunya: {pg: 'catalunya', cat: true},
+  barcelona: {pg: 'barcelona', sub: 'barcelona', pages: ['bcn_lloguer']},
+  'barcelona-mapes': {pg: 'barcelona', sub: 'barcelona-mapes', pages: ['bcn_mapes']},
+};
+
+SITE.current = null;
+SITE.route = function () {
+  const h = location.hash.replace(/^#/, '');
+  const key = SITE.routes[h] ? h : 'inici';
+  const r = SITE.routes[key];
+  document.querySelectorAll('main > .pg').forEach((s) => { s.hidden = s.id !== 'pg-' + r.pg; });
+  document.querySelectorAll('.site-nav a').forEach((a) => {
+    if (a.dataset.route === r.pg) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  });
+  if (r.sub) {
+    document.querySelectorAll('[data-sub-of]').forEach((el) => { el.hidden = el.dataset.subOf !== r.sub; });
+    document.querySelectorAll('.tabs a[data-sub]').forEach((a) => {
+      if (a.dataset.sub === r.sub) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+  }
+  document.body.classList.toggle('on-cat', !!r.cat);
+  (r.pages || []).forEach(SITE.startPage);
+  if (r.cat) SITE.startCatalunya();
+  if (SITE.current !== null && SITE.current !== key) window.scrollTo(0, 0);
+  SITE.current = key;
+};
+</script>
+<script>
+/*__PAGE_JS__*/
+</script>
+<script>
+window.addEventListener('hashchange', SITE.route);
+SITE.route();
+</script>

@@ -1,0 +1,19 @@
+{
+  "description": "Viviendas alquiladas como residencia habitual y alquiler mediano de un piso, provincia y León capital, 2011–2024 (SERPAVI, Ministerio de Vivienda).",
+  "edit": {
+    "at": "2026-11-16T16:51:14Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "alquiler.json",
+    "url": "/_blob/a265cacc70f6334e880770b61dedbbcd"
+  },
+  "title": "Viviendas alquiladas y alquiler mediano",
+  "updated": {
+    "at": "2026-11-16T16:51:14Z",
+    "by": "Claude"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "description": "Serie anual de la provincia de León del framework vivienda_capitales, con las viviendas por tipo de propietario del Catastro (2024–2026).",
+  "edit": {
+    "at": "2026-11-16T18:36:02Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "provincia_serie.json",
+    "url": "/_blob/3d303b8c2333b35dd087aaed16f8c969"
+  },
+  "title": "Provincia: serie anual del framework",
+  "updated": {
+    "at": "2026-11-16T18:36:02Z",
+    "by": "Claude"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "description": "Porcentaje de compraventas de vivienda con comprador persona jurídica en Castilla y León, 2015–2025 (Colegio de Registradores).",
+  "edit": {
+    "at": "2026-11-16T17:07:27Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "empresas.json",
+    "url": "/_blob/8f467b18d4fff85aa386a5c2801a370d"
+  },
+  "title": "Compras de vivienda por empresas",
+  "updated": {
+    "at": "2026-11-16T17:07:27Z",
+    "by": "Claude"
+  }
+}

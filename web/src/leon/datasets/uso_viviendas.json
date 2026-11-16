@@ -1,0 +1,19 @@
+{
+  "description": "Viviendas de particulares por uso (habitual, alquilada, a disposición), provincia y León capital, 2023 y 2024 (AEAT).",
+  "edit": {
+    "at": "2026-11-16T16:51:14Z",
+    "via": "claude"
+  },
+  "fixed": true,
+  "source": {
+    "format": "json",
+    "kind": "file",
+    "name": "uso_viviendas.json",
+    "url": "/_blob/0a8ba2876260e04d597f37522daf2f90"
+  },
+  "title": "Uso de las viviendas según Hacienda",
+  "updated": {
+    "at": "2026-11-16T16:51:14Z",
+    "by": "Claude"
+  }
+}
