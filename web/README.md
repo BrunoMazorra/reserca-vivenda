@@ -1,8 +1,12 @@
 # Atles de l'habitatge (web)
 
-El web que reuneix les pàgines del projecte:
-[Atles de l'habitatge](https://claude.ai/artifact/ESAu2nXLjeUhZ2DngwFbL9).
-És una pàgina de claude.ai i és privada fins que es comparteix des del seu menú.
+El web que reuneix les pàgines del projecte. És públic a
+**https://brunomazorra.github.io/reserca-vivenda/** i es torna a publicar sol cada vegada
+que canvia `web/` o la pàgina de Barcelona (workflow `.github/workflows/pages.yml`).
+
+També n'hi ha una còpia a claude.ai,
+[Atles de l'habitatge](https://claude.ai/artifact/ESAu2nXLjeUhZ2DngwFbL9), privada fins que
+es comparteix des del seu menú.
 
 ## Pàgines
 
@@ -44,5 +48,6 @@ Per a un servidor estàtic (per exemple GitHub Pages), la versió autònoma:
 ```bash
 python3 -I web/build.py --pages _site
 ```
+
 Si es torna a exportar la pàgina de Barcelona (`concentracio/analisi/exporta_pagina.py`),
 n'hi ha prou amb tornar a executar `build.py`.
