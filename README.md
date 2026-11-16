@@ -48,7 +48,7 @@ Lectures
 
 | Tema | Pregunta central | Estat |
 |---|---|---|
-| [Concentració del mercat](concentracio/) | La propietat (o el control) de l'habitatge està prou concentrada perquè hi hagi poder de mercat? | En curs |
+| [Concentració del mercat de lloguer](concentracio/) | Hi ha poder de mercat en el lloguer, i quina part es capitalitza en el preu de compra? | En curs |
 | Demanda: immigració i estrangers | Quina part de la pressió sobre preus ve de població nova resident i quina de compradors o llogaters estrangers (residents temporals, segona residència, turisme)? | Pendent |
 | Crèdit | Quant expliquen els preus les condicions de finançament (tipus d'interès, LTV, oferta de crèdit)? | Pendent |
 | Cost de construcció (sense sòl) | Quant costa construir un m² i com ha evolucionat respecte al preu de venda? | Pendent |
@@ -63,6 +63,8 @@ Els temes es toquen entre ells. Uns quants punts de contacte que convé tenir pr
   menys el cost de construir.
 - *Demanda ↔ crèdit:* compradors que no depenen del crèdit local.
 - *Concentració ↔ regulació:* la definició legal de "gran tenidor" canvia incentius.
+- *Concentració ↔ crèdit:* el poder de mercat en el lloguer passa al preu de compra només
+  si les llars poden arbitrar entre llogar i comprar, i això depèn de l'accés al crèdit.
 
 ## Estructura del repositori
 
