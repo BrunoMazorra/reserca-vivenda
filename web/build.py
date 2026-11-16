@@ -7,11 +7,16 @@ Entrades (src/):
 - catalunya/page.html: el mapa 3D, una pàgina normal amb les dades dins.
 
 Sortida (dist/): index.html i data/<pàgina>/<dataset>.<ext>.
+- dist/index.html és per a claude.ai, que hi afegeix la capçalera HTML.
+- Amb --pages DIR, a més, escriu a DIR una versió autònoma (amb <!doctype>, <head> i
+  .nojekyll) per servir des de GitHub Pages o qualsevol servidor estàtic.
 
 Ús:
     python3 -I web/build.py
+    python3 -I web/build.py --pages _site
 """
 
+import argparse
 import json
 import re
 import shutil
@@ -130,7 +135,31 @@ def build_catalunya():
     return css, markup, js
 
 
+HEAD = (
+    '<!doctype html>\n<html lang="ca">\n<head>\n<meta charset="utf-8">\n'
+    '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
+    '<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);'
+    'padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}'
+    '[hidden]{display:none!important}</style>\n'
+)
+
+
+def standalone(shell, out):
+    """Versió autònoma: el que hi ha abans de la barra superior va al <head>."""
+    i = shell.index('<header class="site-top">')
+    html = HEAD + shell[:i].strip() + "\n</head>\n<body>\n" + shell[i:].strip() + "\n</body>\n</html>\n"
+    if out.exists():
+        shutil.rmtree(out)
+    shutil.copytree(DIST / "data", out / "data")
+    (out / "index.html").write_text(html, encoding="utf-8")
+    (out / ".nojekyll").write_text("", encoding="utf-8")
+    print(f"versió autònoma -> {out}")
+
+
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--pages", type=Path, help="carpeta on escriure la versió autònoma")
+    args = ap.parse_args()
     if DIST.exists():
         shutil.rmtree(DIST)
     DIST.mkdir()
@@ -187,6 +216,8 @@ def main():
     (DIST / "index.html").write_text(shell, encoding="utf-8")
     total = sum(f.stat().st_size for f in DIST.rglob("*") if f.is_file())
     print(f"index.html {len(shell) / 1024:.0f} KB, {len(list(DIST.rglob('*.*')))} fitxers, {total / 1024 / 1024:.1f} MB")
+    if args.pages:
+        standalone(shell, args.pages.resolve())
 
 
 if __name__ == "__main__":

@@ -38,5 +38,11 @@ python3 -I web/build.py
 ```
 
 Després es publica `dist/index.html` amb els fitxers de `dist/data/` al mateix artefacte.
+
+Per a un servidor estàtic (per exemple GitHub Pages), la versió autònoma:
+
+```bash
+python3 -I web/build.py --pages _site
+```
 Si es torna a exportar la pàgina de Barcelona (`concentracio/analisi/exporta_pagina.py`),
 n'hi ha prou amb tornar a executar `build.py`.
