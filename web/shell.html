@@ -135,7 +135,8 @@ a { color: inherit; }
 .note p { margin: 0; color: var(--site-muted); max-width: 70ch; }
 
 /* Catalunya stage */
-.cat-stage { height: calc(100vh - var(--topbar-h)); height: calc(100svh - var(--topbar-h) - env(safe-area-inset-top, 0px)); min-height: 560px; position: relative; }
+/* the map leaves 44px at the bottom of the screen for the button that leads to the charts below it */
+.cat-stage { height: calc(100vh - var(--topbar-h) - 44px); height: calc(100svh - var(--topbar-h) - 44px - env(safe-area-inset-top, 0px)); min-height: 520px; position: relative; }
 #pg-catalunya .cat-stage > #app { position: absolute; inset: 0; height: auto; }
 
 .site-foot { padding-block: 22px 32px; border-top: 1px solid var(--site-line); color: var(--site-muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
@@ -365,6 +366,7 @@ body.on-cat .site-foot { display: none; }
     <div class="cat-stage">
 <!--__CATALUNYA__-->
     </div>
+<!--__CATALUNYA_SOTA__-->
   </section>
 
   <section id="pg-barcelona" class="pg" hidden>

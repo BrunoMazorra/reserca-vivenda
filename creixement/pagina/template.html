@@ -1,0 +1,1006 @@
+<title>Catalunya en relleu</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: full-bleed 3D map of municipalities around Barcelona (prisms), distance rings drawn on top,
+   header top-left, data panel on the right (bottom sheet on phones), year timeline along the bottom.
+   Below the map: charts of population by 10 km ring, on solid cards. */
+:root {
+  --bg: #e2e6e3;
+  --fg: #1c2321;
+  --muted: #5a6561;
+  --surface: rgba(247, 248, 247, 0.9);
+  --card: #f5f7f6;
+  --t0: #88b3a6; --t1: #5a9583; --t2: #2f7462; --t3: #154b3e;
+  --cpop: #6250d6; --csize: #eda100;
+  --line: rgba(28, 35, 33, 0.14);
+  --ink: #1c2321;
+  --on-ink: #f4f6f5;
+  --shadow: 0.22;
+  --edge: rgba(28, 35, 33, 0.3);
+  --ring: #1c2321;
+  /* population change since 1981: -30 %, -10 %, 0, +25 %, +75 %, +200 %, +400 % */
+  --p0: #2c5d99; --p1: #8fb0d6; --p2: #e8e4d8; --p3: #f3d27a; --p4: #ee9442; --p5: #c9412d; --p6: #6b1531;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101513; --fg: #e2e8e5; --muted: #93a19b; --surface: rgba(21, 28, 26, 0.88); --card: #161d1b;
+    --t0: #2f5a4e; --t1: #4b8a77; --t2: #79b8a4; --t3: #b5e3d3; --cpop: #9085e9; --csize: #c98500;
+    --line: rgba(226, 232, 229, 0.14); --ink: #e2e8e5; --on-ink: #101513; --shadow: 0.45;
+    --edge: rgba(8, 12, 11, 0.55); --ring: #e2e8e5;
+    --p0: #5f9be6; --p1: #3a5a80; --p2: #444b47; --p3: #b39a4a; --p4: #ee8a3c; --p5: #f2554a; --p6: #ffc2d6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101513; --fg: #e2e8e5; --muted: #93a19b; --surface: rgba(21, 28, 26, 0.88); --card: #161d1b;
+    --t0: #2f5a4e; --t1: #4b8a77; --t2: #79b8a4; --t3: #b5e3d3; --cpop: #9085e9; --csize: #c98500;
+  --line: rgba(226, 232, 229, 0.14); --ink: #e2e8e5; --on-ink: #101513; --shadow: 0.45;
+  --edge: rgba(8, 12, 11, 0.55); --ring: #e2e8e5;
+  --p0: #5f9be6; --p1: #3a5a80; --p2: #444b47; --p3: #b39a4a; --p4: #ee8a3c; --p5: #f2554a; --p6: #ffc2d6;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-display); overflow-x: hidden; overflow-y: auto; }
+#app { position: relative; height: calc(100% - 44px); min-height: 440px; overflow: hidden; }
+#scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+#scene:active { cursor: grabbing; }
+#labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.lbl { position: absolute; left: 0; top: 0; white-space: nowrap; font-size: 11px; line-height: 1.15; text-align: center; color: var(--fg); text-shadow: 0 0 3px var(--bg), 0 0 6px var(--bg), 0 0 1px var(--bg); will-change: transform; }
+.lbl b { display: block; font-weight: 650; font-stretch: 88%; letter-spacing: 0.01em; }
+.lbl span { font-family: var(--font-data); font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.lbl.major b { font-size: 12.5px; }
+.lbl.ring { font-family: var(--font-data); font-size: 10px; color: var(--muted); font-weight: 500; }
+
+#ui {
+  position: absolute; inset: 0; pointer-events: none;
+  display: grid; grid-template-columns: minmax(0, 1fr) 300px; grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  padding-block: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+#ui button, #ui input, #ui details, #ui a { pointer-events: auto; }
+header { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; min-width: 0; }
+.intro { display: flex; flex-direction: column; gap: 6px; background: var(--surface); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; max-width: 480px; }
+h1 { margin: 0; font-size: 26px; line-height: 1.05; font-weight: 780; font-stretch: 115%; letter-spacing: -0.01em; text-wrap: balance; }
+.sub { margin: 0; max-width: 48ch; color: var(--muted); font-size: 13px; line-height: 1.4; text-wrap: pretty; }
+.sub em { font-style: normal; color: var(--fg); font-weight: 600; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 2px; gap: 2px; }
+.seg .seg-label { align-self: center; padding: 0 6px 0 8px; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.seg button { font: inherit; font-size: 12.5px; font-weight: 560; border: 0; background: transparent; color: var(--fg); padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); }
+button:focus-visible, #year:focus-visible, summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.panel {
+  grid-column: 2; grid-row: 1 / span 2; align-self: start; max-height: 100%; overflow-y: auto; min-width: 0;
+  pointer-events: auto;
+  background: var(--surface); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 14px;
+}
+.yearblock { display: flex; align-items: baseline; gap: 10px; justify-content: space-between; }
+.year { font-size: 60px; line-height: 0.9; font-weight: 800; font-stretch: 72%; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.yearnote { font-size: 11.5px; color: var(--muted); text-align: right; line-height: 1.3; }
+.headline { margin: 0; font-size: 14px; line-height: 1.4; text-wrap: pretty; }
+.headline b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.h3 { margin: 0 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+svg.chart text { font-family: var(--font-data); font-size: 9.5px; fill: var(--muted); }
+svg.chart text.nm { font-family: var(--font-display); font-size: 11px; fill: var(--fg); }
+svg.chart text.vl { fill: var(--fg); }
+svg.chart .grid { stroke: var(--line); stroke-width: 1; }
+svg.chart .zero { stroke: var(--muted); stroke-width: 1; }
+svg.chart .cursor { stroke: var(--ink); stroke-width: 1; }
+.legend { display: flex; flex-direction: column; gap: 4px; }
+.legend-bar { height: 10px; border-radius: 3px; }
+.legend-ticks { position: relative; height: 13px; font-family: var(--font-data); font-size: 9.5px; color: var(--muted); }
+.legend-ticks span { position: absolute; top: 1px; transform: translateX(-50%); white-space: nowrap; }
+.legend-ticks span:first-child { transform: none; }
+.legend-ticks span:last-child { transform: translateX(-100%); }
+.key { display: flex; gap: 10px; font-size: 11px; color: var(--muted); flex-wrap: wrap; margin-top: 4px; }
+.key i { display: inline-block; width: 14px; height: 0; border-top: 2px solid; vertical-align: middle; margin-right: 4px; }
+details { display: flex; flex-direction: column; }
+summary { cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); list-style: none; display: flex; justify-content: space-between; align-items: center; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; font-family: var(--font-data); font-size: 14px; }
+details[open] summary::after { content: "−"; }
+.more { display: flex; flex-direction: column; gap: 16px; margin-top: 12px; }
+.rank { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.rank li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; font-size: 12px; }
+.rank .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rank .vl { font-family: var(--font-data); font-size: 11px; font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.rank .bar { grid-column: 1 / -1; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.rank .bar i { display: block; height: 100%; border-radius: 2px; }
+.panel-note { margin: 0; font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+.source { font-size: 10.5px; color: var(--muted); line-height: 1.45; margin: 0; }
+.source a { color: inherit; }
+
+.timeline {
+  grid-column: 1; grid-row: 3; pointer-events: auto; min-width: 0;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; align-items: center;
+  background: var(--surface); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px 6px 10px;
+}
+.play { grid-row: 1 / span 2; width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--ink); color: var(--on-ink); cursor: pointer; display: grid; place-items: center; }
+.play svg { width: 16px; height: 16px; fill: currentColor; }
+.track { position: relative; min-width: 0; }
+#year { width: 100%; margin: 0; accent-color: var(--ink); cursor: pointer; height: 22px; }
+.ticks { position: relative; height: 16px; font-family: var(--font-data); font-size: 10px; color: var(--muted); grid-column: 2; }
+.ticks span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+
+#tip {
+  position: absolute; left: 0; top: 0; pointer-events: none; z-index: 5; min-width: 210px; max-width: 270px;
+  background: var(--surface); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 12px; line-height: 1.4;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+#tip h4 { margin: 0; font-size: 14px; font-weight: 700; }
+#tip .com { margin: 0 0 6px; font-size: 11px; color: var(--muted); }
+#tip table { border-collapse: collapse; width: 100%; }
+#tip td { padding: 1px 0; color: var(--muted); }
+#tip td:last-child { text-align: right; font-family: var(--font-data); color: var(--fg); font-variant-numeric: tabular-nums; padding-left: 10px; white-space: nowrap; }
+#tip .tip-sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+.linkbtn { align-self: flex-start; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+.linkbtn:hover, .peek:hover { background: var(--card); }
+
+/* ---------- charts below the map ---------- */
+.peek {
+  display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 44px;
+  padding-block: 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  border: 0; border-top: 1px solid var(--line); background: var(--bg); color: var(--fg);
+  font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.peek span { font-family: var(--font-data); }
+.peek:focus-visible, .linkbtn:focus-visible, svg.chart:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.below { padding-block: 12px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.below:focus { outline: none; }
+/* inside the Atles the site bar stays on top: leave room for it */
+.below { scroll-margin-top: calc(var(--topbar-h, 0px) + 8px); }
+.below-in { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+.sec-head { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; }
+h2 { margin: 0; font-size: 30px; line-height: 1.05; font-weight: 780; font-stretch: 115%; letter-spacing: -0.01em; text-wrap: balance; }
+.lede { margin: 0; max-width: 68ch; font-size: 15px; line-height: 1.5; text-wrap: pretty; }
+.lede b { font-weight: 700; }
+.chart-card { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.fig-head h3 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.25; text-wrap: balance; }
+.fig-sub { margin: 4px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; max-width: 82ch; text-wrap: pretty; }
+.readout { margin: 0; font-size: 13.5px; line-height: 1.4; min-height: 1.4em; }
+.readout b { font-weight: 700; }
+.plot { position: relative; min-width: 0; }
+svg.chart.big text { font-size: 10.5px; }
+svg.chart.big text .nm, svg.chart.big text.nm { font-size: 12px; font-weight: 600; }
+svg.chart tspan.nm { font-family: var(--font-display); fill: var(--fg); }
+svg.chart tspan.vl { fill: var(--muted); }
+svg.chart .edge { fill: none; stroke: var(--fg); stroke-width: 1.5; stroke-linejoin: round; }
+svg.chart .leader { fill: none; stroke: var(--muted); stroke-width: 1; }
+svg.chart .dot { fill: var(--fg); }
+svg.chart .ln { fill: none; stroke: var(--fg); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+svg.chart .wash { fill-opacity: 0.6; }
+#stack, .mp svg { cursor: crosshair; touch-action: pan-y; }
+.ctip {
+  position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; min-width: 190px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px;
+  font-size: 12px; line-height: 1.35; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
+}
+.ctip h4 { margin: 0 0 4px; font-size: 13px; font-weight: 700; }
+.ctip table { border-collapse: collapse; }
+.ctip td { padding: 1px 0; white-space: nowrap; }
+.ctip td.k i { display: inline-block; width: 12px; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 7px; border-radius: 2px; }
+.ctip td.v { font-family: var(--font-data); font-weight: 600; text-align: right; padding-right: 8px; font-variant-numeric: tabular-nums; }
+.ctip td.c { font-family: var(--font-data); color: var(--muted); text-align: right; padding-left: 10px; font-variant-numeric: tabular-nums; }
+.scale-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.scale-row .h3 { margin: 0; }
+.scale-row .lg-scale { width: min(280px, 100%); display: flex; flex-direction: column; gap: 3px; }
+.mult { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 18px; }
+.mp { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.mh { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.mh h4 { margin: 0; font-size: 13px; font-weight: 650; }
+.mv { font-size: 21px; font-weight: 760; font-stretch: 85%; white-space: nowrap; }
+.ms { font-family: var(--font-data); font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tablecard summary { padding: 2px 0; }
+.tablewrap { overflow-x: auto; margin-top: 10px; }
+.dtable { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 12.5px; }
+.dtable caption { text-align: left; color: var(--muted); font-size: 11.5px; padding-bottom: 6px; }
+.dtable th, .dtable td { padding: 6px 8px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.dtable th:first-child, .dtable td:first-child { text-align: left; padding-left: 0; }
+.dtable thead th { color: var(--muted); font-weight: 600; font-size: 11.5px; }
+.dtable td { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+.dtable td:first-child { font-family: var(--font-display); }
+.dtable tr.sum td { font-weight: 650; border-top: 1px solid var(--muted); }
+.below .source { max-width: 92ch; }
+.sec2 { padding-top: 28px; }
+.duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.toolbar .seg button { white-space: nowrap; font-size: 12px; padding: 5px 8px; }
+.key2 { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); }
+.key2 span { display: inline-flex; align-items: center; gap: 6px; }
+.key2 i { display: inline-block; flex: none; }
+.key2 i.dot { width: 10px; height: 10px; border-radius: 50%; }
+.key2 i.sq { width: 12px; height: 10px; border-radius: 2px; }
+.key2 i.tick { width: 2.5px; height: 14px; border-radius: 2px; background: var(--fg); }
+svg.chart .mark { stroke: var(--fg); stroke-width: 2.5; stroke-linecap: round; }
+svg.chart tspan.vv { fill: var(--fg); font-weight: 600; }
+.rowhit { cursor: default; }
+@media (max-width: 860px) { .duo { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 720px) {
+  .mult { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 14px; }
+  h2 { font-size: 24px; }
+  .lede { font-size: 14px; }
+  .chart-card { padding: 12px; }
+}
+
+.mobile-year { display: none; font-size: 30px; font-weight: 800; font-stretch: 72%; line-height: 1; font-variant-numeric: tabular-nums; }
+@media (max-width: 760px) {
+  #ui { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto auto; gap: 10px; padding-block: 12px; }
+  h1 { font-size: 21px; }
+  .sub { font-size: 12px; }
+  .panel { grid-column: 1; grid-row: 3; align-self: end; padding: 12px; gap: 10px; max-height: 44vh; }
+  .yearblock { display: none; }
+  .headline { font-size: 12.5px; }
+  .intro .sub { display: none; }
+  .intro { padding: 10px 12px; }
+  .timeline { grid-column: 1; grid-row: 4; }
+  .mobile-year { display: block; }
+}
+</style>
+
+<div id="app">
+  <canvas id="scene" aria-label="Mapa 3D dels municipis al voltant de Barcelona: l'alçada és la densitat de població i el color, el canvi de població des de 1981"></canvas>
+  <div id="labels" aria-hidden="true"></div>
+  <div id="ui">
+    <header>
+      <div class="intro">
+      <h1>Catalunya en relleu</h1>
+      <p class="sub">Com ha crescut el voltant de Barcelona, 1981–2026. Cada prisma és un municipi. <em>Alçada</em>: densitat. <em>Color</em>: canvi de població des de 1981. Els cercles marquen la distància a la plaça de Catalunya.</p>
+      </div>
+      <div class="controls">
+        <div class="seg" role="group" aria-label="Vista">
+          <span class="seg-label">Vista</span>
+          <button type="button" id="vBcn" aria-pressed="true">Voltant de Barcelona</button>
+          <button type="button" id="vCat" aria-pressed="false">Catalunya</button>
+        </div>
+        <div class="seg" role="group" aria-label="Escala de l'alçada">
+          <span class="seg-label">Alçada</span>
+          <button type="button" id="sSqrt" aria-pressed="true">Arrel</button>
+          <button type="button" id="sLin" aria-pressed="false">Lineal</button>
+        </div>
+        <div class="seg" role="group" aria-label="Cercles de distància">
+          <button type="button" id="rings" aria-pressed="true">Cercles de distància</button>
+        </div>
+      </div>
+    </header>
+
+    <aside class="panel" id="panel">
+      <div class="yearblock">
+        <div class="year" id="yearBig">2026</div>
+        <div class="yearnote" id="yearNote">Població a<br>1 de gener</div>
+      </div>
+      <p class="headline" id="headline"></p>
+      <section id="bandsSec">
+        <h3 class="h3">Habitants guanyats des de 1981, segons la distància a Barcelona</h3>
+        <svg class="chart" id="bands" viewBox="0 0 268 198" role="img" aria-label="Habitants guanyats o perduts des de 1981 per anells de distància a Barcelona"></svg>
+      </section>
+      <div class="legend">
+        <h3 class="h3">Color: canvi de població des de 1981</h3>
+        <div class="legend-bar" id="lg"></div>
+        <div class="legend-ticks" id="lgT"></div>
+      </div>
+      <details id="more" open>
+        <summary>Més dades</summary>
+        <div class="more">
+          <button type="button" class="linkbtn" id="toCharts">Gràfiques per anells de 10 km <span aria-hidden="true">↓</span></button>
+          <section>
+            <h3 class="h3" id="rankTitle">Municipis que més han crescut</h3>
+            <ol class="rank" id="rank"></ol>
+          </section>
+          <p class="panel-note">La distància es mesura des de la plaça de Catalunya fins al centre de cada municipi. Barcelona ciutat i la primera corona (L'Hospitalet, Badalona, Santa Coloma, Cornellà…) ja eren plenes el 1981: van perdre gent fins al 2001 i després l'han recuperat. El creixement s'ha fet entre 10 i 60 km.</p>
+          <p class="source">Fonts: Idescat, <a href="https://www.idescat.cat/pub/?id=pmh&amp;n=446&amp;lang=ca" target="_blank" rel="noopener">padró municipal</a> 1998–2025 i <a href="https://www.idescat.cat/pub/?id=shd&amp;n=1341&amp;lang=ca" target="_blank" rel="noopener">sèries històriques</a> 1981, 1986 i 1991 (població de fet); entre aquests anys s'interpola i cada any s'ajusta al total de Catalunya. 2026: avanç provisional per províncies. Contorns municipals: INE (es-atlas), simplificats.</p>
+        </div>
+      </details>
+    </aside>
+
+    <div class="timeline">
+      <button type="button" class="play" id="play" aria-label="Reprodueix"><svg viewBox="0 0 16 16" id="playIcon"><path d="M4 2.5v11l9-5.5z"/></svg></button>
+      <div class="track">
+        <label for="year" class="mobile-year" id="yearMobile">2026</label>
+        <input type="range" id="year" min="1981" max="2026" step="1" value="2026" aria-label="Any">
+      </div>
+      <div class="ticks" id="ticks"></div>
+    </div>
+  </div>
+  <div id="tip" hidden></div>
+</div>
+
+<button type="button" class="peek" id="peek">Gràfiques: població, llars i habitatge <span aria-hidden="true">↓</span></button>
+
+<main class="below" id="charts" tabindex="-1">
+  <div class="below-in">
+    <header class="sec-head">
+      <h2>Població segons la distància a Barcelona</h2>
+      <p class="lede" id="lede"></p>
+    </header>
+
+    <figure class="chart-card">
+      <figcaption class="fig-head">
+        <h3>Quanta gent viu fins a 10, 20, 30… 60 km de la plaça de Catalunya</h3>
+        <p class="fig-sub">Cada franja és un anell de 10 km. La vora de dalt de cada franja és el total acumulat fins a aquella distància. El color és el canvi de població de l'anell des de 1981, amb la mateixa escala que el mapa. Fes clic al gràfic per portar el mapa a aquell any.</p>
+      </figcaption>
+      <p class="readout" id="readout" aria-live="polite"></p>
+      <div class="plot" id="stackBox">
+        <svg class="chart big" id="stack" tabindex="0" role="img" aria-label="Població acumulada fins a 10, 20, 30, 40, 50 i 60 km de Barcelona, 1981–2026. Les fletxes esquerra i dreta canvien l'any."></svg>
+        <div class="ctip" id="stTip" hidden></div>
+      </div>
+      <div class="scale-row">
+        <h3 class="h3">Color: canvi des de 1981</h3>
+        <div class="lg-scale"><div class="legend-bar" id="lg2"></div><div class="legend-ticks" id="lgT2"></div></div>
+      </div>
+    </figure>
+
+    <figure class="chart-card">
+      <figcaption class="fig-head">
+        <h3>Canvi de població des de 1981, anell per anell</h3>
+        <p class="fig-sub">Percentatge respecte a 1981. Tots els gràfics tenen la mateixa escala vertical. Passa el ratolí per sobre o toca un gràfic per veure un any.</p>
+      </figcaption>
+      <div class="mult" id="mult"></div>
+    </figure>
+
+    <details class="chart-card tablecard" id="tableCard">
+      <summary>Taula de dades: població per anells</summary>
+      <div class="tablewrap"><table id="tbl" class="dtable"></table></div>
+    </details>
+
+    <header class="sec-head sec2">
+      <h2>Habitatge i llars</h2>
+      <p class="lede" id="hlede"></p>
+    </header>
+
+    <div class="duo">
+      <figure class="chart-card">
+        <figcaption class="fig-head">
+          <h3>Habitatges nous per cada 1.000 habitants i any</h3>
+          <p class="fig-sub">Habitatges que el 2021 eren primera residència, segons la dècada en què es van construir, dividits per la població mitjana de l'anell en aquella dècada.</p>
+        </figcaption>
+        <div class="key2" id="k1"></div>
+        <div class="plot" id="h1Box"><svg class="chart" id="h1" role="img" aria-label="Habitatges nous per cada 1.000 habitants i any, per anell i dècada de construcció"></svg><div class="ctip" id="h1Tip" hidden></div></div>
+      </figure>
+      <figure class="chart-card">
+        <figcaption class="fig-head">
+          <h3>Persones per llar</h3>
+          <p class="fig-sub">Mitjana de persones per llar a cada cens. Entre 1991 i 2011 les llars es van fer més petites a tots els anells; entre 2011 i 2021, a gairebé tots han tornat a créixer una mica.</p>
+        </figcaption>
+        <div class="key2" id="k2"></div>
+        <div class="plot" id="h2Box"><svg class="chart" id="h2" role="img" aria-label="Persones per llar per anell als censos de 1991, 2001, 2011 i 2021"></svg><div class="ctip" id="h2Tip" hidden></div></div>
+      </figure>
+    </div>
+
+    <figure class="chart-card">
+      <figcaption class="fig-head">
+        <h3>Llars noves i habitatges nous, en % de les llars a l'inici del període</h3>
+        <p class="fig-sub">Cada barra és el creixement del nombre de llars, partit en dues parts: el que ve del creixement de la població (amb la mateixa mida de llar) i el que ve del canvi de mida de les llars (positiu si són més petites). La marca vertical són els habitatges nous del mateix període. Quan la barra passa la marca, s'han format més llars que habitatges s'han construït.</p>
+      </figcaption>
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="Període">
+          <button type="button" id="pr0" aria-pressed="true">1991–2021</button>
+          <button type="button" id="pr1" aria-pressed="false">1991–2001</button>
+          <button type="button" id="pr2" aria-pressed="false">2001–2011</button>
+          <button type="button" id="pr3" aria-pressed="false">2011–2021</button>
+        </div>
+        <div class="key2" id="k3"></div>
+      </div>
+      <div class="plot" id="h3Box"><svg class="chart" id="h3" role="img" aria-label="Creixement de les llars per anell, partit entre creixement de la població i canvi de mida de les llars, amb els habitatges nous"></svg><div class="ctip" id="h3Tip" hidden></div></div>
+    </figure>
+
+    <details class="chart-card tablecard" id="tableCard2">
+      <summary>Taula de dades: llars i habitatges per anells</summary>
+      <div class="tablewrap"><table id="tbl2" class="dtable"></table></div>
+    </details>
+
+    <p class="source">Fonts: Idescat, <a href="https://www.idescat.cat/pub/?id=pmh&amp;n=446&amp;lang=ca" target="_blank" rel="noopener">padró municipal</a> 1998–2025 i <a href="https://www.idescat.cat/pub/?id=shd&amp;n=1341&amp;lang=ca" target="_blank" rel="noopener">sèries històriques</a> 1981, 1986 i 1991; entre aquests anys s'interpola i cada any s'ajusta al total de Catalunya. 2026: avanç provisional per províncies. Llars, persones per llar i habitatges per any de construcció: Idescat, <a href="https://www.idescat.cat/pub/?id=censph&amp;n=909&amp;lang=ca" target="_blank" rel="noopener">censos de població i habitatges</a> de 1991, 2001, 2011 i 2021. El cens del 2011 es va fer en part per enquesta i el del 2021 a partir de registres, i per això la comparació entre tots dos s'ha de llegir amb prudència. Els habitatges nous només compten els que el 2021 eren primera residència: no inclouen els buits, les segones residències ni els enderrocats. Cada municipi entra a l'anell on cau el seu centre; Barcelona es compta a part.</p>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>/*CHARTS*/</script>
+<script id="data" type="application/json">/*DATA*/</script>
+<script id="hdata" type="application/json">/*HDATA*/</script>
+<script>
+(function () {
+  const D = JSON.parse(document.getElementById('data').textContent);
+  const Y0 = D.y0, Y1 = D.y1, YRS = D.years, M = D.munis, NM = M.length, Q = D.Q;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fmt = new Intl.NumberFormat('ca-ES');
+  const fmt1 = new Intl.NumberFormat('ca-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const fmt2 = new Intl.NumberFormat('ca-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const $ = id => document.getElementById(id);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  const sgn = v => (v > 0.5 ? '+' : v < -0.5 ? '−' : '');
+  const pctTxt = r => { const v = 100 * (r - 1); return (v >= 0.5 ? '+' : v <= -0.5 ? '−' : '') + fmt.format(Math.round(Math.abs(v))) + '\u00a0%'; };
+  const people = v => v >= 1e6 || v <= -1e6 ? fmt2.format(Math.abs(v) / 1e6) + ' milions' : fmt.format(Math.round(Math.abs(v) / 1000)) + ' mil';
+
+  // ---------- population ----------
+  const popNow = new Float64Array(NM), pop81 = new Float64Array(NM), work = new Float64Array(NM);
+  function valueAtYearly(arr, y) { const i = clamp(Math.floor(y) - Y0, 0, arr.length - 1), f = y - Math.floor(y); return arr[i] + (arr[Math.min(i + 1, arr.length - 1)] - arr[i]) * f; }
+  function computePops(y, out) {
+    let k = 0; while (k < YRS.length - 2 && YRS[k + 1] <= y) k++;
+    const f = clamp((y - YRS[k]) / (YRS[k + 1] - YRS[k]), 0, 1);
+    let s = 0;
+    for (let m = 0; m < NM; m++) { const p = M[m].p; const v = p[k] + (p[k + 1] - p[k]) * f; out[m] = v; s += v; }
+    const scale = valueAtYearly(D.totals, y) / s;
+    for (let m = 0; m < NM; m++) out[m] *= scale;
+  }
+  computePops(Y0, pop81);
+
+  // distance rings from Plaça de Catalunya (projected km, same projection as the polygons)
+  const kx = 111.32 * Math.cos(41.7 * Math.PI / 180), ky = 110.57;
+  const PC = [(2.1700 - 1.75) * kx, (41.3870 - 41.7) * ky];
+  const BANDS = [{ n: 'Barcelona ciutat', short: 'Barcelona' }, { n: 'Primera corona, 0–10 km', short: '0–10 km', r: [0, 10] }]
+    .concat([10, 20, 30, 40, 50].map(a => ({ n: `${a}–${a + 10} km`, short: `${a}–${a + 10} km`, r: [a, a + 10] })))
+    .concat([{ n: 'Més de 60 km', short: '+60 km', r: [60, 1e9] }]);
+  const bcnIdx = M.findIndex(m => m.n === 'Barcelona');
+  const distKm = M.map(m => Math.hypot(m.c[0] - PC[0], m.c[1] - PC[1]));
+  const bandOf = M.map((m, i) => i === bcnIdx ? 0 : BANDS.findIndex((b, k) => k > 0 && distKm[i] >= b.r[0] && distKm[i] < b.r[1]));
+  const bandSeries = BANDS.map(() => []);
+  for (let y = Y0; y <= Y1; y++) { computePops(y, work); const s = new Array(BANDS.length).fill(0); for (let m = 0; m < NM; m++) s[bandOf[m]] += work[m]; s.forEach((v, b) => bandSeries[b].push(v)); }
+
+  // ---------- colours ----------
+  const PSTOPS = [0.7, 0.9, 1, 1.25, 1.75, 3, 5].map(Math.log2), PMIN = Math.log2(0.6), PMAX = Math.log2(6);
+  const PLUT = new Float32Array(768);
+  let T = {};
+  function readTokens() {
+    const cs = getComputedStyle(document.documentElement);
+    const g = n => cs.getPropertyValue(n).trim();
+    T = { bg: new THREE.Color(g('--bg')), shadow: parseFloat(g('--shadow')) || 0.2, edge: g('--edge'), ring: new THREE.Color(g('--ring')), p: Array.from({ length: 7 }, (_, i) => g('--p' + i)), muted: g('--muted'), ink: g('--ink'), card: g('--card'),
+      t: Array.from({ length: 4 }, (_, i) => g('--t' + i)), cpop: g('--cpop'), csize: g('--csize') };
+    const cols = T.p.map(v => new THREE.Color(v)), c = new THREE.Color();
+    for (let i = 0; i < 256; i++) {
+      const v = PMIN + (PMAX - PMIN) * i / 255;
+      if (v <= PSTOPS[0]) c.copy(cols[0]); else if (v >= PSTOPS[6]) c.copy(cols[6]);
+      else { let k = 0; while (v > PSTOPS[k + 1]) k++; c.copy(cols[k]).lerp(cols[k + 1], (v - PSTOPS[k]) / (PSTOPS[k + 1] - PSTOPS[k])); }
+      PLUT[i * 3] = c.r; PLUT[i * 3 + 1] = c.g; PLUT[i * 3 + 2] = c.b;
+    }
+  }
+  readTokens();
+  const lutI = ratio => clamp(Math.round((Math.log2(Math.max(ratio, 0.01)) - PMIN) / (PMAX - PMIN) * 255), 0, 255);
+  const cssChg = ratio => { const i = lutI(ratio) * 3; return `rgb(${Math.round(PLUT[i] * 255)},${Math.round(PLUT[i + 1] * 255)},${Math.round(PLUT[i + 2] * 255)})`; };
+
+  // ---------- three.js ----------
+  const canvas = $('scene'), app = $('app');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const scene = new THREE.Scene();
+  scene.background = T.bg.clone();
+  scene.fog = new THREE.Fog(T.bg.clone(), 500, 1400);
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.5, 6000);
+  const controls = new THREE.OrbitControls(camera, canvas);
+  Object.assign(controls, { enableDamping: true, dampingFactor: 0.08, maxPolarAngle: Math.PI * 0.46, minDistance: 15, maxDistance: 2400, screenSpacePanning: false });
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a908c, 0.62));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.75);
+  sun.position.set(-150, 260, 160); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+  Object.assign(sun.shadow.camera, { left: -200, right: 200, top: 200, bottom: -200, near: 10, far: 900 });
+  sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.3;
+  scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.3); fill.position.set(240, 110, 90); scene.add(fill);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(3000, 3000), new THREE.ShadowMaterial({ opacity: T.shadow }));
+  ground.rotation.x = -Math.PI / 2; ground.position.y = -0.05; ground.receiveShadow = true; scene.add(ground);
+
+  // decode polygons and extrude every municipality into one merged mesh
+  function decodeRing(flat) { const r = []; let x = 0, y = 0; for (let i = 0; i < flat.length; i += 2) { x += flat[i]; y += flat[i + 1]; r.push(new THREE.Vector2(x / Q, y / Q)); } return r; }
+  const P = [], N = [], VM = [], VT = [], E = [], EM = [];
+  M.forEach((mu, m) => {
+    let polys = mu.g;
+    let shapes;
+    if (!polys.length) { // tiny municipality lost in the source outlines: a hexagon of its real area
+      const rr = Math.sqrt(mu.a / (1.5 * Math.sqrt(3)));
+      shapes = [new THREE.Shape(Array.from({ length: 6 }, (_, k) => new THREE.Vector2(mu.c[0] + rr * Math.cos(k * Math.PI / 3), mu.c[1] + rr * Math.sin(k * Math.PI / 3))))];
+    } else {
+      shapes = polys.map(rings => { const s = new THREE.Shape(decodeRing(rings[0])); rings.slice(1).forEach(h => s.holes.push(new THREE.Path(decodeRing(h)))); return s; });
+    }
+    const geo = new THREE.ExtrudeGeometry(shapes, { depth: 1, bevelEnabled: false, curveSegments: 1 });
+    const p = geo.attributes.position.array, n = geo.attributes.normal.array;
+    for (let t = 0; t < p.length; t += 9) {
+      if (p[t + 2] === 0 && p[t + 5] === 0 && p[t + 8] === 0) continue; // bottom cap, never visible
+      for (let v = 0; v < 9; v += 3) {
+        P.push(p[t + v], 0, -p[t + v + 1]); N.push(n[t + v], n[t + v + 2], -n[t + v + 1]); VM.push(m); VT.push(p[t + v + 2] > 0.5 ? 1 : 0);
+      }
+    }
+    geo.dispose();
+    for (const s of shapes) for (const ring of [s.getPoints(), ...s.holes.map(h => h.getPoints())]) for (let i = 0; i < ring.length; i++) { const a = ring[i], b = ring[(i + 1) % ring.length]; E.push(a.x, -a.y, b.x, -b.y); EM.push(m); }
+  });
+  const NV = VM.length;
+  const pos = new Float32Array(P), col = new Float32Array(NV * 3), vm = Uint16Array.from(VM), vt = Uint8Array.from(VT);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(N), 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.82, metalness: 0, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }));
+  mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
+  scene.add(mesh);
+  const ePos = new Float32Array(EM.length * 6);
+  for (let s = 0; s < EM.length; s++) { ePos[s * 6] = E[s * 4]; ePos[s * 6 + 2] = E[s * 4 + 1]; ePos[s * 6 + 3] = E[s * 4 + 2]; ePos[s * 6 + 5] = E[s * 4 + 3]; }
+  const eGeo = new THREE.BufferGeometry(); eGeo.setAttribute('position', new THREE.BufferAttribute(ePos, 3));
+  const eMat = new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.3 });
+  const edges = new THREE.LineSegments(eGeo, eMat); edges.frustumCulled = false; scene.add(edges);
+  function applyEdge() { const m = T.edge.match(/rgba?\(([^)]+)\)/); if (m) { const p = m[1].split(',').map(parseFloat); eMat.color.setRGB(p[0] / 255, p[1] / 255, p[2] / 255); eMat.opacity = p[3] ?? 1; } }
+  applyEdge();
+
+  // distance rings, drawn over everything as a guide
+  const RINGS = [10, 20, 30, 40, 50, 60];
+  const ringMat = new THREE.LineDashedMaterial({ color: T.ring, dashSize: 1.6, gapSize: 1.2, transparent: true, opacity: 0.55, depthTest: false });
+  const ringGroup = new THREE.Group(); ringGroup.renderOrder = 10;
+  for (const r of RINGS) {
+    const pts = []; for (let i = 0; i <= 180; i++) { const a = i / 180 * Math.PI * 2; pts.push(new THREE.Vector3(PC[0] + r * Math.cos(a), 0.3, -(PC[1] + r * Math.sin(a)))); }
+    const lg = new THREE.BufferGeometry().setFromPoints(pts); const line = new THREE.Line(lg, ringMat); line.computeLineDistances(); line.renderOrder = 10; ringGroup.add(line);
+  }
+  scene.add(ringGroup);
+
+  // ---------- state & update ----------
+  let year = Y1, yearTarget = Y1, playing = false, scaleMode = 'sqrt', heightMix = 1, showRings = true, pinned = null, hover = null;
+  const H = new Float32Array(NM), Hs = new Float32Array(NM), ratio = new Float32Array(NM);
+  let DMAX = 1;
+  for (const y of [1981, 2001, 2026]) { computePops(y, work); for (let m = 0; m < NM; m++) if (M[m].a >= 0.8) DMAX = Math.max(DMAX, work[m] / M[m].a); }
+  const BASE = 0.4, HS = 26, HL = 32;
+  function computeTargets() {
+    computePops(year, popNow);
+    for (let m = 0; m < NM; m++) {
+      const r = popNow[m] / Math.max(M[m].a, 0.3) / DMAX;
+      H[m] = BASE + HS * Math.sqrt(r) * heightMix + HL * r * (1 - heightMix);
+      ratio[m] = popNow[m] / pop81[m];
+    }
+  }
+  let first = true;
+  function applyMesh(dt) {
+    const k = first ? 1 : Math.min(1, dt * 10); first = false;
+    for (let m = 0; m < NM; m++) Hs[m] += (H[m] - Hs[m]) * k;
+    for (let v = 0; v < NV; v++) {
+      const m = vm[v];
+      pos[v * 3 + 1] = vt[v] ? Hs[m] : 0;
+      const i = lutI(ratio[m]) * 3; col[v * 3] = PLUT[i]; col[v * 3 + 1] = PLUT[i + 1]; col[v * 3 + 2] = PLUT[i + 2];
+    }
+    for (let s = 0; s < EM.length; s++) { const h = Hs[EM[s]] + 0.02; ePos[s * 6 + 1] = h; ePos[s * 6 + 4] = h; }
+    geo.attributes.position.needsUpdate = true; geo.attributes.color.needsUpdate = true; eGeo.attributes.position.needsUpdate = true;
+    boundsDirty = true;
+  }
+  let boundsDirty = true;
+
+  // ---------- labels ----------
+  const labelsEl = $('labels'), pool = new Map();
+  function labelEl(key, name, major, cls) {
+    let L = pool.get(key);
+    if (!L) { const el = document.createElement('div'); el.className = 'lbl' + (major ? ' major' : '') + (cls ? ' ' + cls : ''); el.innerHTML = '<b></b><span></span>'; el.firstChild.textContent = name; labelsEl.appendChild(el); L = { el, txt: el.lastChild, w: 0, h: 0, last: null }; pool.set(key, L); }
+    return L;
+  }
+  const v3 = new THREE.Vector3();
+  const FIXED = ['Barcelona', "l'Hospitalet de Llobregat", 'Badalona', 'Santa Coloma de Gramenet'];
+  const fixedIdx = FIXED.map(n => M.findIndex(m => m.n === n));
+  function placeLabels() {
+    const W = app.clientWidth, Hh = app.clientHeight, placed = [], shown = new Set();
+    const items = [];
+    if (showRings) RINGS.forEach(r => items.push({ key: 'r' + r, name: '', text: r + ' km', x: PC[0] + r * 0.5, y: PC[1] - r * 0.866, h: 0.3, cls: 'ring' }));
+    const gain = Array.from({ length: NM }, (_, i) => i).sort((a, b) => (popNow[b] - pop81[b]) - (popNow[a] - pop81[a]));
+    for (const m of fixedIdx.concat(gain.slice(0, 14))) items.push({ key: m, name: cap(M[m].n), major: m === bcnIdx, text: year > Y0 + 0.5 ? pctTxt(ratio[m]) : fmt.format(Math.round(popNow[m] / 1000)) + ' mil', x: M[m].c[0], y: M[m].c[1], h: Hs[m] + 0.6 });
+    for (const it of items) {
+      if (shown.has(it.key)) continue;
+      v3.set(it.x, it.h, -it.y).project(camera);
+      if (v3.z > 1) continue;
+      const sx = (v3.x * 0.5 + 0.5) * W, sy = (-v3.y * 0.5 + 0.5) * Hh;
+      const L = labelEl(it.key, it.name, it.major, it.cls);
+      if (L.last !== it.text) { L.txt.textContent = it.text; L.last = it.text; L.w = 0; }
+      if (!L.w) { L.el.style.display = 'block'; L.w = L.el.offsetWidth; L.h = L.el.offsetHeight; }
+      const box = { x0: sx - L.w / 2 - 3, x1: sx + L.w / 2 + 3, y0: sy - L.h - 2, y1: sy + 1 };
+      if (box.x0 < 0 || box.x1 > W || box.y0 < 0 || box.y1 > Hh) continue;
+      if (placed.some(p => !(box.x1 < p.x0 || box.x0 > p.x1 || box.y1 < p.y0 || box.y0 > p.y1))) continue;
+      placed.push(box); shown.add(it.key);
+      L.el.style.transform = `translate(${sx.toFixed(1)}px, ${sy.toFixed(1)}px) translate(-50%, -100%)`;
+    }
+    pool.forEach((L, k) => { L.el.style.display = shown.has(k) ? 'block' : 'none'; });
+  }
+
+  // ---------- panel ----------
+  const yearBig = $('yearBig'), yearMobile = $('yearMobile'), yearNote = $('yearNote'), slider = $('year');
+  $('ticks').innerHTML = [1981, 1991, 2001, 2011, 2026].map(y => `<span style="left:calc(${(y - Y0) / (Y1 - Y0)} * (100% - 16px) + 8px)">${y === 2026 ? '2026 (p)' : y}</span>`).join('');
+  function drawLegend() {
+    const pp = l => (l - PMIN) / (PMAX - PMIN) * 100;
+    const grad = `linear-gradient(90deg, ${T.p[0]} 0%, ${T.p.map((c, i) => `${c} ${pp(PSTOPS[i]).toFixed(1)}%`).join(', ')}, ${T.p[6]} 100%)`;
+    const ticks = [[Math.log2(0.6), '−40 %'], [0, '0'], [1, '+100 %'], [Math.log2(6), '+500 %']].map(([v, s]) => `<span style="left:${pp(v).toFixed(1)}%">${s}</span>`).join('');
+    $('lg').style.background = grad; $('lgT').innerHTML = ticks;
+    $('lg2').style.background = grad; $('lgT2').innerHTML = ticks;
+  }
+  drawLegend();
+  function drawBands() {
+    const yi = clamp(Math.round((year - Y0)), 0, Y1 - Y0);
+    const gains = bandSeries.map(s => valueAtYearly(s, year) - s[0]), ratios = bandSeries.map(s => valueAtYearly(s, year) / s[0]);
+    const lo = -300000, hi = 800000, x0 = 70, x1 = 190, xs = v => x0 + (v - lo) / (hi - lo) * (x1 - x0), z = xs(0);
+    let s = `<line class="zero" x1="${z}" x2="${z}" y1="2" y2="${BANDS.length * 24 + 2}"/>`;
+    BANDS.forEach((b, k) => {
+      const y = 6 + k * 24, g = gains[k], xa = Math.min(z, xs(g)), w = Math.abs(xs(g) - z);
+      s += `<text class="nm" x="0" y="${y + 11}">${b.short}</text>`;
+      s += `<rect x="${xa.toFixed(1)}" y="${y + 2}" width="${Math.max(w, 0.8).toFixed(1)}" height="12" rx="2" fill="${cssChg(ratios[k])}"/>`;
+      s += `<text class="vl" x="${(g >= 0 ? xs(g) + 4 : xa - 4).toFixed(1)}" y="${y + 11.5}" text-anchor="${g >= 0 ? 'start' : 'end'}">${sgn(g)}${fmt.format(Math.round(Math.abs(g) / 1000))} mil</text>`;
+      s += `<text x="268" y="${y + 11.5}" text-anchor="end">${pctTxt(ratios[k])}</text>`;
+    });
+    $('bands').innerHTML = s;
+    const ring = gains.slice(2, 7).reduce((a, b) => a + b, 0), core =(bandSeries[0][yi] + bandSeries[1][yi]) / (bandSeries[0][0] + bandSeries[1][0]);
+    $('headline').innerHTML = Math.floor(year + 1e-6) <= Y0 ? 'El 1981 és el punt de partida. Prem ▶ per veure on s\'ha instal·lat la gent nova.' :
+      `Entre 1981 i ${Math.floor(year + 1e-6)}, l'anell de <b>10 a 60 km</b> de Barcelona ha guanyat <b>${sgn(ring)}${people(ring)}</b> d'habitants. Barcelona i la primera corona: <b>${pctTxt(core)}</b>.`;
+  }
+  let lastRank = null;
+  function updatePanel() {
+    const yi = Math.floor(year + 1e-6);
+    yearBig.textContent = yi; yearMobile.textContent = yi + (yi === 2026 ? ' (p)' : '');
+    yearNote.innerHTML = yi === 2026 ? 'Avanç provisional<br>a 1 de gener' : 'Població a<br>1 de gener';
+    drawBands();
+    updateCharts();
+    if (lastRank !== yi) {
+      lastRank = yi;
+      const top = Array.from({ length: NM }, (_, i) => i).sort((a, b) => (popNow[b] - pop81[b]) - (popNow[a] - pop81[a])).slice(0, 8);
+      const mx = Math.max(1, popNow[top[0]] - pop81[top[0]]);
+      $('rankTitle').textContent = yi === Y0 ? 'Municipis que més han crescut' : `Municipis que més han crescut, 1981–${yi}`;
+      $('rank').innerHTML = top.map(m => { const g = popNow[m] - pop81[m]; return `<li><span class="nm">${cap(M[m].n)} <span style="color:var(--muted)">· ${fmt.format(Math.round(distKm[m]))} km</span></span><span class="vl">${sgn(g)}${fmt.format(Math.round(Math.abs(g)))} · ${pctTxt(ratio[m])}</span><span class="bar"><i style="width:${(100 * Math.max(g, 0) / mx).toFixed(1)}%;background:${cssChg(ratio[m])}"></i></span></li>`; }).join('');
+    }
+  }
+
+  // ---------- charts below the map ----------
+  const CH = window.RelleuCharts;
+  const NR = 7; // Barcelona + six 10 km rings, up to 60 km
+  const YEARS = Array.from({ length: Y1 - Y0 + 1 }, (_, i) => Y0 + i);
+  const cum60 = bandSeries[0].map((_, i) => bandSeries.slice(0, NR).reduce((a, s) => a + s[i], 0));
+  const mShort = v => v >= 1e6 ? fmt2.format(v / 1e6) + ' M' : fmt.format(Math.round(v / 1000)) + ' mil';
+  const yLabel = y => y + (y === 2026 ? ' (p)' : '');
+  let stackG = null, multG = [], hoverYear = null;
+  {
+    const last = Y1 - Y0, rr = k => bandSeries[k][last] / bandSeries[k][0];
+    const core = (bandSeries[0][last] + bandSeries[1][last]) / (bandSeries[0][0] + bandSeries[1][0]);
+    let best = 2; for (let k = 3; k < NR; k++) if (rr(k) > rr(best)) best = k;
+    $('lede').innerHTML = `El ${Y1} (dades provisionals) viuen <b>${people(cum60[last])}</b> de persones a menys de 60 km de la plaça de Catalunya, <b>${people(cum60[last] - cum60[0])}</b> més que el 1981 (${pctTxt(cum60[last] / cum60[0])}). Barcelona i els municipis a menys de 10 km tenen gairebé la mateixa gent que aleshores (${pctTxt(core)}). El creixement s'ha fet a l'anell de 10 a 60 km, i on més ha crescut és entre ${BANDS[best].r[0]} i ${BANDS[best].r[1]} km (${pctTxt(rr(best))}).`;
+    // small multiples: one panel per ring, plus the rest of Catalonia for comparison
+    $('mult').innerHTML = BANDS.map((b, k) => `<div class="mp"><div class="mh"><h4>${k === 1 ? '0–10 km' : k === BANDS.length - 1 ? 'Més de 60 km' : b.n}</h4><span class="mv" id="mv${k}"></span></div><div class="ms" id="ms${k}"></div><svg class="chart" id="mg${k}" role="img" aria-label="Canvi de població de ${b.n} des de 1981"></svg></div>`).join('');
+    // data table
+    const TY = [1981, 1991, 2001, 2011, 2021, 2026], th = v => fmt.format(Math.round(v / 1000));
+    const row = (name, ser, cls) => `<tr${cls ? ` class="${cls}"` : ''}><td>${name}</td>${TY.map(y => `<td>${th(ser[y - Y0])}</td>`).join('')}<td>${pctTxt(ser[last] / ser[0])}</td></tr>`;
+    const all = cum60.map((v, i) => v + bandSeries[NR][i]);
+    $('tbl').innerHTML = `<caption>Habitants, en milers. Cada municipi compta a l'anell on cau el seu centre.</caption><thead><tr><th>Anell</th>${TY.map(y => `<th>${yLabel(y)}</th>`).join('')}<th>Canvi 1981–2026</th></tr></thead><tbody>` +
+      BANDS.slice(0, NR).map((b, k) => row(b.n, bandSeries[k])).join('') + row('Fins a 60 km', cum60, 'sum') + row('Més de 60 km', bandSeries[NR]) + row('Catalunya', all, 'sum') + '</tbody>';
+  }
+  function drawCharts() {
+    const box = $('stackBox'), w = box.clientWidth;
+    if (!w) return;
+    const narrow = w < 560, h = narrow ? 300 : 380;
+    stackG = CH.stack({
+      id: 'st', w, h, years: YEARS, ticks: narrow ? [1981, 2001, 2026] : [1981, 1991, 2001, 2011, 2021, 2026], labelW: narrow ? 118 : 162,
+      layers: BANDS.slice(0, NR).map((b, k) => ({ label: k === 0 ? 'Barcelona' : (narrow ? '≤ ' : 'fins a ') + b.r[1] + ' km', ser: bandSeries[k] })),
+      color: (b, i) => cssChg(bandSeries[b][i] / bandSeries[b][0]), surface: T.card,
+      fmtVal: v => fmt2.format(v / 1e6) + ' M', fmtTick: v => v ? fmt.format(v / 1e6) + ' M' : '0', step: narrow ? 2e6 : 1e6
+    });
+    const st = $('stack'); st.setAttribute('viewBox', `0 0 ${w} ${h}`); st.innerHTML = stackG.svg;
+    multG = BANDS.map((b, k) => {
+      const el = $('mg' + k), mw = el.parentNode.clientWidth, mh = narrow ? 104 : 120;
+      const g = CH.mini({ id: 'm' + k, w: mw, h: mh, years: YEARS, ser: bandSeries[k], color: i => cssChg(bandSeries[k][i] / bandSeries[k][0]), surface: T.card, lo: -25, hi: 165, grid: [0, 50, 100, 150], ticks: [1981, 2026] });
+      el.setAttribute('viewBox', `0 0 ${mw} ${mh}`); el.innerHTML = g.svg;
+      return g;
+    });
+    drawHousing();
+    updateCharts();
+  }
+
+  // ---------- housing and households (censuses 1991–2021) ----------
+  const HD = JSON.parse(document.getElementById('hdata').textContent);
+  const HR = HD.rings.length;
+  const rName = r => r === 0 ? 'Barcelona' : r === HR - 1 ? 'Més de 60 km' : r === HR ? 'Fins a 60 km' : BANDS[r].short;
+  const s60 = a => a.slice(0, NR).reduce((x, y) => x + y, 0);
+  const withSum = a => a.slice(0, NR).concat([s60(a), a[NR]]); // rings, then total up to 60 km, then beyond 60 km
+  const ROWS = Array.from({ length: NR }, (_, r) => r).concat([HR, NR]); // index order for split chart and table
+  const HH = { ll: HD.households.map(withSum), hp: HD.householdPop.map(withSum), built: HD.built.map(withSum) };
+  const rowOf = r => r === HR ? NR : r === NR ? NR + 1 : r; // ring id -> position in withSum arrays
+  const fmtD = new Intl.NumberFormat('ca-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const pctV = v => (v >= 0.05 ? '+' : v <= -0.05 ? '−' : '') + (Math.abs(v) < 10 ? fmtD.format(Math.abs(v)) : fmt.format(Math.round(Math.abs(v)))) + '\u00a0%';
+  const kTxt = v => (v < 0 ? '−' : '') + fmt.format(Math.round(Math.abs(v) / 1000)) + ' mil';
+  const DEC_Y = [[1981, 1990], [1991, 2000], [2001, 2010], [2011, 2020]];
+  const avgPop = (r, [a, b]) => { let s = 0; for (let y = a; y <= b; y++) s += bandSeries[r][y - Y0]; return s / (b - a + 1); };
+  const BRATE = HD.built.map((row, d) => row.map((v, r) => v / avgPop(r, DEC_Y[d]) / 10 * 1000)); // per 1,000 inhabitants and year
+  const SIZE = HD.years.map((_, k) => HD.householdPop[k].map((p, r) => p / HD.households[k][r]));
+  const PERIODS = [{ n: '1991–2021', k0: 0, k1: 3, d: [1, 2, 3] }, { n: '1991–2001', k0: 0, k1: 1, d: [1] }, { n: '2001–2011', k0: 1, k1: 2, d: [2] }, { n: '2011–2021', k0: 2, k1: 3, d: [3] }];
+  let period = 0, h1G = null, h2G = null, h3G = null;
+  function splitVals(p) {
+    const P = PERIODS[p];
+    return ROWS.map(r => {
+      const i = rowOf(r), H0 = HH.ll[P.k0][i], H1 = HH.ll[P.k1][i], P0 = HH.hp[P.k0][i], P1 = HH.hp[P.k1][i];
+      const nb = P.d.reduce((a, d) => a + HH.built[d][i], 0), pop = 100 * (P1 / P0 - 1), hh = 100 * (H1 / H0 - 1);
+      return { r, pop, size: hh - pop, hh, built: 100 * nb / H0, dH: H1 - H0, nb, s0: P0 / H0, s1: P1 / H1 };
+    });
+  }
+  function niceDomain(vals) {
+    let lo = Math.min(0, ...vals), hi = Math.max(0, ...vals);
+    const span = hi - lo, step = [2, 5, 10, 20, 25, 50].find(s => span / s <= 6) || 100;
+    return { lo: Math.floor(lo / step) * step, hi: Math.ceil(hi / step) * step, step };
+  }
+  const SPLIT_DOM = [[0], [1, 2, 3]].map(ps => niceDomain(ps.flatMap(p => splitVals(p).flatMap(v => [v.pop, v.size, v.hh, v.built]))));
+  {
+    const all60 = i => HH.ll[i][NR], pop60 = i => HH.hp[i][NR];
+    const hh = 100 * (all60(3) / all60(0) - 1), pp = 100 * (pop60(3) / pop60(0) - 1);
+    const s91 = pop60(0) / all60(0), s21 = pop60(3) / all60(3);
+    const b90s = HH.built[1][NR] + HH.built[2][NR] + HH.built[3][NR], b10 = HH.built[3][NR], b00 = HH.built[2][NR];
+    const late = splitVals(3)[NR];
+    $('hlede').innerHTML = `Entre 1991 i 2021, a menys de 60 km de Barcelona, les llars han crescut un <b>${pctV(hh)}</b> i la gent que hi viu, un <b>${pctV(pp)}</b>. La diferència és que cada llar té menys gent: de <b>${fmt2.format(s91)}</b> a <b>${fmt2.format(s21)}</b> persones. Amb la mateixa població calen més habitatges. S'hi han construït <b>${kTxt(b90s)}</b> habitatges que avui són primera residència, però entre 2011 i 2020 només <b>${kTxt(b10)}</b>, un <b>${fmt.format(Math.round(100 * b10 / b00))}&nbsp;%</b> dels de la dècada anterior.` +
+      (late.pop > late.hh ? ` Des del 2011 la població ha crescut més que les llars (${pctV(late.pop)} contra ${pctV(late.hh)}): la gent comparteix més l'habitatge.` : '');
+    const decCols = d => T.t[d];
+    // data table
+    const th = v => fmt.format(Math.round(v / 1000));
+    $('tbl2').innerHTML = `<caption>Llars i habitatges nous en milers. Habitatges nous: primeres residències del 2021 segons la dècada de construcció.</caption><thead><tr><th>Anell</th><th>Llars 1991</th><th>Llars 2021</th>${HD.years.map(y => `<th>Pers./llar ${y}</th>`).join('')}${HD.decades.map(d => `<th>Hab. nous ${d}</th>`).join('')}</tr></thead><tbody>` +
+      ROWS.map(r => { const i = rowOf(r); return `<tr${r === HR ? ' class="sum"' : ''}><td>${r === 0 ? 'Barcelona ciutat' : r === HR ? 'Fins a 60 km' : r === NR ? 'Més de 60 km' : BANDS[r].short}</td><td>${th(HH.ll[0][i])}</td><td>${th(HH.ll[3][i])}</td>${HD.years.map((_, k) => `<td>${fmt2.format(HH.hp[k][i] / HH.ll[k][i])}</td>`).join('')}${HD.decades.map((_, d) => `<td>${th(HH.built[d][i])}</td>`).join('')}</tr>`; }).join('') + '</tbody>';
+  }
+  function keyHTML(items) { return items.map(([cls, color, label]) => `<span><i class="${cls}" style="${color ? 'background:' + color : ''}"></i>${label}</span>`).join(''); }
+  function drawHousing() {
+    const w1 = $('h1Box').clientWidth, w3 = $('h3Box').clientWidth;
+    if (!w1 || !w3) return;
+    const narrow = w3 < 560, rows8 = Array.from({ length: HR }, (_, r) => rName(r));
+    // 1) new dwellings per 1,000 inhabitants and year
+    const rmax = Math.max(...BRATE.flat());
+    const top1 = Math.ceil(rmax / 5) * 5;
+    h1G = CH.dots({ w: w1, rows: rows8, labelW: 92, rowH: 30, surface: T.card, lo: 0, hi: top1, ticks: Array.from({ length: top1 / 5 + 1 }, (_, i) => i * 5), fmtTick: v => fmt.format(v),
+      series: HD.decades.map((d, k) => ({ name: d, color: T.t[k], values: BRATE[k] })) });
+    $('h1').setAttribute('viewBox', `0 0 ${w1} ${h1G.h}`); $('h1').innerHTML = h1G.svg;
+    $('k1').innerHTML = keyHTML(HD.decades.map((d, k) => ['dot', T.t[k], d]));
+    // 2) persons per household at each census
+    const w2 = $('h2Box').clientWidth;
+    const sv = SIZE.flat(), lo2 = Math.floor(Math.min(...sv) * 5) / 5, hi2 = Math.ceil(Math.max(...sv) * 5) / 5;
+    const tk2 = []; for (let v = lo2; v <= hi2 + 1e-9; v += w2 < 420 ? 0.4 : 0.2) tk2.push(Math.round(v * 10) / 10);
+    h2G = CH.dots({ w: w2, rows: rows8, labelW: 92, rowH: 30, surface: T.card, lo: lo2, hi: hi2, ticks: tk2, fmtTick: v => fmtD.format(v),
+      series: HD.years.map((y, k) => ({ name: String(y), color: T.t[k], values: SIZE[k] })) });
+    $('h2').setAttribute('viewBox', `0 0 ${w2} ${h2G.h}`); $('h2').innerHTML = h2G.svg;
+    $('k2').innerHTML = keyHTML(HD.years.map((y, k) => ['dot', T.t[k], y]));
+    // 3) household growth split into population and household size, with the new dwellings
+    drawSplit();
+    $('k3').innerHTML = keyHTML([['sq', T.cpop, 'Creixement de la població'], ['sq', T.csize, 'Canvi de mida de les llars'], ['tick', '', 'Habitatges nous']]);
+  }
+  function drawSplit() {
+    const w = $('h3Box').clientWidth, narrow = w < 560, V = splitVals(period), dom = SPLIT_DOM[period === 0 ? 0 : 1];
+    const st = dom.step * (narrow && (dom.hi - dom.lo) / dom.step > 4 ? 2 : 1), ticks = [];
+    for (let k = Math.ceil(dom.lo / st); k * st <= dom.hi + 1e-9; k++) ticks.push(k * st || 0);
+    h3G = CH.split({ w, rows: V.map(v => rName(v.r)), labelW: narrow ? 84 : 104, valueW: narrow ? 58 : 176, rowH: 34, surface: T.card, lo: dom.lo, hi: dom.hi, ticks, fmtTick: v => (v > 0 ? '+' : '') + fmt.format(v) + '\u00a0%',
+      colors: { a: T.cpop, b: T.csize }, a: V.map(v => v.pop), b: V.map(v => v.size), mark: V.map(v => v.built),
+      value: i => narrow ? `<tspan class="vv">${pctV(V[i].hh)}</tspan>` : `<tspan class="vl">llars </tspan><tspan class="vv">${pctV(V[i].hh)}</tspan><tspan class="vl" dx="10">habitatges </tspan><tspan class="vv">${pctV(V[i].built)}</tspan>` });
+    $('h3').setAttribute('viewBox', `0 0 ${w} ${h3G.h}`); $('h3').innerHTML = h3G.svg;
+    PERIODS.forEach((_, p) => $('pr' + p).setAttribute('aria-pressed', p === period));
+  }
+  PERIODS.forEach((_, p) => $('pr' + p).addEventListener('click', () => { period = p; $('h3Tip').hidden = true; drawSplit(); }));
+  // row tooltips: hover with a mouse, tap on touch
+  function rowTip(svgId, tipId, getG, html) {
+    const svg = $(svgId), tip = $(tipId);
+    const at = e => { const g = getG(); if (!g) return -1; const r = svg.getBoundingClientRect(); const i = Math.floor((e.clientY - r.top - g.t) / g.rowH); return i >= 0 && i < Math.round((g.h - g.t - 22) / g.rowH) ? i : -1; };
+    const show = (e, i) => {
+      if (i < 0) { tip.hidden = true; return; }
+      tip.innerHTML = html(i); tip.hidden = false;
+      const g = getG(), bw = svg.parentNode.clientWidth, tw = tip.offsetWidth, r = svg.getBoundingClientRect();
+      const px = e.clientX - r.left, y = g.t + (i + 1) * g.rowH + 4;
+      const left = clamp(px - tw / 2, 0, Math.max(0, bw - tw));
+      tip.style.transform = `translate(${left.toFixed(0)}px, ${y.toFixed(0)}px)`;
+    };
+    svg.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') show(e, at(e)); });
+    svg.addEventListener('pointerleave', () => { tip.hidden = true; });
+    svg.addEventListener('click', e => { const i = at(e); if (!tip.hidden && tip.dataset.i === String(i)) { tip.hidden = true; return; } tip.dataset.i = i; show(e, i); });
+  }
+  const tr = (color, v, label, cls) => `<tr><td class="k">${color ? `<i style="border-color:${color}"></i>` : ''}</td><td class="v">${v}</td><td>${label}</td>${cls != null ? `<td class="c">${cls}</td>` : ''}</tr>`;
+  rowTip('h1', 'h1Tip', () => h1G, i => `<h4>${rName(i)}</h4><table>${HD.decades.map((d, k) => tr(T.t[k], fmtD.format(BRATE[k][i]), d, kTxt(HD.built[k][i]))).join('')}</table>`);
+  rowTip('h2', 'h2Tip', () => h2G, i => `<h4>${rName(i)}: persones per llar</h4><table>${HD.years.map((y, k) => tr(T.t[k], fmt2.format(SIZE[k][i]), y, kTxt(HD.households[k][i]) + ' llars')).join('')}</table>`);
+  rowTip('h3', 'h3Tip', () => h3G, i => {
+    const v = splitVals(period)[i];
+    return `<h4>${rName(v.r)} · ${PERIODS[period].n}</h4><table>` + tr(T.cpop, pctV(v.pop), 'creixement de la població') + tr(T.csize, pctV(v.size), v.size >= 0 ? 'llars més petites' : 'llars més grans') +
+      tr('', pctV(v.hh), 'llars noves', kTxt(v.dH)) + tr(T.ink, pctV(v.built), 'habitatges nous', kTxt(v.nb)) + tr('', fmt2.format(v.s0) + ' → ' + fmt2.format(v.s1), 'persones per llar') + '</table>';
+  });
+  function updateCharts() {
+    if (!stackG) return;
+    const yr = hoverYear != null ? hoverYear : year, fi = clamp(yr - Y0, 0, Y1 - Y0), yi = Math.floor(yr + 1e-6);
+    const x = stackG.X(fi).toFixed(1), cur = $('stcur');
+    cur.firstChild.setAttribute('x1', x); cur.firstChild.setAttribute('x2', x);
+    stackG.cum.forEach((c, b) => { const d = cur.childNodes[b + 1]; d.setAttribute('cx', x); d.setAttribute('cy', stackG.Y(valueAtYearly(c, yr)).toFixed(1)); });
+    const tot = valueAtYearly(cum60, yr);
+    $('readout').innerHTML = `<b>${yLabel(yi)}</b>: ${people(tot)} d'habitants fins a 60 km de Barcelona, <b>${pctTxt(tot / cum60[0])}</b> respecte a 1981.`;
+    multG.forEach((g, k) => {
+      const v = valueAtYearly(bandSeries[k], yr), p = 100 * (v / bandSeries[k][0] - 1), mx = g.X(fi).toFixed(1), c = $('m' + k + 'cur');
+      c.firstChild.setAttribute('x1', mx); c.firstChild.setAttribute('x2', mx);
+      c.lastChild.setAttribute('cx', mx); c.lastChild.setAttribute('cy', g.Y(p).toFixed(1));
+      $('mv' + k).textContent = pctTxt(v / bandSeries[k][0]);
+      $('ms' + k).textContent = `${mShort(bandSeries[k][0])} → ${mShort(v)} · ${yi}`;
+    });
+  }
+  const stTip = $('stTip'), stackSvg = $('stack');
+  function yearAt(e, g) { const r = e.currentTarget.getBoundingClientRect(); return clamp(Math.round(Y0 + (e.clientX - r.left - g.x0) / (g.x1 - g.x0) * (Y1 - Y0)), Y0, Y1); }
+  function goYear(y) { setPlaying(false); yearTarget = y; slider.value = y; }
+  function showStackTip(y) {
+    const i = y - Y0;
+    let rows = '';
+    for (let b = NR - 1; b >= 0; b--) {
+      const v = stackG.cum[b][i];
+      rows += `<tr><td class="k"><i style="border-color:${cssChg(bandSeries[b][i] / bandSeries[b][0])}"></i></td><td class="v">${fmt2.format(v / 1e6)} M</td><td>${b === 0 ? 'Barcelona' : 'fins a ' + BANDS[b].r[1] + ' km'}</td><td class="c">${pctTxt(v / stackG.cum[b][0])}</td></tr>`;
+    }
+    stTip.innerHTML = `<h4>${yLabel(y)}</h4><table>${rows}</table>`;
+    stTip.hidden = false;
+    const bw = $('stackBox').clientWidth, tw = stTip.offsetWidth, x = stackG.X(i);
+    const left = x + 14 + tw > bw ? x - 14 - tw : x + 14;
+    stTip.style.transform = `translate(${Math.max(0, left).toFixed(0)}px, ${(stackG.y0 + 6).toFixed(0)}px)`;
+  }
+  stackSvg.addEventListener('pointermove', e => { if (!stackG || e.pointerType !== 'mouse') return; const y = yearAt(e, stackG); if (y !== hoverYear) { hoverYear = y; updateCharts(); showStackTip(y); } });
+  stackSvg.addEventListener('pointerleave', () => { hoverYear = null; stTip.hidden = true; updateCharts(); });
+  stackSvg.addEventListener('click', e => { if (stackG) goYear(yearAt(e, stackG)); });
+  stackSvg.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    const y = clamp(Math.round(yearTarget) + (e.key === 'ArrowRight' ? 1 : -1), Y0, Y1);
+    goYear(y); showStackTip(y);
+  });
+  stackSvg.addEventListener('blur', () => { stTip.hidden = true; });
+  $('mult').addEventListener('pointermove', e => {
+    const k = BANDS.findIndex((_, j) => e.target.closest && e.target.closest('#mg' + j));
+    if (k < 0 || e.pointerType !== 'mouse') return;
+    const el = $('mg' + k), r = el.getBoundingClientRect(), g = multG[k];
+    const y = clamp(Math.round(Y0 + (e.clientX - r.left - g.x0) / (g.x1 - g.x0) * (Y1 - Y0)), Y0, Y1);
+    if (y !== hoverYear) { hoverYear = y; updateCharts(); }
+  });
+  $('mult').addEventListener('pointerleave', () => { hoverYear = null; updateCharts(); });
+  $('mult').addEventListener('click', e => {
+    const k = BANDS.findIndex((_, j) => e.target.closest && e.target.closest('#mg' + j));
+    if (k < 0) return;
+    const r = $('mg' + k).getBoundingClientRect(), g = multG[k];
+    goYear(clamp(Math.round(Y0 + (e.clientX - r.left - g.x0) / (g.x1 - g.x0) * (Y1 - Y0)), Y0, Y1));
+  });
+  const toCharts = () => $('charts').scrollIntoView({ block: 'start' });
+  $('peek').addEventListener('click', toCharts);
+  $('toCharts').addEventListener('click', toCharts);
+  let chartRaf = 0, lastChartW = 0;
+  new ResizeObserver(() => { const w = $('stackBox').clientWidth; if (w === lastChartW) return; lastChartW = w; cancelAnimationFrame(chartRaf); chartRaf = requestAnimationFrame(drawCharts); }).observe($('stackBox'));
+
+  // ---------- tooltip / picking ----------
+  const tip = $('tip');
+  let tipAt = null;
+  function showTip(m, px, py) {
+    tipAt = [px, py];
+    const p = popNow[m], g = p - pop81[m];
+    tip.innerHTML = `<h4>${cap(M[m].n)}</h4><p class="com">${M[m].com} · ${fmt.format(Math.round(distKm[m]))} km de la plaça de Catalunya</p><table>
+      <tr><td>Població ${Math.floor(year + 1e-6)}</td><td>${fmt.format(Math.round(p))}</td></tr>
+      <tr><td>Població 1981</td><td>${fmt.format(Math.round(pop81[m]))}</td></tr>
+      <tr><td><span class="tip-sw" style="background:${cssChg(ratio[m])}"></span>Canvi</td><td>${sgn(g)}${fmt.format(Math.round(Math.abs(g)))} (${pctTxt(ratio[m])})</td></tr>
+      <tr><td>Densitat</td><td>${fmt.format(Math.round(p / Math.max(M[m].a, 0.3)))} hab./km²</td></tr></table>`;
+    tip.hidden = false;
+    const W = app.clientWidth, Hh = app.clientHeight, tw = tip.offsetWidth, th = tip.offsetHeight;
+    let x = px + 16, y = py + 16;
+    if (x + tw > W - 12) x = px - tw - 16;
+    if (y + th > Hh - 12) y = py - th - 16;
+    tip.style.transform = `translate(${Math.max(12, x)}px, ${Math.max(12, y)}px)`;
+  }
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  function pick(px, py) {
+    if (boundsDirty) { geo.computeBoundingSphere(); geo.computeBoundingBox(); boundsDirty = false; }
+    ndc.set((px / app.clientWidth) * 2 - 1, -(py / app.clientHeight) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObject(mesh, false)[0];
+    return hit ? vm[hit.face.a] : -1;
+  }
+  let downAt = null;
+  const rel = e => { const r = app.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  canvas.addEventListener('pointerdown', e => { downAt = { x: e.clientX, y: e.clientY }; });
+  canvas.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse' || e.buttons) { if (pinned == null) tip.hidden = true; return; }
+    const [px, py] = rel(e); const m = pick(px, py); hover = m >= 0 ? m : null;
+    if (hover != null) showTip(hover, px, py); else if (pinned == null) tip.hidden = true;
+  });
+  canvas.addEventListener('pointerleave', () => { hover = null; if (pinned == null) tip.hidden = true; });
+  canvas.addEventListener('pointerup', e => {
+    if (!downAt || Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) > 6 || e.pointerType === 'mouse') return;
+    const [px, py] = rel(e); const m = pick(px, py); pinned = m >= 0 ? m : null;
+    if (pinned != null) showTip(pinned, px, py); else tip.hidden = true;
+  });
+
+  // ---------- camera ----------
+  const POSES = {
+    bcn: { target: new THREE.Vector3(PC[0] - 12, 2, -PC[1] - 26), dir: new THREE.Vector3(0.32, 1.25, 0.85), dist: 225, span: 150 },
+    cat: { target: new THREE.Vector3(-6, 4, 14), dir: new THREE.Vector3(0.30, 0.80, 0.86), dist: 525, span: 290 }
+  };
+  let camAnim = null, curPose = 'bcn', panelOffset = 0;
+  function viewPose(name) {
+    const a = POSES[name], W = app.clientWidth, Hh = app.clientHeight;
+    const aspectFree = (W - panelOffset) / Math.max(1, Hh);
+    const portrait = aspectFree < 0.9;
+    const dir = portrait ? new THREE.Vector3(0.1, 1.2, 0.85) : a.dir;
+    const dFit = a.span / (2 * Math.tan(THREE.MathUtils.degToRad(17)) * aspectFree);
+    return { target: a.target.clone(), pos: a.target.clone().add(dir.clone().normalize().multiplyScalar(Math.max(a.dist, dFit))) };
+  }
+  function goView(name, instant) {
+    curPose = name;
+    $('vBcn').setAttribute('aria-pressed', name === 'bcn'); $('vCat').setAttribute('aria-pressed', name === 'cat');
+    const p = viewPose(name);
+    if (instant || reduceMotion) { camera.position.copy(p.pos); controls.target.copy(p.target); controls.update(); return; }
+    camAnim = { t: 0, fromP: camera.position.clone(), fromT: controls.target.clone(), toP: p.pos, toT: p.target };
+  }
+  function resize() {
+    const W = app.clientWidth, Hh = app.clientHeight;
+    renderer.setSize(W, Hh, false);
+    panelOffset = W > 760 ? Math.min($('panel').offsetWidth + 16, W * 0.35) : 0;
+    // on phones the ring bars live inside "Més dades" so the map stays visible
+    const bs = $('bandsSec'), more = document.querySelector('.more');
+    if (W <= 760 && bs.parentNode !== more) more.insertBefore(bs, more.firstChild);
+    if (W > 760 && bs.parentNode === more) $('panel').insertBefore(bs, document.querySelector('.panel .legend'));
+    camera.aspect = (W + panelOffset) / Hh;
+    if (panelOffset) camera.setViewOffset(W + panelOffset, Hh, panelOffset, 0, W, Hh); else camera.clearViewOffset();
+    camera.updateProjectionMatrix();
+    pool.forEach(L => (L.w = 0));
+  }
+  let roFirst = true;
+  new ResizeObserver(() => { resize(); if (!roFirst) goView(curPose, true); roFirst = false; }).observe(app);
+  resize(); goView('bcn', true);
+  if (app.clientWidth <= 760) $('more').open = false;
+
+  // ---------- controls ----------
+  const playBtn = $('play'), playIcon = $('playIcon');
+  function setPlaying(p) {
+    playing = p;
+    playIcon.innerHTML = p ? '<path d="M3.5 2.5h3.2v11H3.5zM9.3 2.5h3.2v11H9.3z"/>' : '<path d="M4 2.5v11l9-5.5z"/>';
+    playBtn.setAttribute('aria-label', p ? 'Atura' : 'Reprodueix');
+  }
+  playBtn.addEventListener('click', () => {
+    if (!playing && year >= Y1 - 0.001) { year = yearTarget = Y0; }
+    if (playing) { yearTarget = Math.min(Y1, Math.ceil(year)); slider.value = yearTarget; }
+    setPlaying(!playing);
+  });
+  slider.addEventListener('input', () => { setPlaying(false); yearTarget = +slider.value; });
+  $('vBcn').addEventListener('click', () => goView('bcn'));
+  $('vCat').addEventListener('click', () => goView('cat'));
+  $('sSqrt').addEventListener('click', () => { scaleMode = 'sqrt'; $('sSqrt').setAttribute('aria-pressed', true); $('sLin').setAttribute('aria-pressed', false); });
+  $('sLin').addEventListener('click', () => { scaleMode = 'lin'; $('sLin').setAttribute('aria-pressed', true); $('sSqrt').setAttribute('aria-pressed', false); });
+  $('rings').addEventListener('click', () => { showRings = !showRings; ringGroup.visible = showRings; $('rings').setAttribute('aria-pressed', showRings); });
+  let dirty = 1;
+  function onTheme() {
+    readTokens(); applyEdge(); drawLegend(); drawCharts();
+    scene.background.copy(T.bg); scene.fog.color.copy(T.bg); ground.material.opacity = T.shadow; ringMat.color.copy(T.ring);
+    dirty++; lastRank = null;
+  }
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', onTheme);
+  new MutationObserver(onTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // ---------- frame loop ----------
+  const RATE = 2.4;
+  let last = performance.now(), built = { y: NaN, mix: NaN, dirty: 0 };
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (playing) {
+      year = Math.min(Y1, year + dt * RATE); yearTarget = year; slider.value = Math.floor(year);
+      if (year >= Y1) setPlaying(false);
+    } else if (Math.abs(yearTarget - year) > 1e-3) {
+      year += (yearTarget - year) * Math.min(1, dt * 10);
+      if (Math.abs(yearTarget - year) < 0.01) year = yearTarget;
+    }
+    const mixT = scaleMode === 'sqrt' ? 1 : 0;
+    if (heightMix !== mixT) { heightMix += (mixT - heightMix) * Math.min(1, dt * 7); if (Math.abs(mixT - heightMix) < 0.004) heightMix = mixT; }
+    if (camAnim) {
+      camAnim.t = Math.min(1, camAnim.t + dt / 1.3);
+      const e = camAnim.t < 0.5 ? 4 * camAnim.t ** 3 : 1 - Math.pow(-2 * camAnim.t + 2, 3) / 2;
+      camera.position.lerpVectors(camAnim.fromP, camAnim.toP, e);
+      controls.target.lerpVectors(camAnim.fromT, camAnim.toT, e);
+      if (camAnim.t >= 1) camAnim = null;
+    }
+    controls.update();
+    const camDist = camera.position.distanceTo(controls.target);
+    scene.fog.near = camDist * 1.2; scene.fog.far = camDist * 3;
+    const changed = year !== built.y || heightMix !== built.mix || dirty !== built.dirty;
+    if (changed) { computeTargets(); built = { y: year, mix: heightMix, dirty }; updatePanel(); }
+    let moving = changed; for (let m = 0; m < NM && !moving; m++) if (Math.abs(H[m] - Hs[m]) > 0.005) moving = true;
+    if (moving || first) applyMesh(dt);
+    if (changed) { const t = pinned != null ? pinned : hover; if (t != null && !tip.hidden && tipAt) showTip(t, tipAt[0], tipAt[1]); }
+    renderer.render(scene, camera);
+    placeLabels();
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  // open on today's picture, then replay the story from 1981
+  if (!reduceMotion) setTimeout(() => { if (!playing && year === Y1) { year = yearTarget = Y0; setPlaying(true); } }, 1800);
+})();
+</script>

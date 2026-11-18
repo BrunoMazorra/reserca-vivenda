@@ -15,7 +15,7 @@ es comparteix des del seu menú.
 | `#inici` | Presentació i accés a les tres escales | `shell.html` |
 | `#ciutats`, `#ciutat-<nom>` | Fitxa de cada capital de província, amb selector (per exemple `#ciutat-girona`) | `src/capitals/` |
 | `#ciutat-leon-ampliada` | Fitxa ampliada de León (en castellà) | `src/leon/` |
-| `#catalunya` | Mapa 3D «Catalunya en relleu» | `src/catalunya/` |
+| `#catalunya` | Mapa 3D «Catalunya en relleu» i, a sota, gràfiques de població, llars i habitatge per anells | `../creixement/pagina/` |
 | `#barcelona` | Concentració del lloguer i grans propietaris | `../concentracio/pagina/` |
 | `#barcelona-mapes` | Propietat per barris, amb mapes (en castellà) | `src/bcn_mapes/` |
 
@@ -28,9 +28,11 @@ es comparteix des del seu menú.
   - Pàgines «Data» (León, Barcelona): separa estils, contingut i guions. Cada pàgina corre
     amb la seva pròpia instància de `dash`, de manera que els noms de dibuixos i dades no
     xoquen.
-  - Mapa de Catalunya: prefixa els estils amb `#pg-catalunya` (les variables de color es
-    queden a `:root`, perquè el codi del mapa les llegeix d'allà), treu les dades a
-    `data/catalunya.json` i carrega Three.js només quan s'obre la pàgina.
+  - Mapa de Catalunya: llegeix `../creixement/pagina/index.html`. Prefixa els estils amb
+    `#pg-catalunya` (les variables de color es queden a `:root`, perquè el codi del mapa les
+    llegeix d'allà), treu les dades del mapa a `data/catalunya.json`, posa les de llars i
+    habitatge dins del codi i carrega Three.js només quan s'obre la pàgina. El mapa va dins
+    de l'escenari (`.cat-stage`) i les gràfiques, a sota.
   - Comprova que no hi hagi identificadors repetits entre pàgines.
 - `src/`: còpies de les pàgines originals i dels seus fitxers de dades, baixades dels
   artefactes el 16/11/2026.
@@ -53,5 +55,6 @@ Per a un servidor estàtic (per exemple GitHub Pages), la versió autònoma:
 python3 -I web/build.py --pages _site
 ```
 
-Si es torna a exportar la pàgina de Barcelona (`concentracio/analisi/exporta_pagina.py`),
-n'hi ha prou amb tornar a executar `build.py`.
+Si es torna a exportar la pàgina de Barcelona (`concentracio/analisi/exporta_pagina.py`)
+o es torna a muntar la de Catalunya (`creixement/pagina/build.py`), n'hi ha prou amb tornar
+a executar `build.py`.

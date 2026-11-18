@@ -4,7 +4,8 @@ Entrades (src/):
 - leon/, bcn_mapes/: pàgines del tipus «Data» (page.html, datasets/*.json, assets/*).
 - La pàgina de concentració del lloguer es llegeix directament de ../concentracio/pagina
   i ../concentracio/dades, per no tenir-ne dues còpies.
-- catalunya/page.html: el mapa 3D, una pàgina normal amb les dades dins.
+- El mapa 3D de Catalunya i les seves gràfiques es llegeixen de ../creixement/pagina/index.html
+  (es genera amb creixement/pagina/build.py).
 - capitals/: les fitxes de les 52 capitals (vegeu importa_capitals.py).
 
 Sortida (dist/): index.html i data/<pàgina>/<dataset>.<ext>.
@@ -26,6 +27,7 @@ from pathlib import Path
 AQUI = Path(__file__).resolve().parent
 SRC = AQUI / "src"
 CONC = AQUI.parent / "concentracio"
+CREIX = AQUI.parent / "creixement"
 DIST = AQUI / "dist"
 
 
@@ -116,24 +118,34 @@ def scope_css(css, prefix, stage):
 
 
 def build_catalunya():
-    html = (SRC / "catalunya" / "page.html").read_text(encoding="utf-8")
+    """Mapa 3D i gràfiques de ../creixement/pagina/index.html.
+
+    Retorna els estils, el mapa (va dins de l'escenari), el que va a sota del mapa
+    (gràfiques de població, habitatge i llars) i el codi.
+    """
+    html = (CREIX / "pagina" / "index.html").read_text(encoding="utf-8")
     styles = re.findall(r"<style[^>]*>(.*?)</style>", html, re.S)
     scripts = re.findall(r"<script[^>]*>(.*?)</script>", html, re.S)
-    data_script = next(s for s in scripts if s.lstrip().startswith("{"))
+    data_script = re.search(r'<script id="data" type="application/json">(.*?)</script>', html, re.S).group(1)
+    hdata_script = re.search(r'<script id="hdata" type="application/json">(.*?)</script>', html, re.S).group(1)
+    charts = next(s for s in scripts if "root.RelleuCharts" in s)
     code = next(s for s in scripts if "JSON.parse(document.getElementById('data').textContent)" in s)
-    # El primer <style> és el reset de la plantilla d'artefacte; el segon, el del mapa.
+    # El primer <style> és el reset de la pàgina autònoma; el segon, el del mapa.
     css = scope_css(styles[-1], "#pg-catalunya", ".cat-stage")
     body = re.sub(r"<script[^>]*>.*?</script>|<style[^>]*>.*?</style>", "", html, flags=re.S)
-    start = body.index('<div id="app">')
-    markup = body[start:].replace("</body>", "").replace("</html>", "").strip()
+    body = body[body.index('<div id="app">'):].replace("</body>", "").replace("</html>", "").strip()
+    cut = body.index('<button type="button" class="peek"')
+    markup, below = body[:cut].strip(), body[cut:].strip()
+    json.loads(hdata_script)
     code = code.replace("JSON.parse(document.getElementById('data').textContent)", "window.__CAT_DATA__")
-    js = "window.initCatalunya = function () {\n" + code.strip("\n") + "\n};"
-    assert "</script" not in js.lower()
+    code = code.replace("JSON.parse(document.getElementById('hdata').textContent)", hdata_script.strip())
+    js = charts.strip("\n") + "\nwindow.initCatalunya = function () {\n" + code.strip("\n") + "\n};"
+    assert "</script" not in js.lower() and "getElementById('hdata')" not in js
     out = DIST / "data" / "catalunya.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     json.loads(data_script)
     out.write_text(data_script.strip(), encoding="utf-8")
-    return css, markup, js
+    return css, markup, below, js
 
 
 HEAD = (
@@ -202,11 +214,12 @@ def main():
     # Fitxes de ciutat: una per capital, generades amb vivienda_capitales (importa_capitals.py)
     shutil.copytree(SRC / "capitals", DIST / "data" / "capitals")
 
-    # Catalunya
-    css, markup, js = build_catalunya()
+    # Catalunya: mapa i, a sota, gràfiques per anells (../creixement/pagina)
+    css, markup, below, js = build_catalunya()
     css_parts.append(css)
     js_parts.append(js)
     shell = shell.replace("<!--__CATALUNYA__-->", markup)
+    shell = shell.replace("<!--__CATALUNYA_SOTA__-->", below)
 
     shell = shell.replace("/*__PAGE_CSS__*/", "\n".join(css_parts))
     shell = shell.replace("/*__PAGE_JS__*/", "\n\n".join(js_parts))

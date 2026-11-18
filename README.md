@@ -51,6 +51,7 @@ Lectures
 | Tema | Pregunta central | Estat |
 |---|---|---|
 | [Concentració del mercat de lloguer](concentracio/) | Hi ha poder de mercat en el lloguer, i quina part es capitalitza en el preu de compra? | En curs |
+| [Creixement al voltant de Barcelona](creixement/) | On s'ha instal·lat la població nova des de 1981, i s'ha construït prou habitatge per a les llars noves? | En curs |
 | Demanda: immigració i estrangers | Quina part de la pressió sobre preus ve de població nova resident i quina de compradors o llogaters estrangers (residents temporals, segona residència, turisme)? | Pendent |
 | Crèdit | Quant expliquen els preus les condicions de finançament (tipus d'interès, LTV, oferta de crèdit)? | Pendent |
 | Cost de construcció (sense sòl) | Quant costa construir un m² i com ha evolucionat respecte al preu de venda? | Pendent |
@@ -74,6 +75,7 @@ Els temes es toquen entre ells. Uns quants punts de contacte que convé tenir pr
 README.md            aquest fitxer: intenció, mètode i índex de temes
 concentracio/        tema 1: concentració del mercat
   README.md          preguntes, hipòtesis, dades i pla
+creixement/          tema 2: població, llars i habitatge per anells al voltant de Barcelona
 <tema>/              un directori per tema, a mesura que hi treballem
   README.md
   dades/             dades descarregades (les grans no es pugen al repo)

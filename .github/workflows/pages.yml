@@ -8,6 +8,8 @@ on:
       - "web/**"
       - "concentracio/pagina/**"
       - "concentracio/dades/**"
+      - "creixement/pagina/**"
+      - "creixement/dades/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
