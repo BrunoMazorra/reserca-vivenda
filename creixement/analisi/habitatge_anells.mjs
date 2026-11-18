@@ -1,31 +1,28 @@
-// Builds dades/habitatge-anells.json: households, household size and new dwellings by 10 km ring
-// around Plaça de Catalunya, from the Idescat census tables by municipality.
-//   node creixement/analisi/habitatge_anells.mjs            (downloads the tables from idescat.cat)
+// Construeix creixement/dades/habitatge-anells.json: llars, persones per llar i habitatges nous
+// per anells de 10 km al voltant de la plaça de Catalunya, a partir dels censos d'Idescat per municipis.
 //
-// Censuses 1991, 2001, 2011 and 2021:
-//   n=7952  Llars (households)                      -> households per municipality
-//   n=450   Grandària mitjana de la llar            -> persons per household
-// Census 2021:
-//   n=309   Habitatges principals per any de construcció -> dwellings built per decade
-//           (only municipalities Idescat publishes; each ring is scaled up by its share of
-//            households that are covered, and the Catalonia row is used for the total)
+//   node creixement/analisi/habitatge_anells.mjs              baixa el que falti i escriu el fitxer
+//   node creixement/analisi/habitatge_anells.mjs --comprova   no escriu res: diu si surt igual que el guardat
+//   node creixement/analisi/habitatge_anells.mjs --refresca   torna a baixar totes les taules
+//
+// Fa servir dades/municipis.json (codi i centre de cada municipi): primer cal poblacio_municipis.mjs.
+// Taules (Idescat, Cens de població i habitatges, per municipis):
+//   censph 7952  Llars                                         1991, 2001, 2011, 2021
+//   censph 450   Grandària mitjana de la llar                  1991, 2001, 2011, 2021
+//   censph 309   Habitatges principals per any de construcció  2021 (només els municipis que publica
+//                Idescat: cada anell s'escala segons la part de les seves llars que hi surt)
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { TEMA, baixa, llegeixSsv, num, comprova } from './descarrega.mjs';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const root = TEMA;
 const D = JSON.parse(fs.readFileSync(path.join(root, 'dades/municipis.json'), 'utf8'));
-const URL = (n, y) => `https://www.idescat.cat/pub/?id=censph&n=${n}&by=mun&lang=ca&f=ssv&t=${y}00`;
 async function table(n, y) {
-  const res = await fetch(URL(n, y));
-  if (!res.ok) throw new Error(`${n} ${y}: HTTP ${res.status}`);
-  const rows = (await res.text()).replace(/^﻿/, '').split(/\r?\n/);
-  if (!rows[1].includes(String(y))) throw new Error(`${n} ${y}: got "${rows[1]}"`);
-  const h = rows.findIndex(r => r.startsWith('Codi;'));
-  const head = rows[h].split(';'), body = rows.slice(h + 1).map(r => r.split(';'));
-  return { head, rows: body.filter(q => /^\d{6}$/.test(q[0])), cat: body.find(q => q[1] === 'Catalunya') };
+  const text = await baixa(`censph${n}_${y}.ssv`, `https://www.idescat.cat/pub/?id=censph&n=${n}&by=mun&lang=ca&f=ssv&t=${y}00`);
+  const T = llegeixSsv(text);
+  if (!T.meta.some(r => r.includes(String(y)))) throw new Error(`censph ${n}: la taula baixada no és del ${y}`);
+  return { head: T.cap, rows: T.files.filter(q => /^\d{6}$/.test(q[0])), cat: T.files.find(q => q[1] === 'Catalunya') };
 }
-const num = s => s == null || s === '' || s === '..' || s === '-' ? NaN : parseFloat(s.replace(/\./g, '').replace(',', '.'));
 
 // ring of each municipality: same projection and distances as the page
 const kx = 111.32 * Math.cos(41.7 * Math.PI / 180), ky = 110.57, PC = [(2.17 - 1.75) * kx, (41.387 - 41.7) * ky];
@@ -43,7 +40,7 @@ for (const y of YEARS) T[y] = { L: await table(7952, y), G: await table(450, y) 
 for (const y of YEARS) for (const q of T[y].G.rows) { const v = num(q[2]); if (v > 0) (sizes[q[0]] ||= {})[y] = v; }
 for (const [k, y] of YEARS.entries()) {
   for (const q of T[y].L.rows) {
-    const r = ringOf[q[0]]; if (r == null) { console.warn(y, 'no ring for', q[0], q[1]); continue; }
+    const r = ringOf[q[0]]; if (r == null) { console.warn(`${y}: ${q[1]} (${q[0]}) ja no és un municipi; no es compta`); continue; }
     const n = num(q[2]); if (!(n > 0)) continue;
     // a few small municipalities have no published household size (2011): use the mean of their other censuses
     let s = sizes[q[0]]?.[y];
@@ -75,7 +72,9 @@ const out = {
   coverage: cov.map(v => Math.round(v * 1000) / 1000),
   builtCatalunya: cols.map(c => num(B.cat[c]))
 };
-fs.writeFileSync(path.join(root, 'dades/habitatge-anells.json'), JSON.stringify(out) + '\n');
+const SORTIDA = path.join(root, 'dades/habitatge-anells.json');
+if (process.argv.includes('--comprova')) process.exitCode = comprova(out, SORTIDA) ? 0 : 1;
+else fs.writeFileSync(SORTIDA, JSON.stringify(out) + '\n');
 console.log('coverage', out.coverage.join(' '));
 out.rings.forEach((n, r) => console.log(n.padEnd(17),
   YEARS.map((y, k) => `${y} llars ${Math.round(ll[k][r] / 1e3)}k pers/llar ${(hp[k][r] / ll[k][r]).toFixed(2)}`).join(' | '),

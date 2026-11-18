@@ -2,6 +2,8 @@
 
 **Pàgina:** [Catalunya en relleu](https://brunomazorra.github.io/reserca-vivenda/catalunya-relleu/) (mapa 3D i gràfiques)
 
+**Reproduir-ho:** [REPRODUCIBILITAT.md](REPRODUCIBILITAT.md) explica com baixar totes les dades i refer-ho tot amb cinc ordres.
+
 ## Pregunta central
 
 On s'ha instal·lat la població nova de l'àrea de Barcelona des de 1981, i s'ha construït
@@ -134,19 +136,24 @@ Pendent.
 ## Contingut
 
 ```
-dades/municipis.json        població per any i contorn de cada municipi (amb el codi Idescat)
+REPRODUCIBILITAT.md         com baixar les dades i refer-ho tot
+dades/municipis.json        població per any, contorn, superfície i centre de cada municipi (amb el codi Idescat)
 dades/habitatge-anells.json llars, població en llars i habitatges nous per anell
-analisi/habitatge_anells.mjs baixa els censos d'Idescat i calcula dades/habitatge-anells.json
+dades/brut/                 descàrregues originals (no es guarden al repositori)
+analisi/poblacio_municipis.mjs baixa padró, sèries històriques i contorns i escriu dades/municipis.json
+analisi/habitatge_anells.mjs baixa els censos d'Idescat i escriu dades/habitatge-anells.json
+analisi/descarrega.mjs      descàrregues i comprovacions compartides
 analisi/figures.mjs         genera figures/*.svg amb el mateix codi de gràfics que la pàgina
 figures/                    gràfics estàtics
 pagina/                     la pàgina «Catalunya en relleu» (mapa 3D i gràfiques)
 ```
 
 ```bash
+node creixement/analisi/poblacio_municipis.mjs
 node creixement/analisi/habitatge_anells.mjs
-python3 -I creixement/pagina/build.py
 node creixement/analisi/figures.mjs
-python3 -I web/build.py
+python3 -I creixement/pagina/build.py
+python3 -I web/build.py --pages _site
 ```
 
 ![Població acumulada fins a 10, 20, 30, 40, 50 i 60 km de la plaça de Catalunya](figures/poblacio-fins-60km.svg)

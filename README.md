@@ -5,6 +5,7 @@ Recerca sobre el mercat de l'habitatge a Barcelona i rodalia.
 **Web amb els resultats:** https://brunomazorra.github.io/reserca-vivenda/
 
 **Catalunya en relleu** (mapa 3D i gràfiques de població, llars i habitatge, a pantalla completa): https://brunomazorra.github.io/reserca-vivenda/catalunya-relleu/
+([com reproduir-ne les dades](creixement/REPRODUCIBILITAT.md))
 
 ## Intenció
 
