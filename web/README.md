@@ -16,6 +16,7 @@ es comparteix des del seu menú.
 | `#ciutats`, `#ciutat-<nom>` | Fitxa de cada capital de província, amb selector (per exemple `#ciutat-girona`) | `src/capitals/` |
 | `#ciutat-leon-ampliada` | Fitxa ampliada de León (en castellà) | `src/leon/` |
 | `#catalunya` | Mapa 3D «Catalunya en relleu» i, a sota, gràfiques de població, llars i habitatge per anells | `../creixement/pagina/` |
+| `catalunya-relleu/` | La mateixa pàgina de Catalunya sencera, a pantalla completa: https://brunomazorra.github.io/reserca-vivenda/catalunya-relleu/ (només a la versió de GitHub Pages) | `../creixement/pagina/index.html` |
 | `#barcelona` | Concentració del lloguer i grans propietaris | `../concentracio/pagina/` |
 | `#barcelona-mapes` | Propietat per barris, amb mapes (en castellà) | `src/bcn_mapes/` |
 

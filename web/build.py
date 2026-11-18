@@ -11,7 +11,8 @@ Entrades (src/):
 Sortida (dist/): index.html i data/<pàgina>/<dataset>.<ext>.
 - dist/index.html és per a claude.ai, que hi afegeix la capçalera HTML.
 - Amb --pages DIR, a més, escriu a DIR una versió autònoma (amb <!doctype>, <head> i
-  .nojekyll) per servir des de GitHub Pages o qualsevol servidor estàtic.
+  .nojekyll) per servir des de GitHub Pages o qualsevol servidor estàtic, i hi copia
+  «Catalunya en relleu» sencera com a pàgina pròpia a DIR/catalunya-relleu/.
 
 Ús:
     python3 -I web/build.py
@@ -166,6 +167,9 @@ def standalone(shell, out):
     shutil.copytree(DIST / "data", out / "data")
     (out / "index.html").write_text(html, encoding="utf-8")
     (out / ".nojekyll").write_text("", encoding="utf-8")
+    # «Catalunya en relleu» sencera com a pàgina pròpia, a pantalla completa: catalunya-relleu/
+    (out / "catalunya-relleu").mkdir()
+    shutil.copyfile(CREIX / "pagina" / "index.html", out / "catalunya-relleu" / "index.html")
     print(f"versió autònoma -> {out}")
 
 

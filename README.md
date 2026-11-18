@@ -4,6 +4,8 @@ Recerca sobre el mercat de l'habitatge a Barcelona i rodalia.
 
 **Web amb els resultats:** https://brunomazorra.github.io/reserca-vivenda/
 
+**Catalunya en relleu** (mapa 3D i gràfiques de població, llars i habitatge, a pantalla completa): https://brunomazorra.github.io/reserca-vivenda/catalunya-relleu/
+
 ## Intenció
 
 Volem entendre per què l'habitatge a Barcelona és car i per què puja. No farem un gran
