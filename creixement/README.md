@@ -91,6 +91,20 @@ recuperada. Tot el creixement net de 1981 a 2026 és entre 10 i 60 km.
 | Idescat, [cens de població i habitatges](https://www.idescat.cat/pub/?id=censph&n=909&lang=ca) | Llars (taula 7952), grandària mitjana de la llar (450), habitatges principals per any de construcció (309, cens 2021) | Municipi; la 309 només publica els municipis més grans (cobreix més del 99 % de les llars fins a 60 km) | Taules descarregables; `analisi/habitatge_anells.mjs` les baixa |
 | INE, contorns municipals via [es-atlas](https://github.com/martgnz/es-atlas) | Polígons dels municipis | Municipi | TopoJSON |
 
+Com es calcula:
+
+- *Llar:* el grup de persones que viuen habitualment al mateix habitatge, siguin família o no
+  (definició del cens). Una llar és un habitatge principal.
+- *Persones per llar d'un anell:* per a cada municipi, llars × nombre mitjà de persones per
+  llar (taules 7952 i 450) dona les persones que viuen en llars; se sumen tots els municipis
+  de l'anell i es divideix pel total de llars. No hi compta la gent que viu en
+  establiments col·lectius (residències, convents, casernes, presons). Si un municipi no té
+  la mida publicada en un cens (12 municipis petits el 2011), es fa servir la mitjana dels
+  seus altres censos.
+- *Creixement de les llars partit en dues parts:* creixement de les llars = creixement de
+  la població en llars + la resta, que només pot venir del canvi en el nombre de persones
+  per llar.
+
 Limitacions:
 
 - Els «habitatges nous» només compten els que el 2021 eren primera residència: no inclouen

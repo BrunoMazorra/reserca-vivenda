@@ -177,6 +177,8 @@ h2 { margin: 0; font-size: 30px; line-height: 1.05; font-weight: 780; font-stret
 .chart-card { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .fig-head h3 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.25; text-wrap: balance; }
 .fig-sub { margin: 4px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; max-width: 82ch; text-wrap: pretty; }
+.fig-note { margin: 0; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.5; color: var(--muted); max-width: 82ch; text-wrap: pretty; }
+.fig-note b { color: var(--fg); font-weight: 650; }
 .readout { margin: 0; font-size: 13.5px; line-height: 1.4; min-height: 1.4em; }
 .readout b { font-weight: 700; }
 .plot { position: relative; min-width: 0; }
@@ -384,6 +386,7 @@ svg.chart tspan.vv { fill: var(--fg); font-weight: 600; }
         </figcaption>
         <div class="key2" id="k2"></div>
         <div class="plot" id="h2Box"><svg class="chart" id="h2" role="img" aria-label="Persones per llar per anell als censos de 1991, 2001, 2011 i 2021"></svg><div class="ctip" id="h2Tip" hidden></div></div>
+        <p class="fig-note"><b>Com es calcula.</b> Una llar és el grup de persones que viuen habitualment al mateix habitatge, siguin família o no (definició del cens). Per a cada municipi i cens, Idescat publica el nombre de llars i el nombre mitjà de persones per llar. Per a cada anell multipliquem aquestes dues xifres a cada municipi, ho sumem (són les persones que viuen en llars) i ho dividim pel total de llars de l'anell. No hi compta la gent que viu en residències, convents, casernes o altres establiments col·lectius.</p>
       </figure>
     </div>
 
@@ -402,6 +405,7 @@ svg.chart tspan.vv { fill: var(--fg); font-weight: 600; }
         <div class="key2" id="k3"></div>
       </div>
       <div class="plot" id="h3Box"><svg class="chart" id="h3" role="img" aria-label="Creixement de les llars per anell, partit entre creixement de la població i canvi de mida de les llars, amb els habitatges nous"></svg><div class="ctip" id="h3Tip" hidden></div></div>
+      <p class="fig-note"><b>Com es calcula.</b> Població vol dir aquí la gent que viu en llars, la mateixa que surt a «Persones per llar»; per això pot diferir una mica de la del padró. La part lila és el creixement d'aquesta població. La part groga és la resta del creixement de les llars, que només pot venir de canvis en el nombre de persones per llar. Les dues sumen el creixement de les llars. Els habitatges nous són les primeres residències del 2021 construïdes en aquells anys, en % de les llars a l'inici del període.</p>
     </figure>
 
     <details class="chart-card tablecard" id="tableCard2">
